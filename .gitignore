@@ -1,6 +1,7 @@
 Main.java
-
+!/template/Main.java
 *.class
+.*
 
 # Package Files #
 *.jar
