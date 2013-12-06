@@ -18,12 +18,12 @@ import com.jme3.scene.shape.Quad;
  *
  * @author silvandeleemput
  */
-public class Grid extends Node {
+public class GridLines extends Node {
     
     private int scale;
     private Geometry grid;
     
-    public Grid(AssetManager assetManager, int scale)
+    public GridLines(AssetManager assetManager, int scale)
     {
         this.scale = scale;
         Quad b = new Quad(scale,scale);
