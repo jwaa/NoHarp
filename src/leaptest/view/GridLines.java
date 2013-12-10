@@ -2,13 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package leaptest;
+package leaptest.view;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
@@ -20,37 +19,29 @@ import com.jme3.scene.shape.Quad;
  */
 public class GridLines extends Node {
     
-    private int scale;
-    private Geometry grid;
+    private float scale;
+    private int elements;
+    private final float thickness = 0.3f;
     
-    public GridLines(AssetManager assetManager, int scale)
+    public GridLines(AssetManager assetManager, int elements, float scale)
     {
         this.scale = scale;
-        Quad b = new Quad(scale,scale);
-        
-        grid = new Geometry("Surface", b);
-        grid.setLocalTranslation(0f, 0f , 0f);
-        grid.rotate(-FastMath.PI*0.5f, 0f, 0f);
+        this.elements = elements;
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.Red);
-        grid.setMaterial(mat);
-        //this.attachChild(grid);
-
         setupCoordinateLines(assetManager, mat);
-        //this.rotate(0f, -FastMath.PI*0.5f, 0f);
     }
     
-    private void setupCoordinateLines(AssetManager assetManager,Material mat) {
-        float thickness=0.5f;
-        for(int i=-10; i<=10; i++){
-            Geometry xQuad = new Geometry("x" + i,new Quad(thickness,scale));
-            xQuad.setLocalTranslation(new Vector3f(i*scale/20f,0f,scale/2));
+    private void setupCoordinateLines(AssetManager assetManager, Material mat) {
+        for(int i=0; i<=elements; i++){
+            Geometry xQuad = new Geometry("x" + i,new Quad(thickness,scale*elements));
+            xQuad.setLocalTranslation(new Vector3f(((float)i-elements/2.0f)*scale,0f,scale*elements/2));
             xQuad.rotate(-FastMath.PI*0.5f, 0f, 0f);
             xQuad.setMaterial(mat);
             this.attachChild(xQuad);
             
-            Geometry yQuad = new Geometry("z" + i,new Quad(scale,thickness));
-            yQuad.setLocalTranslation(new Vector3f(-scale/2,0f,i*scale/20f));
+            Geometry yQuad = new Geometry("z" + i,new Quad(scale*elements,thickness));
+            yQuad.setLocalTranslation(new Vector3f(-scale*elements/2,0f,((float)i-elements/2.0f)*scale));
             yQuad.rotate(-FastMath.PI*0.5f, 0f, 0f);
             yQuad.setMaterial(mat);
             this.attachChild(yQuad);
