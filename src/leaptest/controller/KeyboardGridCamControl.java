@@ -15,12 +15,13 @@ import leaptest.model.GridCam;
  *
  * @author srw-install
  */
-public class KeyboardGridCamControl implements AnalogListener {
+public class KeyboardGridCamControl implements AnalogListener, Updatable {
 
     private GridCam gridcam;
     
     private final float delta = FastMath.PI/1.5f;
     
+    private float inc;
     
     public KeyboardGridCamControl(InputManager inputManager, GridCam gridcam)
     {
@@ -37,9 +38,14 @@ public class KeyboardGridCamControl implements AnalogListener {
 
     public void onAnalog(String name, float value, float tpf) {
           if (name.equals("Rotate Cam Up"))
-            gridcam.rotate(delta * tpf);
+            inc += delta * tpf;
         else if (name.equals("Rotate Cam Down"))
-            gridcam.rotate(-delta * tpf);
+            inc -= delta * tpf;
+    }
+
+    public void update(float tpf) {
+        gridcam.rotate(inc);
+        inc = 0;
     }
     
 }

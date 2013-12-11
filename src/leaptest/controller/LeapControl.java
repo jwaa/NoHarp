@@ -1,16 +1,9 @@
 package leaptest.controller;
 
-import com.jme3.export.JmeExporter;
-import com.jme3.export.JmeImporter;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
-import com.jme3.scene.Spatial;
-import com.jme3.scene.control.Control;
 import com.leapmotion.leap.Controller;
 import com.leapmotion.leap.Listener;
-import java.io.IOException;
 
-public abstract class LeapControl implements Control {
+public abstract class LeapControl implements Updatable {
 
     protected Controller controller;
     private LeapListener leap;
@@ -21,28 +14,18 @@ public abstract class LeapControl implements Control {
         leap = new LeapListener(this);
         controller.addListener(leap);   
     }
-    
-    public Control cloneForSpatial(Spatial spatial) {
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }
-
-    public abstract void setSpatial(Spatial spatial);
 
     public abstract void update(float tpf);
 
-    protected abstract void onInit(Controller leap);
+    protected void onInit(Controller leap) {}
     
     protected abstract void onFrame(Controller leap);
     
-    public void render(RenderManager rm, ViewPort vp) {}
-
-    public void write(JmeExporter ex) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }
-
-    public void read(JmeImporter im) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }      
+    protected void onExit(Controller leap) {}
+ 
+    protected void onConnect(Controller leap) {}
+ 
+    protected void onDisconnect(Controller leap) {}   
     
     private class LeapListener extends Listener {
 
@@ -63,19 +46,19 @@ public abstract class LeapControl implements Control {
         @Override
         public void onConnect(Controller arg0)
         {
-                System.out.println("Connect");
+            control.onConnect(arg0);
         }
 
         @Override
         public void onDisconnect(Controller arg0)
         {
-                System.out.println("Disconnect");
+            control.onDisconnect(arg0);
         }
 
         @Override
         public void onExit(Controller arg0)
         {
-                System.out.println("Exit");
+            control.onExit(arg0);
         }	
 
         @Override

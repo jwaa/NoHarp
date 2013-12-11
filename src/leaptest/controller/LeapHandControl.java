@@ -6,7 +6,6 @@ package leaptest.controller;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Spatial;
 import com.leapmotion.leap.Controller;
 import com.leapmotion.leap.Finger;
 import com.leapmotion.leap.Frame;
@@ -28,18 +27,11 @@ public class LeapHandControl extends LeapControl {
                   showFingers = true, 
                   showSpheres = false;
     
-    public LeapHandControl(Controller control, Vector3f scalar)
+    public LeapHandControl(Controller control, HandView hand, Vector3f scalar)
     {
         super(control);
+        this.hand = hand;
         this.scalar = scalar;
-    }
-    
-    public void setSpatial(Spatial spatial)
-    {
-        if (spatial instanceof HandView)
-            this.hand = (HandView) spatial;
-        else
-            throw new UnsupportedOperationException("Not supported yet."); 
     }
 
     public void update(float tpf)
@@ -93,6 +85,7 @@ public class LeapHandControl extends LeapControl {
         }
     }
 
+    @Override
     protected void onInit(Controller leap)
     {
         System.out.println("Init");

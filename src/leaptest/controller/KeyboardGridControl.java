@@ -15,12 +15,13 @@ import leaptest.model.Grid;
  *
  * @author srw-install
  */
-public class KeyboardGridControl implements AnalogListener {
+public class KeyboardGridControl implements AnalogListener, Updatable {
 
     private Grid grid;
     
     private final float delta = FastMath.PI/1.5f;
     
+    private float inc;
     
     public KeyboardGridControl(InputManager inputManager, Grid grid)
     {
@@ -37,9 +38,14 @@ public class KeyboardGridControl implements AnalogListener {
 
     public void onAnalog(String name, float value, float tpf) {
           if (name.equals("Rotate Grid Left"))
-            grid.rotate(delta * tpf);
+            inc += delta * tpf;
         else if (name.equals("Rotate Grid Right"))
-            grid.rotate(-delta * tpf);
+            inc -= delta * tpf;
+    }
+
+    public void update(float tpf) {
+        grid.rotate(inc);
+        inc = 0;
     }
     
 }

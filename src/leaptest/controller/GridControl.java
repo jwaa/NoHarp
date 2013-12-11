@@ -21,7 +21,7 @@ import leaptest.model.Grid;
  *
  * @author silvandeleemput
  */
-public class GridControl implements Control {
+public class GridControl implements Updatable {
 
     private Grid grid;
     private Node gridnode;
@@ -32,31 +32,12 @@ public class GridControl implements Control {
         this.grid = grid;
         this.gridnode = gridnode;
     }
-    
-    public Control cloneForSpatial(Spatial spatial) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public void setSpatial(Spatial spatial) {
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }
 
     public void update(float tpf) {
         Quaternion q = new Quaternion();
         q.fromAngles(0f, grid.getRotation(), 0f);
         gridnode.setLocalRotation(q);
         
-    }
-
-    public void render(RenderManager rm, ViewPort vp) {
-    }
-
-    public void write(JmeExporter ex) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public void read(JmeImporter im) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

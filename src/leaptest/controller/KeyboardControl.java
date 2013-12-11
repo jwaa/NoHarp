@@ -14,9 +14,10 @@ import leaptest.Main;
  *
  * @author srw-install
  */
-public class KeyboardControl implements ActionListener {
+public class KeyboardControl implements ActionListener, Updatable {
 
     private Main game;
+    private boolean quit;
     
     public KeyboardControl(Main game)
     {
@@ -35,9 +36,14 @@ public class KeyboardControl implements ActionListener {
     public void onAction(String name, boolean isPressed, float tpf) 
     {   
         if (name.equals("Quit game"))
+            quit = true;
+    }
+
+    public void update(float tpf) {
+        if (quit)
         {
             game.getInputManager().removeListener(this);
-            game.shutDown();
+            game.shutDown();            
         }
     }
     
