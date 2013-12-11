@@ -10,6 +10,7 @@ import com.leapmotion.leap.Gesture;
 import com.leapmotion.leap.GestureList;
 import com.leapmotion.leap.Hand;
 import com.leapmotion.leap.SwipeGesture;
+import java.util.ArrayList;
 import leaptest.model.Grid;
 
 /**
@@ -18,22 +19,21 @@ import leaptest.model.Grid;
  */
 public class GestureRotateControl extends LeapControl
 {
+    private final double ROTATION_DELTA = Math.PI;
     private Frame frame;
     private boolean isRightHanded = true;
     private SwipeGesture swipe;
+    private Grid grid;
     
     public GestureRotateControl(Controller leap, Grid grid)
     {
         super(leap);
+        this.grid = grid;
     }
 
     @Override
     public void update(float tpf) 
     {
-        if(isSwiped())
-        {
-            thenRotate;
-        }
         
     }
 
@@ -41,6 +41,15 @@ public class GestureRotateControl extends LeapControl
     protected void onFrame(Controller leap) 
     {
         frame = controller.frame();
+        if (frame != null)
+        {
+            if(isSwiped())
+            {
+                System.out.println(swipe.direction());
+                System.out.println(swipe.direction().getX());
+                rotate(1/frame.currentFramesPerSecond());
+            }
+        }
     }
     
     @Override
@@ -57,18 +66,47 @@ public class GestureRotateControl extends LeapControl
     
     private boolean isSwiped()
     {
-        
+        swipe = null;
+        ArrayList<SwipeGesture> swipes = getSwipes();
+        if (swipes.isEmpty())
+        {
+            return false;
+        }
+        for(SwipeGesture s : swipes)
+        {
+            //if (swipe==null || swipe.position().getX() < s.position().getX())
+              //  swipe = s;
+            if(!(Math.abs(s.direction().getX())>Math.abs(s.direction().getY())&&Math.abs(s.direction().getX())>Math.abs(s.direction().getZ())))
+                swipes.remove(s);
+        }
+        if (swipes.isEmpty())
+            return false;
+        for(SwipeGesture s : swipes)
+        {
+            if(swipe==null || (isRightHanded && s.position().getX() < swipe.position().getX())||(!isRightHanded && s.position().getX() > swipe.position().getX()))
+                swipe = s;
+        }
+        return true;
     }
     
-    private GestureList getSwipes()
+    private void rotate(float tpf)
+    {
+        if(swipe.direction().getX()>0)
+            grid.rotate((float) (ROTATION_DELTA*tpf));
+        else if(swipe.direction().getX()<0)
+            grid.rotate((float) (-ROTATION_DELTA*tpf));
+    }
+    
+    private ArrayList<SwipeGesture> getSwipes()
     {
         GestureList allGestures = frame.gestures();
-        GestureList swipes = new GestureList();
+        ArrayList<SwipeGesture> swipes = new ArrayList();
         for(Gesture g : allGestures)
         {
-            if(g.type() instanceof SwipeGesture)
+            if(g.type() == Gesture.Type.TYPE_SWIPE)
             {
-                swipes.append(g.);
+                SwipeGesture oneSwipe = new SwipeGesture(g);
+                swipes.add(oneSwipe);
             }
         }
         return swipes;
