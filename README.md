@@ -3,10 +3,11 @@ NoHarp
 
 Installation notes working environment
 --------------------------------------
+* Download & install the LEAP drivers: https://www.leapmotion.com/setup/
 * Download & install LEAP SDK: https://developer.leapmotion.com/downloads/
 * Download & install JMonkeyEngine: http://hub.jmonkeyengine.org/downloads/
 * Setup JMonkeyEngine:
-	* Create a new project called "leaptest" somewhere on your disk, but not inside the repo
+	* Create a new JM3/BasicGame project called "leaptest" somewhere on your disk, but not inside the repo
 	* Under the project tab, goto LeapTest, right click it and select "properties"
 		* Under the Sources Category Add a new Source Package Folder: link this to the "/src" folder in the repo
 		* Under the Libraries Category Add JAR/Folder linking to the LeapJava.jar in the LEAP SDK
