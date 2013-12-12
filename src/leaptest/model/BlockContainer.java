@@ -4,8 +4,10 @@
  */
 package leaptest.model;
 
+import com.jme3.bounding.BoundingBox;
 import com.jme3.collision.Collidable;
 import com.jme3.collision.CollisionResults;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
@@ -28,7 +30,7 @@ public class BlockContainer {
         blockgeoms = new ArrayList<Geometry>();
     }
 
-    private void setBlockGeoms()
+    public void setBlockGeoms()
     {
         blocknode.detachAllChildren();
         blockgeoms.clear();
@@ -60,9 +62,18 @@ public class BlockContainer {
         return null;
     }    
     
-    public Block getBlockAt(Vector3f pos)
+    public boolean collideWith(Block b)
     {
-        setBlockGeoms();
+        Vector3f pos = b.getPosition().clone();
+        pos.y -= b.getDimensions().y * 2;
+        return (getBlockAt(pos,b) != null);
+    }
+    
+    public Block getBlockAt(Vector3f pos, Block nb)
+    {
+        for (Block b : blocks)
+            if (!b.equals(nb) && b.collidesWith(pos))
+                return b;
         return null;
     }
     

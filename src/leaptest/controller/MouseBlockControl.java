@@ -153,7 +153,7 @@ public class MouseBlockControl implements AnalogListener, Updatable {
             
             if (ray.intersectsWherePlane(new Plane(Vector3f.UNIT_Y,0f), dir))
             {
-                dir.y += dragging.getDimensions().y;
+                dir.y += dragging.getDimensions().y*3;
                 dragging.setPosition(dir);
                 if (grid.withinGrid(dir)) 
                     grid.snapToGrid(dragging);
