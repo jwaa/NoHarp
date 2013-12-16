@@ -25,7 +25,6 @@ public class BlockContainerGravityControl implements Updatable {
     }
 
     public void update(float tpf) {
-        bc.setBlockGeoms();
         for (Block b : bc.getBlocks())
         {
             pushDown(b);
@@ -38,9 +37,11 @@ public class BlockContainerGravityControl implements Updatable {
         if (b.getPosition().y > b.getDimensions().y)
         {
             pos.y += dy;
+            b.setPosition(pos);
             if (bc.collideWith(b))
             {
                 pos.y -= dy;
+                b.setPosition(pos);
             }
         } 
     }

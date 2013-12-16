@@ -35,7 +35,7 @@ public class Grid extends BlockContainer {
     public void rotate(float delta)
     {
         this.rotation += delta;
-        this.blocknode.rotate(0, delta, 0);
+        this.rotate(0, delta, 0);
     }
     
     public float getRotation()

@@ -34,6 +34,7 @@ public class MouseBlockControl implements AnalogListener, Updatable {
     // Process data
     private boolean clickinit, clickrelease, mousemove; 
     private Block dragging;
+    private float liftdelta;
     
     public MouseBlockControl(InputManager inputManager, Camera cam, BlockContainer world, Grid grid)
     {
@@ -52,7 +53,9 @@ public class MouseBlockControl implements AnalogListener, Updatable {
                 new MouseAxisTrigger(MouseInput.AXIS_X, false), 
                 new MouseAxisTrigger(MouseInput.AXIS_Y, true), 
                 new MouseAxisTrigger(MouseInput.AXIS_Y, false));        
-        inputManager.addListener(this, new String[]{"Mouse Move"});       
+        inputManager.addMapping("LiftBlockUp", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, false));
+        inputManager.addMapping("LiftBlockDown", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, true));
+        inputManager.addListener(this, new String[]{"Mouse Move", "LiftBlockUp", "LiftBlockDown"});       
         inputManager.addListener(actionListener, new String[]{"Dragging"});
     }
 
@@ -60,12 +63,14 @@ public class MouseBlockControl implements AnalogListener, Updatable {
     {
         if (name.equals("Mouse Move"))
             mousemove = true;
-
+        if (name.equals("LiftBlockUp"))
+            liftdelta += value;
+        else if (name.equals("LiftBlockDown"))
+            liftdelta -= value;
     }
     
     private Block detectBlock()
     {
-        Block result = null;
         CollisionResults results = new CollisionResults();
         // Convert screen click to 3d position
         Vector2f click2d = inputManager.getCursorPosition();
@@ -79,11 +84,10 @@ public class MouseBlockControl implements AnalogListener, Updatable {
         if (results.size() > 0)
         {
             Geometry g = results.getClosestCollision().getGeometry();
-            result = grid.getBlockFromGeometry(g);
-            if (result == null)
-                result = world.getBlockFromGeometry(g);
+            if (g instanceof Block)
+                return (Block) g;
         }
-        return result;
+        return null;
     }
     
     private ActionListener actionListener = new ActionListener() {
@@ -108,6 +112,7 @@ public class MouseBlockControl implements AnalogListener, Updatable {
         mousemove = false;
         clickinit = false;
         clickrelease = false;
+        liftdelta = 0;
     }
     
     public void update(float tpf) {
@@ -141,23 +146,29 @@ public class MouseBlockControl implements AnalogListener, Updatable {
             dragging = null;
         }
         
-        
-        if (dragging != null && mousemove)
+        if (dragging != null)
         {
-            //System.out.println(name + " " + value + " " + tpf);
+            Vector3f pos = dragging.getPosition();
+            if (pos.y + liftdelta > dragging.getDimensions().y/2)
+            {
+                pos.y += liftdelta;
+                dragging.setPosition(pos);
+            }
+
+                //System.out.println(name + " " + value + " " + tpf);
             Vector2f click2d = inputManager.getCursorPosition();
             Vector3f click3d = cam.getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 0f).clone();
             Vector3f dir = cam.getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
             // Aim the ray from the clicked spot forwards.
             Ray ray = new Ray(click3d, dir);
-            
+
             if (ray.intersectsWherePlane(new Plane(Vector3f.UNIT_Y,0f), dir))
             {
-                dir.y += dragging.getDimensions().y*3;
+                dir.y = dragging.getPosition().y;
                 dragging.setPosition(dir);
-                if (grid.withinGrid(dir)) 
-                    grid.snapToGrid(dragging);
             }
+            if (grid.withinGrid(dragging.getPosition())) 
+                grid.snapToGrid(dragging);
         }
         resetStates();
     }

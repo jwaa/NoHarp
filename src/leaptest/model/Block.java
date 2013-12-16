@@ -4,22 +4,29 @@
  */
 package leaptest.model;
 
+import com.jme3.material.Material;
 import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.shape.Box;
 
 /**
  *
  * @author silvandeleemput
  */
-public class Block {
+public class Block extends Geometry {
     
     private Vector3f dimensions;
     private Vector3f position;
     private boolean lifted;
     private float rotation;
     
-    public Block(Vector3f position, Vector3f dimensions)
+    public Block(Material mat, Vector3f position, Vector3f dimensions)
     {
+        super("Block", new Box(dimensions.x*0.5f,dimensions.y*0.5f,dimensions.z*0.5f));
+        this.setMaterial(mat);
+        this.setLocalTranslation(position);       
         this.position = position;
         this.dimensions = dimensions.mult(0.5f);
     }
@@ -73,11 +80,14 @@ public class Block {
     
     public void setRotation(float rotation)
     {
+        this.setLocalRotation(Quaternion.IDENTITY);
+        this.rotate(0, rotation, 0);
         this.rotation = rotation;
     }
     
     public void setPosition(Vector3f position)
     {
+        this.setLocalTranslation(position);
         this.position = position;
     }
 }
