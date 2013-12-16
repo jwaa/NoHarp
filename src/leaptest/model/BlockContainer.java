@@ -4,10 +4,8 @@
  */
 package leaptest.model;
 
-import com.jme3.bounding.BoundingBox;
 import com.jme3.collision.Collidable;
 import com.jme3.collision.CollisionResults;
-import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
