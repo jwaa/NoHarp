@@ -94,5 +94,9 @@ public class Grid extends BlockContainer {
         b.setPosition(grid2world(pos));
         b.setRotation(rotation);
     }
+
+    public float getRadius() {
+        return radius;
+    }
     
 }
