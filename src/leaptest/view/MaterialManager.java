@@ -14,7 +14,7 @@ import com.jme3.math.ColorRGBA;
  */
 public class MaterialManager extends Material {
     
-    public static Material normal, lifted, falling, gridnormal, ringrotate;
+    public static Material normal, lifted, falling, gridnormal, ringrotate, creationblock;
      
     private MaterialManager(AssetManager assetManager, int col)
     {
@@ -48,7 +48,8 @@ public class MaterialManager extends Material {
         lifted = new MaterialManager(assetManager, 1);
         falling = new MaterialManager(assetManager, 2);
         gridnormal = new MaterialManager(assetManager, 3);
-        ringrotate = new MaterialManager(assetManager, 4);        
+        ringrotate = new MaterialManager(assetManager, 4);  
+        creationblock = new MaterialManager(assetManager, 5);  
     }
     
 }

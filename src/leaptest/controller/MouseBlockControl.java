@@ -21,6 +21,7 @@ import com.jme3.math.Plane;
 import com.jme3.scene.Geometry;
 import leaptest.model.BlockContainer;
 import leaptest.model.Grid;
+import leaptest.view.MaterialManager;
 /**
  *
  * @author silvandeleemput
@@ -34,11 +35,12 @@ public class MouseBlockControl implements AnalogListener, Updatable {
     
     // Process data
     private boolean clickinit, clickrelease, mousemove; 
-    private Block dragging;
+    private Block dragging, creationblock;
     private float liftdelta;
     
-    public MouseBlockControl(InputManager inputManager, Camera cam, BlockContainer world, Grid grid, Block selected)
+    public MouseBlockControl(InputManager inputManager, Camera cam, BlockContainer world, Grid grid, Block selected, Block creationblock)
     {
+        this.creationblock = creationblock;
         this.dragging = selected;
         this.grid = grid;
         this.world = world;
@@ -81,13 +83,22 @@ public class MouseBlockControl implements AnalogListener, Updatable {
         // Aim the ray from the clicked spot forwards.
         Ray ray = new Ray(click3d, dir);
         // Collect intersections between ray and all nodes in results list.
+        creationblock.collideWith(ray, results);
+        if (results.size() > 0)
+        {
+            return new Block(MaterialManager.normal,creationblock.getPosition(),Vector3f.UNIT_XYZ.mult(creationblock.getDimensions().x*2));
+        }
+        
         world.collideWith(ray, results);
         grid.collideWith(ray, results);
+        
         if (results.size() > 0)
         {
             Geometry g = results.getClosestCollision().getGeometry();
             if (g instanceof Block && !((Block) g).isDissolving())
+            {
                 return (Block) g;
+            }
         }
         return null;
     }
@@ -131,7 +142,8 @@ public class MouseBlockControl implements AnalogListener, Updatable {
                     grid.removeFromGrid(dragging);
 
                     // TODO correct position
-                }
+                } else if (!world.containsBlock(dragging))
+                    world.addBlock(dragging);
                 dragging.setLifted(true);
             }
         } else if (clickrelease && dragging != null) {
@@ -161,11 +173,13 @@ public class MouseBlockControl implements AnalogListener, Updatable {
                 ((Block) c.getGeometry()).setFalling(true);
             
             Vector3f pos = dragging.getPosition();
-            if (pos.y + liftdelta > dragging.getDimensions().y/2)
-            {
+            if (pos.y + liftdelta > dragging.getDimensions().y)
                 pos.y += liftdelta;
+            else
+                pos.y = dragging.getDimensions().y;
+            
                 dragging.setPosition(pos);
-            }
+            
 
                 //System.out.println(name + " " + value + " " + tpf);
             Vector2f click2d = inputManager.getCursorPosition();
