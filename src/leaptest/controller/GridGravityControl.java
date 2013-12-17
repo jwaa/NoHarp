@@ -9,7 +9,6 @@ package leaptest.controller;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.math.Ray;
-import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,17 +43,13 @@ public class GridGravityControl implements Updatable {
         // find out for which pillars there are falling blocks
         HashSet<IntPair> pillars = new HashSet<IntPair>();
         for (Block b : bc.getBlocks())
-        {
             if (b.isFalling())
-            {
-                b.setGravity(b.getGravity()+dy);
                 pillars.add(new IntPair((int)b.getPosition().x,(int)b.getPosition().z));
-            }
-        }     
+  
         // for each pillar with falling blocks
         for (IntPair pp : pillars)
         {
-            // collect blocks for pillar
+            // collect unique blocks per pillar
             HashSet<Block> blocks = new HashSet<Block>();
             CollisionResults cr = new CollisionResults();
             Ray r = new Ray(bc.grid2world(new Vector3f(pp.x,0,pp.y)),Vector3f.UNIT_Y);
@@ -67,7 +62,8 @@ public class GridGravityControl implements Updatable {
             ArrayList<Block> blocks2 = new ArrayList<Block>();
             for (Block b : blocks)
             {
-                //b.setFalling(true);
+                b.setGravity(b.getGravity()+dy);
+                b.setFalling(!b.isLifted()); // all non-selected blocks are set to falling
                 blocks2.add(b);
             }
             Collections.sort(blocks2);
