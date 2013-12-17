@@ -77,9 +77,9 @@ public class GridGravityControl implements Updatable {
                 if (i==0) 
                 {
                     // does it hit the floor?
-                    if (b.getDeltaY()<b.getDimensions().y)
+                    if (b.getDeltaY()<b.getDimensions().y/2)
                     {
-                        pos.y=b.getDimensions().y;
+                        pos.y=b.getDimensions().y/2;
                         b.setPosition(pos);
                         b.setFalling(false);
                     }
@@ -87,9 +87,10 @@ public class GridGravityControl implements Updatable {
                 else // for all other blocks
                 {
                     // does it hit block below
-                    if (b.getDeltaY()<blocks2.get(i-1).getPosition().y+blocks2.get(i-1).getDimensions().y*2)
+                    float boundary = blocks2.get(i-1).getPosition().y+blocks2.get(i-1).getDimensions().y/2 + b.getDimensions().y/2;
+                    if (b.getDeltaY()<boundary)
                     {
-                        pos.y=blocks2.get(i-1).getPosition().y+blocks2.get(i-1).getDimensions().y*2;
+                        pos.y=boundary;
                         b.setPosition(pos);
                         b.setFalling(false);
                     }             

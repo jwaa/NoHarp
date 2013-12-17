@@ -28,7 +28,7 @@ public class BlockContainer extends Node {
     
     public int collideAboveBlock(Block b, CollisionResults r)
     {
-        Vector3f pos = b.getPosition().subtract(0, b.getDimensions().y, 0);
+        Vector3f pos = b.getPosition().subtract(0, b.getDimensions().y/2, 0);
         return collideWith(new Ray(pos,Vector3f.UNIT_Y),r);
     }
     

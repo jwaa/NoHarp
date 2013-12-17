@@ -32,10 +32,10 @@ public class MouseBlockControl implements AnalogListener, Updatable {
     private Camera cam;
     private BlockContainer world;
     private Grid grid;
+    private Block dragging, creationblock;
     
     // Process data
-    private boolean clickinit, clickrelease, mousemove; 
-    private Block dragging, creationblock;
+    private boolean clickinit, clickrelease, mousemove;
     private float liftdelta;
     
     public MouseBlockControl(InputManager inputManager, Camera cam, BlockContainer world, Grid grid, Block selected, Block creationblock)
@@ -82,13 +82,15 @@ public class MouseBlockControl implements AnalogListener, Updatable {
         Vector3f dir = cam.getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
         // Aim the ray from the clicked spot forwards.
         Ray ray = new Ray(click3d, dir);
-        // Collect intersections between ray and all nodes in results list.
+        
+        // New block creation intersection
         creationblock.collideWith(ray, results);
         if (results.size() > 0)
         {
-            return new Block(MaterialManager.normal,creationblock.getPosition(),Vector3f.UNIT_XYZ.mult(creationblock.getDimensions().x*2));
+            return new Block(MaterialManager.normal,creationblock.getPosition(),Vector3f.UNIT_XYZ.mult(creationblock.getDimensions().x));
         }
         
+        // Collect intersections between ray and all nodes in results list.
         world.collideWith(ray, results);
         grid.collideWith(ray, results);
         
@@ -166,22 +168,20 @@ public class MouseBlockControl implements AnalogListener, Updatable {
         if (dragging != null)
         {
             // Everything block above the dragged block switches to falling state
-            // TODO get collision ceiling for liftdelta out of this
+            // TODO get collision ceiling and bottom for liftdelta out of this
             CollisionResults cr = new CollisionResults();
             grid.collideAboveBlock(dragging, cr);
             for (CollisionResult c : cr)
                 ((Block) c.getGeometry()).setFalling(true);
             
             Vector3f pos = dragging.getPosition();
-            if (pos.y + liftdelta > dragging.getDimensions().y)
+            if (pos.y + liftdelta > dragging.getDimensions().y/2)
                 pos.y += liftdelta;
             else
-                pos.y = dragging.getDimensions().y;
+                pos.y = dragging.getDimensions().y/2;
             
-                dragging.setPosition(pos);
+            dragging.setPosition(pos);
             
-
-                //System.out.println(name + " " + value + " " + tpf);
             Vector2f click2d = inputManager.getCursorPosition();
             Vector3f click3d = cam.getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 0f).clone();
             Vector3f dir = cam.getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();

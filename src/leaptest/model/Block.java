@@ -30,7 +30,7 @@ public class Block extends Geometry implements Comparable {
         this.setMaterial(mat);
         this.setLocalTranslation(position);       
         this.position = position;
-        this.dimensions = dimensions.mult(0.5f);
+        this.dimensions = dimensions;
     }
     
     public boolean isDissolving()
@@ -44,7 +44,7 @@ public class Block extends Geometry implements Comparable {
         this.setMaterial(material.clone());
         this.material.setColor("Color",((ColorRGBA) (this.material.getParam("Color").getValue())).clone());
         this.material.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        this.setQueueBucket(RenderQueue.Bucket.Translucent);
+        this.setQueueBucket(RenderQueue.Bucket.Transparent);
     }
     
     public float getAlpha()

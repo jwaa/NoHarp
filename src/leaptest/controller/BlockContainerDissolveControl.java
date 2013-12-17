@@ -32,8 +32,8 @@ public class BlockContainerDissolveControl implements Updatable {
                 b.setFalling(true);
                 b.setGravity(b.getGravity()-0.2f);
                 Vector3f pos = b.getPosition().add(0, b.getGravity(), 0);
-                if (pos.y <= b.getDimensions().y)
-                    pos.y = b.getDimensions().y;
+                if (pos.y <= b.getDimensions().y/2)
+                    pos.y = b.getDimensions().y/2;
                 b.setPosition(pos);
             }
             if (b.isDissolving())
@@ -41,8 +41,8 @@ public class BlockContainerDissolveControl implements Updatable {
                 b.setAlpha(b.getAlpha()-0.05f);
                 if (b.getAlpha()<= 0)
                 {
-                    bc.detachChild(b);
                     iter.remove();
+                    b.removeFromParent();
                 }
             }
         }
