@@ -6,7 +6,8 @@ package leaptest.controller;
 
 import leaptest.model.Block;
 import leaptest.model.BlockContainer;
-import leaptest.view.BlockMaterial;
+import leaptest.view.MaterialManager;
+
 
 /**
  *
@@ -24,12 +25,15 @@ public class BlockContainerColorControl implements Updatable {
     public void update(float tpf) {
         for (Block b : bc.getBlocks())
         {
-            if (b.isLifted())
-                b.setMaterial(BlockMaterial.lifted);
-            else if (b.isFalling())
-                b.setMaterial(BlockMaterial.falling);
-            else
-                b.setMaterial(BlockMaterial.normal);
+            if (!b.isDissolving())
+            {
+                if (b.isLifted())
+                    b.setMaterial(MaterialManager.lifted);
+                else if (b.isFalling())
+                    b.setMaterial(MaterialManager.falling);
+                else
+                    b.setMaterial(MaterialManager.normal);
+            }
         }
     }
     

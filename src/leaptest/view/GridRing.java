@@ -15,12 +15,12 @@ import com.jme3.scene.shape.Torus;
  *
  * @author silvandeleemput
  */
-public class GridCircleOutline extends Geometry {
+public class GridRing extends Geometry {
     
     private static final float rimProportion = 0.05f;
     private static final int circleDefinition = 40;
     
-    public GridCircleOutline(AssetManager assetManager, float radius)
+    public GridRing(AssetManager assetManager, float radius)
     {
         super("GridCircleOutline", new Torus(circleDefinition, 2, radius * rimProportion, radius));
         rotate(-FastMath.PI*0.5f, 0f, 0f);

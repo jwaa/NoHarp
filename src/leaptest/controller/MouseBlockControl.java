@@ -37,8 +37,9 @@ public class MouseBlockControl implements AnalogListener, Updatable {
     private Block dragging;
     private float liftdelta;
     
-    public MouseBlockControl(InputManager inputManager, Camera cam, BlockContainer world, Grid grid)
+    public MouseBlockControl(InputManager inputManager, Camera cam, BlockContainer world, Grid grid, Block selected)
     {
+        this.dragging = selected;
         this.grid = grid;
         this.world = world;
         this.cam = cam;
@@ -85,7 +86,7 @@ public class MouseBlockControl implements AnalogListener, Updatable {
         if (results.size() > 0)
         {
             Geometry g = results.getClosestCollision().getGeometry();
-            if (g instanceof Block)
+            if (g instanceof Block && !((Block) g).isDissolving())
                 return (Block) g;
         }
         return null;
@@ -144,6 +145,8 @@ public class MouseBlockControl implements AnalogListener, Updatable {
                 world.removeBlock(dragging);
                 grid.addBlock(dragging);                    
             }
+            else
+                dragging.setDissolving(true);
 
             dragging = null;
         }
