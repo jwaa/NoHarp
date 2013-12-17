@@ -12,11 +12,11 @@ import leaptest.view.BlockMaterial;
  *
  * @author silvandeleemput
  */
-public class BlockContainerSelectControl implements Updatable {
+public class BlockContainerColorControl implements Updatable {
 
     private BlockContainer bc;
     
-    public BlockContainerSelectControl(BlockContainer bc)
+    public BlockContainerColorControl(BlockContainer bc)
     {
         this.bc = bc;
     }
@@ -26,6 +26,8 @@ public class BlockContainerSelectControl implements Updatable {
         {
             if (b.isLifted())
                 b.setMaterial(BlockMaterial.lifted);
+            else if (b.isFalling())
+                b.setMaterial(BlockMaterial.falling);
             else
                 b.setMaterial(BlockMaterial.normal);
         }

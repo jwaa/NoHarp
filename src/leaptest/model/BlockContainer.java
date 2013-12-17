@@ -6,6 +6,7 @@ package leaptest.model;
 
 import com.jme3.collision.Collidable;
 import com.jme3.collision.CollisionResults;
+import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import java.util.ArrayList;
@@ -24,6 +25,17 @@ public class BlockContainer extends Node {
         this.attachChild(blocknode);
         blocks = new ArrayList<Block>();
     }  
+    
+    public int collideAboveBlock(Block b, CollisionResults r)
+    {
+        Vector3f pos = b.getPosition().subtract(0, b.getDimensions().y, 0);
+        return collideAbovePosition(pos,r);
+    }
+    
+    public int collideAbovePosition(Vector3f pos, CollisionResults r)
+    {
+        return collideWith(new Ray(pos,Vector3f.UNIT_Y),r);        
+    }
     
     @Override
     public int collideWith(Collidable c, CollisionResults r)

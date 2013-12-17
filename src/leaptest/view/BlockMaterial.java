@@ -14,21 +14,22 @@ import com.jme3.math.ColorRGBA;
  */
 public class BlockMaterial extends Material {
     
-    public static Material normal, lifted;
+    public static Material normal, lifted, falling;
             
-    private BlockMaterial(AssetManager assetManager, boolean lifted)
+    private BlockMaterial(AssetManager assetManager, int col)
     {
         super(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         //Material mat = new Material(assetManager, "Materials/blockwires.j3m"); 
         //Material mat = new Material();
         //mat.getAdditionalRenderState().setWireframe(true);
-        this.setColor("Color", (lifted ? ColorRGBA.Orange : ColorRGBA.Blue));
+        this.setColor("Color", (col==1 ? ColorRGBA.Orange : (col==2 ? ColorRGBA.White : ColorRGBA.Blue)));
     }
     
     public static void init(AssetManager assetManager)
     {
-        normal = new BlockMaterial(assetManager, false);
-        lifted = new BlockMaterial(assetManager, true);
+        normal = new BlockMaterial(assetManager, 0);
+        lifted = new BlockMaterial(assetManager, 1);
+        falling = new BlockMaterial(assetManager, 2);
     }
     
 }

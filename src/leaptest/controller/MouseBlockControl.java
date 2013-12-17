@@ -4,6 +4,7 @@
  */
 package leaptest.controller;
 
+import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.input.InputManager;
 import com.jme3.input.MouseInput;
@@ -134,6 +135,7 @@ public class MouseBlockControl implements AnalogListener, Updatable {
             }
         } else if (clickrelease && dragging != null) {
             dragging.setLifted(false);
+            dragging.setFalling(true);
             if (grid.withinGrid(dragging.getPosition()))
             {
                 grid.snapToGrid(dragging);
@@ -148,6 +150,13 @@ public class MouseBlockControl implements AnalogListener, Updatable {
         
         if (dragging != null)
         {
+            // Everything block above the dragged block switches to falling state
+            // TODO get collision ceiling for liftdelta out of this
+            CollisionResults cr = new CollisionResults();
+            grid.collideAboveBlock(dragging, cr);
+            for (CollisionResult c : cr)
+                ((Block) c.getGeometry()).setFalling(true);
+            
             Vector3f pos = dragging.getPosition();
             if (pos.y + liftdelta > dragging.getDimensions().y/2)
             {

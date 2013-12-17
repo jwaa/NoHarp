@@ -15,12 +15,12 @@ import com.jme3.scene.shape.Box;
  *
  * @author silvandeleemput
  */
-public class Block extends Geometry {
+public class Block extends Geometry implements Comparable {
     
     private Vector3f dimensions;
     private Vector3f position;
-    private boolean lifted;
-    private float rotation;
+    private boolean lifted, falling;
+    private float rotation, gravity;
     
     public Block(Material mat, Vector3f position, Vector3f dimensions)
     {
@@ -51,6 +51,33 @@ public class Block extends Geometry {
             return (FastMath.abs(diff.x) < dimensions.x/2 && FastMath.abs(diff.z) < dimensions.z/2);
         }
         return false;
+    }
+    
+    public float getDeltaY()
+    {
+        return position.y + gravity;
+    }
+    
+    public void setFalling(boolean falling)
+    {
+        this.falling = falling;
+        if (!falling)
+            gravity = 0;
+    }
+    
+    public float getGravity()
+    {
+        return gravity;
+    }
+    
+    public void setGravity(float gravity)
+    {
+        this.gravity = gravity;
+    }
+    
+    public boolean isFalling()
+    {
+        return falling;
     }
     
     public void setLifted(boolean lifted)
@@ -89,5 +116,14 @@ public class Block extends Geometry {
     {
         this.setLocalTranslation(position);
         this.position = position;
+    }
+
+    public int compareTo(Object o) {
+        if (o instanceof Block)
+        {
+            Block b = (Block) o;
+            return (int) (this.position.y - b.position.y);
+        }
+        return 0;
     }
 }
