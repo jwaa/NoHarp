@@ -7,6 +7,7 @@ package leaptest.model;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
@@ -31,6 +32,14 @@ public class Block extends Geometry implements Comparable {
         this.setLocalTranslation(position);       
         this.position = position;
         this.dimensions = dimensions;
+    }
+    
+    public boolean isInside(Vector3f point)
+    {
+        Vector3f diff = (point.subtract(position));
+        return (FastMath.abs(point.y) < dimensions.y/2 && 
+                FastMath.abs(point.x) < dimensions.x/2 && 
+                FastMath.abs(point.z) < dimensions.z/2);
     }
     
     public boolean isDissolving()
