@@ -26,6 +26,12 @@ public class Grid extends BlockContainer {
         float width = x * (cellDimensions.x + 1), height = z * (cellDimensions.z + 1);
         radius = FastMath.sqrt(width * width + height * height)/2;
     }
+
+    @Override
+    public Block getBlockAt(Vector3f point)
+    {
+        return super.getBlockAt(this.world2grid(point));
+    }   
     
     public boolean withinGrid(Vector3f pos)
     {

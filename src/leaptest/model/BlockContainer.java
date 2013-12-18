@@ -26,6 +26,14 @@ public class BlockContainer extends Node {
         blocks = new ArrayList<Block>();
     }  
     
+    public Block getBlockAt(Vector3f point)
+    {
+        for (Block b : blocks)
+            if (b.isInside(point))
+                return b;
+        return null;
+    }
+    
     public int collideAboveBlock(Block b, CollisionResults r)
     {
         Vector3f pos = b.getPosition().subtract(0, b.getDimensions().y/2, 0);
