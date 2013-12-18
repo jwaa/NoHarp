@@ -37,9 +37,9 @@ public class Block extends Geometry implements Comparable {
     public boolean isInside(Vector3f point)
     {
         Vector3f diff = (point.subtract(position));
-        return (FastMath.abs(point.y) < dimensions.y/2 && 
-                FastMath.abs(point.x) < dimensions.x/2 && 
-                FastMath.abs(point.z) < dimensions.z/2);
+        return (FastMath.abs(diff.y) < dimensions.y/2 && 
+                FastMath.abs(diff.x) < dimensions.x/2 && 
+                FastMath.abs(diff.z) < dimensions.z/2);
     }
     
     public boolean isDissolving()

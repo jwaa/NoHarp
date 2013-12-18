@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import leaptest.controller.GridGravityControl;
 import leaptest.controller.BlockContainerColorControl;
 import leaptest.controller.BlockContainerDissolveControl;
+import leaptest.controller.GestureGrabControl;
 import leaptest.controller.GridCamControl;
 import leaptest.controller.GridRingColorControl;
 import leaptest.controller.KeyboardGridCamControl;
@@ -78,7 +79,7 @@ public class Main extends SimpleApplication {
         float blocksize = 6f;
         int griddim = 7;
         float cameradistance = 100f, cameraangle = FastMath.PI/4f;
-        
+        Vector3f LEAPSCALE = new Vector3f(0.1f,0.1f,0.1f);
         // Add models
         BlockContainer world = new BlockContainer();
         GridCam camera = new GridCam(cameradistance,cameraangle, Vector3f.ZERO);
@@ -120,7 +121,8 @@ public class Main extends SimpleApplication {
         
         // Create a Leap Motion controller
         leap = new Controller();
-        controllers.add(new LeapHandControl(leap, handmodel, new Vector3f(0.1f,0.1f,0.1f)));
+        controllers.add(new LeapHandControl(leap, handmodel, LEAPSCALE));
+        controllers.add(new GestureGrabControl(leap, world, grid, selected, creationblock, LEAPSCALE));
         //controllers.add(new GestureCreateControl(leap,world,blocksize));
 
         // Add keyboard control
