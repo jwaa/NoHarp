@@ -4,10 +4,7 @@
  */
 package leaptest.controller;
 
-import com.leapmotion.leap.Controller;
-import com.leapmotion.leap.Frame;
-import com.leapmotion.leap.Hand;
-import com.leapmotion.leap.HandList;
+import com.leapmotion.leap.*;
 
 /**
  *
@@ -29,20 +26,24 @@ public class GestureGrabControl extends LeapControl {
     
     @Override
     public void update(float tpf) {
-        HandList hands = frame.hands();
-        Hand hand = getGrabHand(hands);
-        if(previousHand != null)
+        if (frame != null)
         {
-            if(hand == null)
-                return;
-            if(Math.abs(hand.palmPosition().getX()-previousHand.palmPosition().getX())<HAND_PALM_THRESHOLD &&
-                    Math.abs(hand.palmPosition().getY()-previousHand.palmPosition().getY())<HAND_PALM_THRESHOLD &&
-                    Math.abs(hand.palmPosition().getZ()-previousHand.palmPosition().getZ())<HAND_PALM_THRESHOLD)
+            HandList hands = frame.hands();
+            Hand hand = getGrabHand(hands);
+            if(previousHand != null)
             {
-                
+                if(hand == null)
+                    return;
+                if(Math.abs(hand.palmPosition().getX()-previousHand.palmPosition().getX())<HAND_PALM_THRESHOLD &&
+                        Math.abs(hand.palmPosition().getY()-previousHand.palmPosition().getY())<HAND_PALM_THRESHOLD &&
+                        Math.abs(hand.palmPosition().getZ()-previousHand.palmPosition().getZ())<HAND_PALM_THRESHOLD)
+                {
+                    FingerList fingers = hand.fingers();
+                    //for (Finger f : fingers)
+                }
             }
+            previousHand = hand;
         }
-        previousHand = hand;
     }
 
     @Override
