@@ -35,7 +35,7 @@ public class Grid extends BlockContainer {
     public void rotate(float delta)
     {
         this.rotation += delta;
-        this.blocknode.rotate(0, delta, 0);
+        this.rotate(0, delta, 0);
     }
     
     public float getRotation()
@@ -93,6 +93,10 @@ public class Grid extends BlockContainer {
         pos.z = Math.round(pos.z/cellDimensions.z)*cellDimensions.z;
         b.setPosition(grid2world(pos));
         b.setRotation(rotation);
+    }
+
+    public float getRadius() {
+        return radius;
     }
     
 }

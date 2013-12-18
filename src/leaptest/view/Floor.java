@@ -18,14 +18,11 @@ import com.jme3.scene.shape.Quad;
  */
 public class Floor extends Node {
     
-    private int scale;
     private Geometry floor;
     
     public Floor(AssetManager assetManager, int scale)
     {
-        this.scale = scale;
         Quad b = new Quad(scale,scale);
-        
         floor = new Geometry("Floor", b);
         floor.setLocalTranslation(-scale/2, -0.1f , scale/2);
         floor.rotate(-FastMath.PI*0.5f, 0f, 0f);
