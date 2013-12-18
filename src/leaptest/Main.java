@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import leaptest.controller.GridGravityControl;
 import leaptest.controller.BlockContainerColorControl;
 import leaptest.controller.BlockContainerDissolveControl;
+import leaptest.controller.GestureRotateControl;
 import leaptest.controller.GridCamControl;
 import leaptest.controller.GridRingColorControl;
 import leaptest.controller.KeyboardGridCamControl;
@@ -121,7 +122,10 @@ public class Main extends SimpleApplication {
         // Create a Leap Motion controller
         leap = new Controller();
         controllers.add(new LeapHandControl(leap, handmodel, new Vector3f(0.1f,0.1f,0.1f)));
+        
+        // Add Gestures control
         //controllers.add(new GestureCreateControl(leap,world,blocksize));
+        controllers.add(new GestureRotateControl(leap,grid));
 
         // Add keyboard control
         controllers.add(new KeyboardControl(this));  
