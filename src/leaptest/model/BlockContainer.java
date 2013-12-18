@@ -51,7 +51,7 @@ public class BlockContainer extends Node {
 
     public void removeBlock(Block b)
     {
-        blocknode.detachChild(b);
+        b.removeFromParent();
         blocks.remove(b);
     }
     

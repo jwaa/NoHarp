@@ -10,6 +10,7 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
+import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 
@@ -28,6 +29,7 @@ public class Block extends Geometry implements Comparable {
     {
         super("Block", new Box(dimensions.x*0.5f,dimensions.y*0.5f,dimensions.z*0.5f));
         this.setMaterial(mat);
+        this.setShadowMode(ShadowMode.Receive);
         this.setLocalTranslation(position);       
         this.position = position;
         this.dimensions = dimensions;

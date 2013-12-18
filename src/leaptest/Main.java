@@ -6,12 +6,17 @@ import leaptest.controller.KeyboardControl;
 import leaptest.controller.LeapHandControl;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
+import com.jme3.light.AmbientLight;
+import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.CartoonEdgeFilter;
 import com.jme3.renderer.RenderManager;
+import com.jme3.shadow.DirectionalLightShadowFilter;
+import com.jme3.shadow.DirectionalLightShadowRenderer;
+import com.jme3.shadow.EdgeFilteringMode;
 import com.leapmotion.leap.Controller;
 import java.util.ArrayList;
 import leaptest.controller.GridGravityControl;
@@ -93,19 +98,14 @@ public class Main extends SimpleApplication {
         grid.addBlock(new Block(MaterialManager.normal,new Vector3f(-17f+blocksize,blocksize/2,0f),Vector3f.UNIT_XYZ.mult(blocksize)));
         
         // VIEWS
-        // Add filters for edge coloring
-        FilterPostProcessor fpp=new FilterPostProcessor(assetManager);
-        CartoonEdgeFilter cef = new CartoonEdgeFilter();
-        cef.setEdgeWidth(0.75f);
-        fpp.addFilter(cef);
-        viewPort.addProcessor(fpp);
+
         
         // Add views         
         viewPort.setBackgroundColor(ColorRGBA.DarkGray);
-        GridRing gridring = new GridRing(assetManager,(int)grid.getRadius());
+        GridRing gridring = new GridRing(grid.getRadius());
         HandView handmodel = new HandView(assetManager);
-        Floor floor = new Floor(assetManager,300);
-        GridLines gridlines = new GridLines(assetManager,grid.getDimensions()[0]+2,grid.getCellDimensions().x,grid.getRadius());
+        Floor floor = new Floor(300);
+        GridLines gridlines = new GridLines(grid.getDimensions()[0]+2,grid.getCellDimensions().x,grid.getRadius());
         rootNode.attachChild(grid);
         grid.attachChild(gridlines);
         grid.attachChild(gridring);        
@@ -113,6 +113,36 @@ public class Main extends SimpleApplication {
         rootNode.attachChild(floor);
         rootNode.attachChild(world);
         rootNode.attachChild(creationblock);
+        
+        // Add lights
+        DirectionalLight sun = new DirectionalLight();
+        sun.setColor(ColorRGBA.White);
+        sun.setDirection(Vector3f.UNIT_Y.negate());
+        rootNode.addLight(sun);
+        AmbientLight al = new AmbientLight();
+        al.setColor(ColorRGBA.White.mult(1.3f));
+        rootNode.addLight(al);
+        
+        // Cast shadows
+        final int SHADOWMAP_SIZE=1024;
+        DirectionalLightShadowRenderer dlsr = new DirectionalLightShadowRenderer(assetManager, SHADOWMAP_SIZE, 3);
+        dlsr.setEnabledStabilization(false);
+        dlsr.setEdgeFilteringMode(EdgeFilteringMode.Nearest);
+        dlsr.setLight(sun);
+        
+        viewPort.addProcessor(dlsr);
+        /*DirectionalLightShadowFilter dlsf = new DirectionalLightShadowFilter(assetManager, SHADOWMAP_SIZE, 3);
+        dlsf.setLight(sun);
+        dlsf.setEnabled(true);
+        fpp.addFilter(dlsf);
+        viewPort.addProcessor(fpp);
+        */
+                // Add filters for edge coloring
+        FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
+        CartoonEdgeFilter cef = new CartoonEdgeFilter();
+        cef.setEdgeWidth(0.75f);
+        fpp.addFilter(cef);
+        viewPort.addProcessor(fpp);
         
         // CONTROLS
         // Set-up looping controllers (order matters!!)
@@ -134,11 +164,13 @@ public class Main extends SimpleApplication {
         // Adds basic effectors
         controllers.add(new GridRingColorControl(grid,gridring));
         controllers.add(new GridCamControl(cam,camera));
-        controllers.add(new BlockContainerColorControl(world));
-        controllers.add(new BlockContainerColorControl(grid));
+
+      
         controllers.add(new GridGravityControl(grid,world));
         controllers.add(new BlockContainerDissolveControl(world));
         
+        controllers.add(new BlockContainerColorControl(grid,dlsr,viewPort));
+        controllers.add(new BlockContainerColorControl(world,dlsr,viewPort)); 
     }
     
     /**
