@@ -5,12 +5,9 @@
 package leaptest.model;
 
 import com.jme3.material.Material;
-import com.jme3.material.RenderState;
-import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
@@ -39,9 +36,9 @@ public class Block extends Geometry implements Comparable {
     public boolean isInside(Vector3f point)
     {
         Vector3f diff = (point.subtract(position));
-        return (FastMath.abs(point.y) < dimensions.y/2 && 
-                FastMath.abs(point.x) < dimensions.x/2 && 
-                FastMath.abs(point.z) < dimensions.z/2);
+        return (FastMath.abs(diff.y) < dimensions.y/2 && 
+                FastMath.abs(diff.x) < dimensions.x/2 && 
+                FastMath.abs(diff.z) < dimensions.z/2);
     }
     
     public boolean isDissolving()
@@ -52,24 +49,6 @@ public class Block extends Geometry implements Comparable {
     public void setDissolving(boolean dissolving)
     {
         this.dissolving = dissolving;
-        this.setMaterial(material.clone());
-        this.material.setColor("Color",((ColorRGBA) (this.material.getParam("Color").getValue())).clone());
-        this.material.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        this.setQueueBucket(RenderQueue.Bucket.Transparent);
-    }
-    
-    public float getAlpha()
-    {
-        return ((ColorRGBA) this.material.getParam("Color").getValue()).a;
-    }
-    
-    public void setAlpha(float alpha)
-    {
-        if (alpha<=0)
-            alpha=0;
-        else if (alpha>=1)
-            alpha=1;
-        ((ColorRGBA) this.material.getParam("Color").getValue()).a = alpha;
     }
     
     public float getDeltaY()

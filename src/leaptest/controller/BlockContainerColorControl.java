@@ -4,9 +4,9 @@
  */
 package leaptest.controller;
 
-import com.jme3.renderer.ViewPort;
+import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
-import com.jme3.shadow.DirectionalLightShadowRenderer;
 import leaptest.model.Block;
 import leaptest.model.BlockContainer;
 import leaptest.view.MaterialManager;
@@ -19,14 +19,19 @@ import leaptest.view.MaterialManager;
 public class BlockContainerColorControl implements Updatable {
 
     private BlockContainer bc;
-    private DirectionalLightShadowRenderer dlsr;
-    private ViewPort view;
+    private Block shadow_fix;
     
-    public BlockContainerColorControl(BlockContainer bc, DirectionalLightShadowRenderer dlsr, ViewPort view)
+    public BlockContainerColorControl(BlockContainer bc)
     {
-        this.view = view;
         this.bc = bc;
-        this.dlsr = dlsr;
+        
+        // ugly hack to solve lingering shadow problem
+        // It adds a small cube off-stage that Casts a shadow 
+        // Seems that dynamic change of shadow modes does not update when there is no 
+        // shadow casting geometry attached
+        shadow_fix = new Block(MaterialManager.normal,new Vector3f(1000,0,0),Vector3f.UNIT_XYZ); 
+        shadow_fix.setShadowMode(ShadowMode.Cast);
+        bc.attachChild(shadow_fix);
     }
     
     public void update(float tpf) {
@@ -38,19 +43,19 @@ public class BlockContainerColorControl implements Updatable {
                 {
                     b.setMaterial(MaterialManager.lifted);
                     b.setShadowMode(ShadowMode.CastAndReceive);
-                //else if (b.isFalling())
-                //    b.setMaterial(MaterialManager.falling);
                 }
                 else
                 {
-                    b.setMaterial(MaterialManager.normal);
-                    b.setShadowMode(ShadowMode.Receive);
-                    b.setShadowMode(ShadowMode.CastAndReceive);
-                    b.setShadowMode(ShadowMode.Receive);
-                    //view.removeProcessor(dlsr);
-                    //view.addProcessor(dlsr);
-                    //dlsr.cleanup();
+                    if (!b.isFalling())
+                    {
+                        b.setMaterial(MaterialManager.normal);
+                        b.setShadowMode(RenderQueue.ShadowMode.Receive);
+                    }
                 }
+            } 
+            else if (b.getShadowMode() == ShadowMode.CastAndReceive)
+            {
+                b.setShadowMode(RenderQueue.ShadowMode.Cast);
             }
         }
     }

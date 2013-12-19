@@ -14,7 +14,6 @@ import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.CartoonEdgeFilter;
 import com.jme3.renderer.RenderManager;
-import com.jme3.shadow.DirectionalLightShadowFilter;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
 import com.leapmotion.leap.Controller;
@@ -69,13 +68,12 @@ public class Main extends SimpleApplication {
     public Main(ConfigSettings config)
     {
         super(new StatsAppState());
-        
         this.config = config;     
     }
     
     @Override
     public void simpleInitApp() {
-        // Init stuff
+        // Init MaterialManager
         MaterialManager.init(assetManager);
         
         // MODELS
@@ -98,8 +96,6 @@ public class Main extends SimpleApplication {
         grid.addBlock(new Block(MaterialManager.normal,new Vector3f(-17f+blocksize,blocksize/2,0f),Vector3f.UNIT_XYZ.mult(blocksize)));
         
         // VIEWS
-
-        
         // Add views         
         viewPort.setBackgroundColor(ColorRGBA.DarkGray);
         GridRing gridring = new GridRing(grid.getRadius());
@@ -123,26 +119,21 @@ public class Main extends SimpleApplication {
         al.setColor(ColorRGBA.White.mult(1.3f));
         rootNode.addLight(al);
         
-        // Cast shadows
+        // FILTERS aka post-processors (order matters!!)
+        // Add shadows
         final int SHADOWMAP_SIZE=1024;
         DirectionalLightShadowRenderer dlsr = new DirectionalLightShadowRenderer(assetManager, SHADOWMAP_SIZE, 3);
         dlsr.setEnabledStabilization(false);
         dlsr.setEdgeFilteringMode(EdgeFilteringMode.Nearest);
         dlsr.setLight(sun);
-        
         viewPort.addProcessor(dlsr);
-        /*DirectionalLightShadowFilter dlsf = new DirectionalLightShadowFilter(assetManager, SHADOWMAP_SIZE, 3);
-        dlsf.setLight(sun);
-        dlsf.setEnabled(true);
-        fpp.addFilter(dlsf);
-        viewPort.addProcessor(fpp);
-        */
-                // Add filters for edge coloring
+        // Add filters for edge coloring
         FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
         CartoonEdgeFilter cef = new CartoonEdgeFilter();
         cef.setEdgeWidth(0.75f);
         fpp.addFilter(cef);
         viewPort.addProcessor(fpp);
+        
         
         // CONTROLS
         // Set-up looping controllers (order matters!!)
@@ -162,15 +153,17 @@ public class Main extends SimpleApplication {
         controllers.add(new MouseBlockControl(inputManager,cam,world,grid,selected,creationblock));
 
         // Adds basic effectors
-        controllers.add(new GridRingColorControl(grid,gridring));
+
         controllers.add(new GridCamControl(cam,camera));
 
-      
         controllers.add(new GridGravityControl(grid,world));
-        controllers.add(new BlockContainerDissolveControl(world));
+        controllers.add(new BlockContainerDissolveControl(world));     
+       
+        controllers.add(new BlockContainerColorControl(grid));
+        controllers.add(new BlockContainerColorControl(world)); 
         
-        controllers.add(new BlockContainerColorControl(grid,dlsr,viewPort));
-        controllers.add(new BlockContainerColorControl(world,dlsr,viewPort)); 
+        controllers.add(new GridRingColorControl(grid,gridring));
+        
     }
     
     /**

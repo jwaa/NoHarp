@@ -152,12 +152,12 @@ public class MouseBlockControl implements AnalogListener, Updatable {
             dragging.setLifted(false);
             dragging.setFalling(true);
             if (grid.withinGrid(dragging.getPosition()))
-            {
+            {       
                 grid.snapToGrid(dragging);
                 dragging.setPosition(grid.world2grid(dragging.getPosition()));
                 dragging.setRotation(0f);
                 world.removeBlock(dragging);
-                grid.addBlock(dragging);                    
+                grid.addBlock(dragging);   
             }
             else
                 dragging.setDissolving(true);
