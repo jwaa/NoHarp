@@ -11,8 +11,6 @@ import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
-import com.jme3.post.FilterPostProcessor;
-import com.jme3.post.filters.CartoonEdgeFilter;
 import com.jme3.renderer.RenderManager;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
@@ -127,12 +125,6 @@ public class Main extends SimpleApplication {
         dlsr.setEdgeFilteringMode(EdgeFilteringMode.Nearest);
         dlsr.setLight(sun);
         viewPort.addProcessor(dlsr);
-        // Add filters for edge coloring
-        FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
-        CartoonEdgeFilter cef = new CartoonEdgeFilter();
-        cef.setEdgeWidth(0.75f);
-        fpp.addFilter(cef);
-        viewPort.addProcessor(fpp);
         
         
         // CONTROLS
