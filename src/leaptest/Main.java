@@ -125,7 +125,7 @@ public class Main extends SimpleApplication {
         
         // Add Gestures control
         //controllers.add(new GestureCreateControl(leap,world,blocksize));
-        controllers.add(new GestureRotateControl(leap,grid));
+        controllers.add(new GestureRotateControl(leap,grid,camera));
 
         // Add keyboard control
         controllers.add(new KeyboardControl(this));  
