@@ -110,11 +110,11 @@ public class Main extends SimpleApplication {
         
         // Add lights
         DirectionalLight sun = new DirectionalLight();
-        sun.setColor(ColorRGBA.White);
+        sun.setColor(ColorRGBA.White.mult(0.2f));
         sun.setDirection(Vector3f.UNIT_Y.negate());
         rootNode.addLight(sun);
         AmbientLight al = new AmbientLight();
-        al.setColor(ColorRGBA.White.mult(1.3f));
+        al.setColor(ColorRGBA.White.mult(0.8f));
         rootNode.addLight(al);
         
         // FILTERS aka post-processors (order matters!!)
@@ -144,16 +144,14 @@ public class Main extends SimpleApplication {
         // Add mouse control
         controllers.add(new MouseBlockControl(inputManager,cam,world,grid,selected,creationblock));
 
-        // Adds basic effectors
-
+        // Add model effectors
         controllers.add(new GridCamControl(cam,camera));
-
         controllers.add(new GridGravityControl(grid,world));
         controllers.add(new BlockContainerDissolveControl(world));     
        
+        // Add visual effectors
         controllers.add(new BlockContainerColorControl(grid));
         controllers.add(new BlockContainerColorControl(world)); 
-        
         controllers.add(new GridRingColorControl(grid,gridring));
         
     }

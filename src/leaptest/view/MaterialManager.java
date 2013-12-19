@@ -23,8 +23,8 @@ public class MaterialManager {
     {
         Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         mat.setBoolean("UseMaterialColors",true);    
-        mat.setColor("Diffuse", color.mult(0.2f)); 
-        mat.setColor("Ambient", color.mult(0.5f));
+        mat.setColor("Diffuse", color); 
+        mat.setColor("Ambient", color); 
         return mat;
     }
     
@@ -37,7 +37,7 @@ public class MaterialManager {
         falling = generateMaterial(assetManager, ColorRGBA.White);
         gridnormal = generateMaterial(assetManager, ColorRGBA.Red);
         ringrotate = generateMaterial(assetManager, ColorRGBA.Orange);  
-        creationblock = normal;//generateMaterial(assetManager, ColorRGBA.Blue);
+        creationblock = normal;
         floor = generateMaterial(assetManager, new ColorRGBA(0.3f,0.3f,0.70f,1.0f));
         leaphand = generateMaterial(assetManager, new ColorRGBA(0f,1.0f,0.f,0.3f));
         leaphand.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
