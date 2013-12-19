@@ -12,6 +12,7 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
 import com.leapmotion.leap.Controller;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import leaptest.controller.GridGravityControl;
 import leaptest.controller.BlockContainerColorControl;
 import leaptest.controller.BlockContainerDissolveControl;
+import leaptest.controller.BlockContainerShadowControl;
 import leaptest.controller.GridCamControl;
 import leaptest.controller.GridRingColorControl;
 import leaptest.controller.KeyboardGridCamControl;
@@ -29,6 +31,7 @@ import leaptest.model.Block;
 import leaptest.model.BlockContainer;
 import leaptest.model.Grid;
 import leaptest.model.GridCam;
+import leaptest.view.BlockCap;
 import leaptest.view.MaterialManager;
 import leaptest.view.GridLines;
 import leaptest.view.GridRing;
@@ -76,22 +79,23 @@ public class Main extends SimpleApplication {
         
         // MODELS
         // Model settings...
-        float blocksize = 6f;
         int griddim = 7;
         float cameradistance = 100f, cameraangle = FastMath.PI/4f;
+        Vector3f blockdims = Vector3f.UNIT_XYZ.mult(6);
         
         // Add models
         BlockContainer world = new BlockContainer();
         GridCam camera = new GridCam(cameradistance,cameraangle, Vector3f.ZERO);
-        Grid grid = new Grid(griddim,griddim,griddim, Vector3f.UNIT_XYZ.mult(blocksize));
-        Block creationblock = new Block(MaterialManager.creationblock,new Vector3f(-grid.getRadius()-2*blocksize,blocksize/2,0f),Vector3f.UNIT_XYZ.mult(blocksize)),
+        Grid grid = new Grid(griddim,griddim,griddim, blockdims);
+        Block creationblock = new Block(MaterialManager.creationblock,new Vector3f(-grid.getRadius()-2*blockdims.x,blockdims.y/2,0f),blockdims),
               selected = null;
+        BlockCap blockcap = new BlockCap(blockdims);
         
         // Do some random stuff with the models for testing...
         grid.rotate(0.5f);
-        grid.addBlock(new Block(MaterialManager.normal,new Vector3f(0f,blocksize/2,0f),Vector3f.UNIT_XYZ.mult(blocksize)));
-        grid.addBlock(new Block(MaterialManager.normal,new Vector3f(-17f,blocksize/2,0f),Vector3f.UNIT_XYZ.mult(blocksize)));
-        grid.addBlock(new Block(MaterialManager.normal,new Vector3f(-17f+blocksize,blocksize/2,0f),Vector3f.UNIT_XYZ.mult(blocksize)));
+        grid.addBlock(new Block(MaterialManager.normal,new Vector3f(0f,blockdims.y/2,0f),blockdims));
+        grid.addBlock(new Block(MaterialManager.normal,new Vector3f(-17f,blockdims.y/2,0f),blockdims));
+        grid.addBlock(new Block(MaterialManager.normal,new Vector3f(-17f+blockdims.x,blockdims.y/2,0f),blockdims));
         
         // VIEWS
         // Add views         
@@ -107,6 +111,12 @@ public class Main extends SimpleApplication {
         rootNode.attachChild(floor);
         rootNode.attachChild(world);
         rootNode.attachChild(creationblock);
+        BlockCap cblockcap = (BlockCap) blockcap.clone();
+        cblockcap.move(creationblock.getLocalTranslation());
+        cblockcap.rotate(-FastMath.PI*0.5f, 0, 0);
+        cblockcap.setMaterial(creationblock.getMaterial());
+        cblockcap.setShadowMode(ShadowMode.Receive);
+        rootNode.attachChild(cblockcap);
         
         // Add lights
         DirectionalLight sun = new DirectionalLight();
@@ -153,7 +163,8 @@ public class Main extends SimpleApplication {
         controllers.add(new BlockContainerColorControl(grid));
         controllers.add(new BlockContainerColorControl(world)); 
         controllers.add(new GridRingColorControl(grid,gridring));
-        
+        controllers.add(new BlockContainerShadowControl(grid,blockdims,blockcap));
+        controllers.add(new BlockContainerShadowControl(world,blockdims,blockcap));
     }
     
     /**

@@ -23,12 +23,13 @@ public class Block extends Geometry implements Comparable {
     private boolean lifted, falling, dissolving;
     private float rotation, gravity;
     
+    
     public Block(Material mat, Vector3f position, Vector3f dimensions)
     {
         super("Block", new Box(dimensions.x*0.5f,dimensions.y*0.5f,dimensions.z*0.5f));
-        this.setMaterial(mat);
-        this.setShadowMode(ShadowMode.Receive);
-        this.setLocalTranslation(position);       
+        setMaterial(mat);
+        setShadowMode(ShadowMode.Off);
+        setLocalTranslation(position);
         this.position = position;
         this.dimensions = dimensions;
     }
