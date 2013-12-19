@@ -17,6 +17,7 @@ public class MaterialManager {
     
     public static Material normal, lifted, falling, gridnormal, ringrotate, creationblock, floor, leaphand;
      
+    // Should not be instantiated
     private MaterialManager() {}
     
     public static Material generateMaterial(AssetManager assetManager, ColorRGBA color)
