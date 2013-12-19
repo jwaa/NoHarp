@@ -20,6 +20,24 @@ import leaptest.model.Grid;
  */
 public class GestureRotateControl extends LeapControl
 {
+    /*
+     * Variables to fine tune what swipe for horizontal rotation is accepted
+    */
+    private double zCoordinateSensitivity = 1.5;
+    private double spinDurationSensitivity = 1;
+    private double timeBetweenSpinSwipesSensitivity = 1;
+    private double minimalDurationOfSpinSwipe = 75000;
+    //Variables that get adjusted over time for a user 
+    private double averageZSpinSwipe = 0.0;
+    private double stdevZSpinSwipe = 30;
+    private double averageDurationSpinSwipe = 100000;
+    private double stdevDurationSpinSwipe = 10000;
+    private double mimimalTimeBetweenSpinSwipes;
+    
+    
+    /*
+     * Variables to fine tune the horizontal rotation movement of the grid
+    */
     private double naturalSpeedIncrease = 2500;
     private double decayConstant = 0.85;
     private double maxVelocity = 0.05;
@@ -33,6 +51,11 @@ public class GestureRotateControl extends LeapControl
     private Grid grid;
     private double spinVelocity;
     private Vector lastDirection;
+    private long timeBetweenSpinSwipes;
+    private long timePreviousSpinSwipe;
+    private int nrSpinSwipes;
+    private String rejectedOn = "";
+    
 
     
     public GestureRotateControl(Controller leap, Grid grid)
@@ -41,6 +64,10 @@ public class GestureRotateControl extends LeapControl
         this.grid = grid;
         spinVelocity = 0;
         maxVelocity = 0.05;
+        nrSpinSwipes = 0;
+        timeBetweenSpinSwipes = 0;
+        timePreviousSpinSwipe = Long.MAX_VALUE;
+        mimimalTimeBetweenSpinSwipes = averageDurationSpinSwipe * ((stdevDurationSpinSwipe/(averageDurationSpinSwipe+stdevDurationSpinSwipe))*timeBetweenSpinSwipesSensitivity);
     }
 
     @Override
@@ -52,11 +79,25 @@ public class GestureRotateControl extends LeapControl
             double swipeSpeed = 0.0;
             if(isSwiped())
             { 
-                swipeSpeed = swipe.speed();
-                lastDirection = swipe.direction();
+                if(swipe.state().equals(Gesture.State.STATE_STOP))
+                {
+                    //System.out.println("\tCurrent time = " + swipe.frame().timestamp());
+                    //System.out.println("\tTime between = " + timeBetweenSpinSwipes);
+                    timeBetweenSpinSwipes = Math.abs(timePreviousSpinSwipe - swipe.frame().timestamp());
+                }
+                
+                if (isIntendedAsSpinSwipe(swipe))
+                {
+                    timePreviousSpinSwipe = swipe.frame().timestamp();
+                    swipeSpeed = swipe.speed();
+                    lastDirection = swipe.direction();
+                }
+                calculateUserVariablesForSpin(swipe);
+                //System.out.println("Z:\t\t" + averageZSpinSwipe + " +/- " + zCoordinateSensitivity*stdevZSpinSwipe);
+                //System.out.println("Duration:\t" + averageDurationSpinSwipe + " +/- " + spinDurationSensitivity*stdevDurationSpinSwipe);
             }
             spinVelocity = calculateVelocity(swipeSpeed);
-            System.out.println("spinVelocity = " + spinVelocity);
+            rejectedOn = "";
             rotate();
         }
     }
@@ -142,21 +183,42 @@ public class GestureRotateControl extends LeapControl
         boolean isCorrectHand = false;
         if(!s1.hands().isEmpty())
             isCorrectHand = (s1.hands().get(0).equals(getRotateHand()));
-        
-        System.out.println(isCorrectDirection + " " + isMostRightOrLeftSwipe + " " + isCorrectHand);
+       
+        //System.out.println(isCorrectDirection + " " + isMostRightOrLeftSwipe 
+        //        + " " + isCorrectHand);
         return isCorrectDirection && isMostRightOrLeftSwipe && isCorrectHand;
+    }
+    
+    private boolean isIntendedAsSpinSwipe(SwipeGesture s)
+    {
+        boolean isAtRegularSwipePosition = (s.startPosition().getZ() >= (averageZSpinSwipe-(1-1/zCoordinateSensitivity)*stdevZSpinSwipe) &&
+        s.startPosition().getZ() <= (averageZSpinSwipe+(1-1/zCoordinateSensitivity)*stdevZSpinSwipe));
+
+        boolean isOffRegularSwipeDuration = (s.duration() >= (averageDurationSpinSwipe-(1-1/spinDurationSensitivity)*stdevDurationSpinSwipe) 
+        && s.duration() <= (averageDurationSpinSwipe+(1-1/spinDurationSensitivity)*stdevDurationSpinSwipe));
+        
+        boolean isFakeSwipe = timeBetweenSpinSwipes < mimimalTimeBetweenSpinSwipes;
+
+        if(!isAtRegularSwipePosition)
+            rejectedOn = rejectedOn + "+ Regular Swipe Position ";
+        if(!isOffRegularSwipeDuration)
+            rejectedOn = rejectedOn + "+ swipe duration";
+        if(isFakeSwipe)
+            rejectedOn = rejectedOn + "+ time between swipes";
+        
+        //if(!"".equals(rejectedOn))
+        //    System.out.println("Swipe rejected on: " + rejectedOn);
+       
+        
+        return isAtRegularSwipePosition && isOffRegularSwipeDuration && !isFakeSwipe;
     }
     
     private Hand getRotateHand() 
     {
         if(isRightHanded)
-        {
             return frame.hands().leftmost();
-        }
         else
-        {
             return frame.hands().rightmost();
-        }
     }
 
     private double calculateVelocity(double speed) 
@@ -165,32 +227,46 @@ public class GestureRotateControl extends LeapControl
         if(lastDirection == null || speed == 0.0)
             velocity = spinVelocity;
         else if(lastDirection.getX()>0)
-        {
             velocity = spinVelocity + (1/(frame.currentFramesPerSecond()*(speed/naturalSpeedIncrease)));  
-        }
         else if(lastDirection.getX()<0)
-        {
             velocity = spinVelocity - (1/(frame.currentFramesPerSecond()*(speed/naturalSpeedIncrease)));
-        }
         else
             velocity = 0.0;
         
-
         if(Math.abs(velocity) > maxVelocity )
-        {
-            System.out.println("MAX velocity reached");
             return Math.signum(velocity)*maxVelocity;
-        }
         if(Math.abs(velocity) < minVelocity )
-        {
-            System.out.println("MIN velocity reached");
             return 0.0;
-        }
+        
         return velocity;
     }
     
     private double decayVelocity(double velocity)
     {
         return velocity*decayConstant; 
+    }
+    
+    private void calculateUserVariablesForSpin(SwipeGesture spinSwipe)
+    {
+        nrSpinSwipes++;
+        
+        double previousAverage = averageZSpinSwipe, zCoordinate = spinSwipe.position().getZ();
+        averageZSpinSwipe = (zCoordinate+(nrSpinSwipes-1)*averageZSpinSwipe)/nrSpinSwipes;
+        if(nrSpinSwipes > 1)
+            stdevZSpinSwipe = Math.sqrt(stdevZSpinSwipe+(zCoordinate-previousAverage)*(zCoordinate-averageZSpinSwipe));
+        
+        
+        if(spinSwipe.state().equals(Gesture.State.STATE_STOP) && spinSwipe.duration() != 0.0)
+        {
+            previousAverage = averageDurationSpinSwipe;
+            averageDurationSpinSwipe = (spinSwipe.duration()+(nrSpinSwipes-1)*averageDurationSpinSwipe)/nrSpinSwipes;
+            if(nrSpinSwipes > 1)
+            {
+                stdevDurationSpinSwipe = Math.sqrt(stdevDurationSpinSwipe+(spinSwipe.duration()-previousAverage)*(spinSwipe.duration()-averageDurationSpinSwipe));
+                mimimalTimeBetweenSpinSwipes = averageDurationSpinSwipe * ((stdevDurationSpinSwipe/(averageDurationSpinSwipe+stdevDurationSpinSwipe))*timeBetweenSpinSwipesSensitivity);
+            }
+            if(averageDurationSpinSwipe < minimalDurationOfSpinSwipe)
+                averageDurationSpinSwipe =  minimalDurationOfSpinSwipe + spinDurationSensitivity*stdevDurationSpinSwipe;
+        }
     }
 }
