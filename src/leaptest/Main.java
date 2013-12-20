@@ -11,6 +11,7 @@ import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
@@ -98,7 +99,13 @@ public class Main extends SimpleApplication {
         grid.addBlock(new Block(MaterialManager.normal,new Vector3f(-17f+blockdims.x,blockdims.y/2,0f),blockdims));
         
         // VIEWS
-        // Add views         
+        // Add views        
+        if (config.getSetting("ShowModel"))
+        {
+            //viewPort.
+            cam.setViewPort(0f, 0.7f, 0f, 1f);
+            Camera cam2 = cam.clone();
+        }
         viewPort.setBackgroundColor(ColorRGBA.DarkGray);
         GridRing gridring = new GridRing(grid.getRadius());
         HandView handmodel = new HandView(assetManager);
