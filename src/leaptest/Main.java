@@ -89,7 +89,6 @@ public class Main extends SimpleApplication {
         Grid grid = new Grid(griddim,griddim,griddim, blockdims);
         Block creationblock = new Block(MaterialManager.creationblock,new Vector3f(-grid.getRadius()-2*blockdims.x,blockdims.y/2,0f),blockdims),
               selected = null;
-        BlockCap blockcap = new BlockCap(blockdims);
         
         // Do some random stuff with the models for testing...
         grid.rotate(0.5f);
@@ -111,6 +110,7 @@ public class Main extends SimpleApplication {
         rootNode.attachChild(floor);
         rootNode.attachChild(world);
         rootNode.attachChild(creationblock);
+        BlockCap blockcap = new BlockCap(blockdims);
         BlockCap cblockcap = (BlockCap) blockcap.clone();
         cblockcap.move(creationblock.getLocalTranslation());
         cblockcap.rotate(-FastMath.PI*0.5f, 0, 0);
