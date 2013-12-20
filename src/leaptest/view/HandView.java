@@ -8,7 +8,9 @@ import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
+import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
@@ -29,9 +31,8 @@ public class HandView extends Node {
     
     public HandView(AssetManager assetManager)
     {
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", new ColorRGBA(0f,1.0f,0.f,0.3f));
-        mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+        setShadowMode(ShadowMode.Off);
+        Material mat = MaterialManager.leaphand;
         fingers = new Geometry[maxfingers];
         hands = new Geometry[maxhands];
         spheres = new Geometry[maxhands];

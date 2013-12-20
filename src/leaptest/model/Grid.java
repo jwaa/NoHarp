@@ -100,6 +100,14 @@ public class Grid extends BlockContainer {
         b.setPosition(grid2world(pos));
         b.setRotation(rotation);
     }
+    
+    public Vector3f snapToGrid(Vector3f pos)
+    {
+        Vector3f ret = world2grid(pos);
+        ret.x = Math.round(ret.x/cellDimensions.x)*cellDimensions.x;
+        ret.z = Math.round(ret.z/cellDimensions.z)*cellDimensions.z;     
+        return grid2world(ret);
+    }
 
     public float getRadius() {
         return radius;
