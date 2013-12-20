@@ -135,10 +135,9 @@ public class MouseBlockControl extends BlockDragControl implements AnalogListene
         // On a new click start dragging
         if (clickinit)
         {
-            dragging = detectBlock();
-            liftBlock();
+            liftBlock(detectBlock());
         } 
-        // On button release drop block
+        // On button release drop block if dragging
         else if (clickrelease && dragging != null) 
         {
             releaseBlock();

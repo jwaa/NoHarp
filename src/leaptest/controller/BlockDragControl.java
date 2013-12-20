@@ -31,8 +31,9 @@ public abstract class BlockDragControl implements Updatable {
         this.world = world;
     }
    
-    protected void liftBlock()
+    protected void liftBlock(Block block)
     {
+        dragging = block;
         if (dragging != null)
         {
            if (grid.containsBlock(dragging))
@@ -94,6 +95,7 @@ public abstract class BlockDragControl implements Updatable {
         world.collideWith(ray, results);
         grid.collideWith(ray, results);
         
+        // Find nearest available geometry and return it as a block
         if (results.size() > 0)
         {
             Geometry g = results.getClosestCollision().getGeometry();
