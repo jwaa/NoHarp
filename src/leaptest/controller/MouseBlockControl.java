@@ -34,9 +34,9 @@ public class MouseBlockControl extends BlockDragControl implements AnalogListene
     private boolean clickinit, clickrelease;
     private float liftdelta;
     
-    public MouseBlockControl(InputManager inputManager, Camera cam, BlockContainer world, Grid grid, Block selected, Block creationblock)
+    public MouseBlockControl(InputManager inputManager, Camera cam, BlockContainer world, Grid grid, Block creationblock)
     {
-        super(world,grid,selected,creationblock);
+        super(world,grid,creationblock);
         this.cam = cam;
         this.inputManager = inputManager;
         configureInputs(inputManager);
@@ -100,19 +100,15 @@ public class MouseBlockControl extends BlockDragControl implements AnalogListene
     {
         // Every block above the old position of the dragged block switches 
         // to falling state
-        // TODO get collision ceiling and bottom for liftdelta out of this
         CollisionResults cr = new CollisionResults();
         grid.collideAboveBlock(dragging, cr);
         for (CollisionResult c : cr)
             ((Block) c.getGeometry()).setFalling(true);
 
-        Vector3f pos = dragging.getPosition();
-        if (pos.y + liftdelta > dragging.getDimensions().y/2)
-            pos.y += liftdelta;
+        if (target.y + liftdelta > dragging.getDimensions().y/2)
+            target.y += liftdelta;
         else
-            pos.y = dragging.getDimensions().y/2;
-
-        moveBlock(pos);
+            target.y = dragging.getDimensions().y/2;
 
         Vector2f click2d = inputManager.getCursorPosition();
         Vector3f click3d = cam.getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 0f).clone();
@@ -123,9 +119,14 @@ public class MouseBlockControl extends BlockDragControl implements AnalogListene
 
         if (ray.intersectsWherePlane(new Plane(Vector3f.UNIT_Y,0f), dir))
         {
-            dir.y = dragging.getPosition().y;
-            moveBlock(dir);
+            dir.y = target.y;
+            target = dir;
         }
+        if (grid.withinGrid(target)) 
+            target=grid.snapToGrid(target);  
+        
+        moveBlock(target);
+        
         if (grid.withinGrid(dragging.getPosition())) 
             grid.snapToGrid(dragging);        
     }

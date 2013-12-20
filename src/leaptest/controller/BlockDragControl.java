@@ -6,8 +6,10 @@ package leaptest.controller;
 
 import com.jme3.collision.Collidable;
 import com.jme3.collision.CollisionResults;
+import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
 import leaptest.model.Block;
 import leaptest.model.BlockContainer;
 import leaptest.model.Grid;
@@ -23,10 +25,11 @@ public abstract class BlockDragControl implements Updatable {
     protected Grid grid;
     protected Block dragging, creationblock;
     
-    public BlockDragControl(BlockContainer world, Grid grid, Block selected, Block creationblock)
+    protected Vector3f target;
+    
+    public BlockDragControl(BlockContainer world, Grid grid, Block creationblock)
     {
         this.creationblock = creationblock;
-        this.dragging = selected;
         this.grid = grid;
         this.world = world;
     }
@@ -43,6 +46,7 @@ public abstract class BlockDragControl implements Updatable {
            } else if (!world.containsBlock(dragging))
                world.addBlock(dragging);
            dragging.setLifted(true);
+           target = dragging.getPosition().clone();
         }       
     }
 
@@ -65,7 +69,24 @@ public abstract class BlockDragControl implements Updatable {
     
     protected void moveBlock(Vector3f position)
     {
-        dragging.setPosition(position);
+        // Calculate direction and distance between current position and target
+        target = position;
+        Vector3f cpos = dragging.getPosition();
+        Vector3f dir = target.subtract(cpos).normalize().mult(1.5f);
+        float dist = cpos.distance(target);
+
+        // Detect collisions between current position and target
+        CollisionResults results = new CollisionResults();
+        grid.collideWith(new Ray(cpos,dir), results);
+        
+        // If collissions occur within range
+        if (results.size() > 0 && results.getClosestCollision().getDistance() < dist)
+        {
+            // Calculate closest collision position and new position of block
+            dragging.setPosition(results.getClosestCollision().getContactPoint().subtract(dir));
+        }
+        else
+            dragging.setPosition(target);
     }
     
     protected Block getBlockAt(Vector3f pos)
@@ -103,6 +124,16 @@ public abstract class BlockDragControl implements Updatable {
                 return (Block) g;
         }
         return null;
+    }
+    
+    public Vector3f getTarget()
+    {
+        return target;
+    }
+    
+    public Block getSelected()
+    {
+        return dragging;
     }
     
     public abstract void update(float tpf);

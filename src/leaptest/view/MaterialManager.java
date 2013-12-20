@@ -15,7 +15,7 @@ import com.jme3.math.ColorRGBA;
  */
 public class MaterialManager {
     
-    public static Material normal, lifted, falling, gridnormal, ringrotate, creationblock, floor, leaphand;
+    public static Material normal, lifted, falling, target, gridnormal, ringrotate, creationblock, floor, leaphand;
      
     // Should not be instantiated
     private MaterialManager() {}
@@ -39,6 +39,8 @@ public class MaterialManager {
         gridnormal = generateMaterial(assetManager, ColorRGBA.Red);
         ringrotate = generateMaterial(assetManager, ColorRGBA.Orange);  
         creationblock = normal;
+        target = generateMaterial(assetManager, new ColorRGBA(1.0f,0f,0.f,0.2f));
+        target.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
         floor = generateMaterial(assetManager, new ColorRGBA(0.3f,0.3f,0.70f,1.0f));
         leaphand = generateMaterial(assetManager, new ColorRGBA(0f,1.0f,0.f,0.3f));
         leaphand.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);

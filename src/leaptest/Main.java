@@ -21,6 +21,8 @@ import leaptest.controller.GridGravityControl;
 import leaptest.controller.BlockContainerColorControl;
 import leaptest.controller.BlockContainerDissolveControl;
 import leaptest.controller.BlockContainerShadowControl;
+import leaptest.controller.BlockDragControl;
+import leaptest.controller.BlockTargetHelperControl;
 import leaptest.controller.GridCamControl;
 import leaptest.controller.GridRingColorControl;
 import leaptest.controller.KeyboardGridCamControl;
@@ -87,8 +89,7 @@ public class Main extends SimpleApplication {
         BlockContainer world = new BlockContainer();
         GridCam camera = new GridCam(cameradistance,cameraangle, Vector3f.ZERO);
         Grid grid = new Grid(griddim,griddim,griddim, blockdims);
-        Block creationblock = new Block(MaterialManager.creationblock,new Vector3f(-grid.getRadius()-2*blockdims.x,blockdims.y/2,0f),blockdims),
-              selected = null;
+        Block creationblock = new Block(MaterialManager.creationblock,new Vector3f(-grid.getRadius()-2*blockdims.x,blockdims.y/2,0f),blockdims);
         
         // Do some random stuff with the models for testing...
         grid.rotate(0.5f);
@@ -152,7 +153,8 @@ public class Main extends SimpleApplication {
         controllers.add(new KeyboardGridCamControl(inputManager,camera));
         
         // Add mouse control
-        controllers.add(new MouseBlockControl(inputManager,cam,world,grid,selected,creationblock));
+        BlockDragControl bdc = new MouseBlockControl(inputManager,cam,world,grid,creationblock);
+        controllers.add(bdc);
 
         // Add model effectors
         controllers.add(new GridCamControl(cam,camera));
@@ -160,6 +162,7 @@ public class Main extends SimpleApplication {
         controllers.add(new BlockContainerDissolveControl(world));     
        
         // Add visual effectors
+        controllers.add(new BlockTargetHelperControl(bdc, rootNode, blockdims));
         controllers.add(new BlockContainerColorControl(grid));
         controllers.add(new BlockContainerColorControl(world)); 
         controllers.add(new GridRingColorControl(grid,gridring));
