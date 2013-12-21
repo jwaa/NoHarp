@@ -26,6 +26,12 @@ public class Grid extends BlockContainer {
         float width = x * (cellDimensions.x + 1), height = z * (cellDimensions.z + 1);
         radius = FastMath.sqrt(width * width + height * height)/2;
     }
+
+    @Override
+    public Block getBlockAt(Vector3f point)
+    {
+        return super.getBlockAt(this.world2grid(point));
+    }   
     
     public boolean withinGrid(Vector3f pos)
     {
@@ -93,6 +99,14 @@ public class Grid extends BlockContainer {
         pos.z = Math.round(pos.z/cellDimensions.z)*cellDimensions.z;
         b.setPosition(grid2world(pos));
         b.setRotation(rotation);
+    }
+    
+    public Vector3f snapToGrid(Vector3f pos)
+    {
+        Vector3f ret = world2grid(pos);
+        ret.x = Math.round(ret.x/cellDimensions.x)*cellDimensions.x;
+        ret.z = Math.round(ret.z/cellDimensions.z)*cellDimensions.z;     
+        return grid2world(ret);
     }
 
     public float getRadius() {

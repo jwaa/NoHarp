@@ -4,11 +4,10 @@
  */
 package leaptest.view;
 
-import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
-import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Quad;
@@ -24,14 +23,12 @@ public class GridLines extends Node {
     private final float thickness = 0.3f;
     
     
-    public GridLines(AssetManager assetManager, int elements, float scale, float radius)
+    public GridLines(int elements, float scale, float radius)
     {
         this.radius = radius;
         this.scale = scale;
         this.elements = elements;
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", ColorRGBA.Red);
-        setupCoordinateLines(mat);
+        setupCoordinateLines(MaterialManager.gridnormal);
     }
     
     private void setupCoordinateLines(Material mat) {
@@ -46,12 +43,14 @@ public class GridLines extends Node {
                 xQuad.setLocalTranslation(new Vector3f(pos,-0.05f,offset));
                 xQuad.rotate(-FastMath.PI*0.5f, 0f, 0f);
                 xQuad.setMaterial(mat);
+                xQuad.setShadowMode(RenderQueue.ShadowMode.Off);
                 this.attachChild(xQuad);
 
                 Geometry yQuad = new Geometry("z" + i,new Quad(length,thickness));
                 yQuad.setLocalTranslation(new Vector3f(-offset,-0.05f,pos));
                 yQuad.rotate(-FastMath.PI*0.5f, 0f, 0f);
                 yQuad.setMaterial(mat);
+                yQuad.setShadowMode(RenderQueue.ShadowMode.Off);
                 this.attachChild(yQuad);
             }
         }
