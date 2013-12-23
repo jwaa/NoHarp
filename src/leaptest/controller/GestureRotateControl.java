@@ -38,13 +38,13 @@ public class GestureRotateControl extends LeapControl
     */
     private final double ROTATE_Z_SENSITIVITY = 0.9;
     private final double ROTATE_DURATION_SENSITIVITY = 0.25;
-    private final double ROTATE_TIME_BETWEEN_SENSITIVITY = 0.25;
+    private final double ROTATE_TIME_BETWEEN_SENSITIVITY = 1;
     private final double ROTATE_PART_SENSITIVITY = 0.5;
     private final double ROTATE_MIN_ACCEPT_DURATION = 75000;
     
     private final double CAMERA_Z_SENSITIVITY = 0.9;
     private final double CAMERA_DURATION_SENSITIVITY = 0.75;
-    private final double CAMERA_TIME_BETWEEN_SENSITIVITY = 0.20;
+    private final double CAMERA_TIME_BETWEEN_SENSITIVITY = 0.5;
     private final double CAMERA_PART_SENSITIVITY = 0.5;
     private final double CAMERA_MIN_ACCEPT_DURATION = 75000;
     /*
@@ -55,14 +55,14 @@ public class GestureRotateControl extends LeapControl
     private double averageZPartialRotateSwipe = 0.0;
     private double stdevZPartialRotateSwipe = 60;
     private double averagePartialDurationRotate = 10000;
-    private double stdevPartialDurationRotate = 0.0;
+    private double stdevPartialDurationRotate = 1000;
     private double averageDurationRotateSwipe = 200000;
     private double stdevDurationRotateSwipe = 20000;
     
     private double averageZPartialCameraSwipe = 0.0;
     private double stdevZPartialCameraSwipe = 80;
     private double averagePartialDurationCamera = 20000;
-    private double stdevPartialDurationCamera = 0.0;
+    private double stdevPartialDurationCamera = 2000;
     private double averageDurationCameraSwipe = 200000;
     private double stdevDurationCameraSwipe = 100000;
     
@@ -77,7 +77,7 @@ public class GestureRotateControl extends LeapControl
     private double MIN_VELOCITY_ROTATE = 0.001;
     private double MAX_VELOCITY_CAMERA = 0.025;
     private double MIN_VELOCITY_CAMERA = 0.0001;
-    private boolean IS_RIGHT_HANDED = true;
+    private boolean IS_RIGHT_HANDED = false;
     private boolean INVERT_Y_AXIS_FOR_CAMERA = false;
     
     
