@@ -24,8 +24,6 @@ public class GestureRotateControl extends LeapControl
     /*
      * Variables to fine tune what swipe for horizontal rotation is accepted
      * Duration & location sensitivities should be positive non-zero value. 
-     * (the time between sensitivity should be between 0 [=no time] and 1 [=the 
-     * stdev weighted with the adjusted relative stdev])
      *      When == 1   :   All swipes rejected
      *      When  > 1   :   more swipes between user's extremes are accepted 
      *      When  < 1   :   all swipes between user's extremes are accepted and 
@@ -39,39 +37,45 @@ public class GestureRotateControl extends LeapControl
      * extreme swipes.
     */
     private final double ROTATE_Z_SENSITIVITY = 0.9;
-    private final double ROTATE_DURATION_SENSITIVITY = 0.50;
-    private final double ROTATE_TIME_BETWEEN_SENSITIVITY = 0.5;
+    private final double ROTATE_DURATION_SENSITIVITY = 0.25;
+    private final double ROTATE_TIME_BETWEEN_SENSITIVITY = 0.25;
+    private final double ROTATE_PART_SENSITIVITY = 0.5;
     private final double ROTATE_MIN_ACCEPT_DURATION = 75000;
+    
     private final double CAMERA_Z_SENSITIVITY = 0.9;
-    private final double CAMERA_DURATION_SENSITIVITY = 0.50;
-    private final double CAMERA_TIME_BETWEEN_SENSITIVITY = 0.5;
+    private final double CAMERA_DURATION_SENSITIVITY = 0.75;
+    private final double CAMERA_TIME_BETWEEN_SENSITIVITY = 0.20;
+    private final double CAMERA_PART_SENSITIVITY = 0.5;
     private final double CAMERA_MIN_ACCEPT_DURATION = 75000;
     /*
      * Variables that get adjusted over time for a user.
      * Change the initial values to match more the initial preferences of the 
      * user.
     */
-    private double averageZRotateSwipe = 0.0;
-    private double stdevZRotateSwipe = 60;
-    private double averageDurationRotateSwipe = 100000;
-    private double stdevDurationRotateSwipe = 10000;
-    private double minimalTimeBetweenRotateSwipes;
-    private double averageZCameraSwipe = 0.0;
-    private double stdevZCameraSwipe = 80;
+    private double averageZPartialRotateSwipe = 0.0;
+    private double stdevZPartialRotateSwipe = 60;
+    private double averagePartialDurationRotate = 10000;
+    private double stdevPartialDurationRotate = 0.0;
+    private double averageDurationRotateSwipe = 200000;
+    private double stdevDurationRotateSwipe = 20000;
+    
+    private double averageZPartialCameraSwipe = 0.0;
+    private double stdevZPartialCameraSwipe = 80;
+    private double averagePartialDurationCamera = 20000;
+    private double stdevPartialDurationCamera = 0.0;
     private double averageDurationCameraSwipe = 200000;
     private double stdevDurationCameraSwipe = 100000;
-    private double minimalTimeBetweenCameraSwipes;
     
     /*
      * Variables to fine tune the movement of the grid.
     */
-    private double ROTATE_SPEED_INCREASE = 2500;
-    private double CAMERA_SPEED_INCREASE = 2000;
+    private double ROTATE_SPEED_INCREASE = 100000;
+    private double CAMERA_SPEED_INCREASE = 70000;
     private double ROTATE_DECAY_CONSTANT = 0.85;
-    private double CAMERA_DECAY_CONSTANT = 0.85;
-    private double MAX_VELOCITY_ROTATE = 0.05;
+    private double CAMERA_DECAY_CONSTANT = 0.65;
+    private double MAX_VELOCITY_ROTATE = 0.25;
     private double MIN_VELOCITY_ROTATE = 0.001;
-    private double MAX_VELOCITY_CAMERA = 0.01;
+    private double MAX_VELOCITY_CAMERA = 0.025;
     private double MIN_VELOCITY_CAMERA = 0.0001;
     private boolean IS_RIGHT_HANDED = true;
     private boolean INVERT_Y_AXIS_FOR_CAMERA = false;
@@ -83,30 +87,43 @@ public class GestureRotateControl extends LeapControl
     private SwipeGesture rotateSwipe;
     private SwipeGesture cameraSwipe;
     private GridCam camera;
-    
     private final double ROTATION_DELTA = Math.PI;
+    
     private boolean isRotateSwipe;
-    private boolean isCameraSwipe;
-    private double rotateVelocity;
-    private double cameraVelocity;
     private Vector lastDirectionRotate;
-    private Vector lastDirectionCamera;
+    private double rotateVelocity;
+    private double summedPartialRotateSwipes;
+    private int nrPartialRotateSwipes;
     private long timeBetweenRotateSwipes;
+    private double minimalTimeBetweenRotateSwipes;
+    private int nrIntendedRotateSwipes;
+    
+    private boolean isCameraSwipe;
+    private Vector lastDirectionCamera;
+    private double cameraVelocity;
+    private double summedPartialCameraSwipes;
+    private int nrPartialCameraSwipes;
     private long timeBetweenCameraSwipes;
-    private long timePreviousRotateSwipe;
-    private long timePreviousCameraSwipe;
-    private int nrRotateSwipes;
-    private int nrCameraSwipes;
+    private double minimalTimeBetweenCameraSwipes;    
+    private int nrIntendedCameraSwipes;
+    
+    private long timePreviousIntendedRotateSwipe;
+    private int previousRotateID;
+    private long timePreviousIntendedCameraSwipe;
+    private int previousCameraID;
+    
     private final double ROTATE_Z_SENS_VALUE;
     private final double ROTATE_DURATION_SENS_VALUE;
+    private final double ROTATE_PART_DURATION_SENS_VALUE;
     private final double CAMERA_Z_SENS_VALUE;
     private final double CAMERA_DURATION_SENS_VALUE;
+    private final double CAMERA_PART_DURATION_SENS_VALUE;
     
             
     
     private final boolean isShowWhyRejected = true;
-    private final boolean isShowSwipeData = false;
-    private final boolean isShowUserVariables = false;
+    private final boolean isShowSwipeData = true;
+    private final boolean isShowUserVariables = true;
     private String rejectedOn = "";
     
     
@@ -119,19 +136,23 @@ public class GestureRotateControl extends LeapControl
         isCameraSwipe = false;
         rotateVelocity = 0;
         cameraVelocity = 0;
-        nrRotateSwipes = 0;
-        nrCameraSwipes = 0;
+        nrPartialRotateSwipes = 0;
+        nrPartialCameraSwipes = 0;
         timeBetweenRotateSwipes = 0;
-        timePreviousRotateSwipe = Long.MAX_VALUE;
+        timePreviousIntendedRotateSwipe = Long.MAX_VALUE;
         timeBetweenCameraSwipes = 0;
-        timePreviousCameraSwipe = Long.MAX_VALUE;
+        timePreviousIntendedCameraSwipe = Long.MAX_VALUE;
         minimalTimeBetweenRotateSwipes = calculateMinimalTimeBetweenGestures(averageDurationRotateSwipe, 
                 stdevDurationRotateSwipe, ROTATE_TIME_BETWEEN_SENSITIVITY);
+        minimalTimeBetweenCameraSwipes = calculateMinimalTimeBetweenGestures(averageDurationCameraSwipe, 
+                stdevDurationCameraSwipe, CAMERA_TIME_BETWEEN_SENSITIVITY);
         
         ROTATE_Z_SENS_VALUE = calculateSensitivyValue(ROTATE_Z_SENSITIVITY);
         ROTATE_DURATION_SENS_VALUE = calculateSensitivyValue(ROTATE_DURATION_SENSITIVITY);
         CAMERA_Z_SENS_VALUE = calculateSensitivyValue(CAMERA_Z_SENSITIVITY);
         CAMERA_DURATION_SENS_VALUE = calculateSensitivyValue(CAMERA_DURATION_SENSITIVITY);
+        ROTATE_PART_DURATION_SENS_VALUE = calculateSensitivyValue(ROTATE_PART_SENSITIVITY);
+        CAMERA_PART_DURATION_SENS_VALUE = calculateSensitivyValue(CAMERA_PART_SENSITIVITY);
     }
 
     @Override
@@ -142,35 +163,44 @@ public class GestureRotateControl extends LeapControl
             rotateVelocity = decayVelocity(rotateVelocity);
             cameraVelocity = decayVelocity(cameraVelocity);
             double rotateSwipeSpeed = 0.0, cameraSwipeSpeed = 0.0;
+            boolean isIntended = false;
             if(isSwiped())
             { 
                 if(isRotateSwipe)
                 {
-                    if(rotateSwipe.state().equals(Gesture.State.STATE_STOP))
-                        timeBetweenRotateSwipes = Math.abs(timePreviousRotateSwipe - rotateSwipe.frame().timestamp());
-
+                    lastDirectionRotate = rotateSwipe.direction();
                     if(isIntendedAsRotateSwipe(rotateSwipe))
                     {
-                        timePreviousRotateSwipe = rotateSwipe.frame().timestamp();
+                        isIntended = true;
+                        timePreviousIntendedRotateSwipe = rotateSwipe.frame().timestamp();
                         rotateSwipeSpeed = rotateSwipe.speed();
-                        lastDirectionRotate = rotateSwipe.direction();
+                    }
+                    else
+                    {
+                        timeBetweenRotateSwipes = Math.abs(timePreviousIntendedRotateSwipe - rotateSwipe.frame().timestamp());
                     }
                     printDebugData("rotate");
-                    calculateUserVariablesForRotate(rotateSwipe);
+                    boolean isNewAndIntended = isIntended && rotateSwipe.id() != previousRotateID;
+                    calculateUserVariablesForRotate(rotateSwipe, isNewAndIntended);
+                    previousRotateID = rotateSwipe.id();
                 }
                 else
                 {
-                    if(cameraSwipe.state().equals(Gesture.State.STATE_STOP))
-                        timeBetweenCameraSwipes = Math.abs(timePreviousCameraSwipe - cameraSwipe.frame().timestamp());
-                    
+                    lastDirectionCamera = cameraSwipe.direction();
                     if(isIntendedAsCameraSwipe(cameraSwipe))
                     {
-                        timePreviousCameraSwipe = cameraSwipe.frame().timestamp();
+                        isIntended = true;
+                        timePreviousIntendedCameraSwipe = cameraSwipe.frame().timestamp();
                         cameraSwipeSpeed = cameraSwipe.speed();
-                        lastDirectionCamera = cameraSwipe.direction();
+                    }
+                    else
+                    {
+                        timeBetweenCameraSwipes = Math.abs(timePreviousIntendedCameraSwipe - cameraSwipe.frame().timestamp());
                     }
                     printDebugData("camera");
-                    calculateUserVariablesForCamera(cameraSwipe);
+                    boolean isNewAndIntended = isIntended && cameraSwipe.id() != previousCameraID;
+                    calculateUserVariablesForCamera(cameraSwipe, isNewAndIntended);
+                    previousCameraID = cameraSwipe.id();
                 }
             }
             rotateVelocity = calculateVelocity(rotateSwipeSpeed);
@@ -239,7 +269,7 @@ public class GestureRotateControl extends LeapControl
         {
             for(SwipeGesture s : allSwipes)
             {
-                if(isCorrectSwipe(s, aCorrectSwipe))
+                if(isCorrectSwipe(s))
                 {
                     aCorrectSwipe = s;
                 }
@@ -263,23 +293,27 @@ public class GestureRotateControl extends LeapControl
         return swipes;
     }
 
-    private boolean isCorrectSwipe(SwipeGesture s1, SwipeGesture s2) 
+    private boolean isCorrectSwipe(SwipeGesture s) 
     {                        
-        boolean isCorrectRotateDirection = (Math.abs(s1.direction().getX())>Math.abs(s1.direction().getY())
-                && Math.abs(s1.direction().getX())>Math.abs(s1.direction().getZ()));
+        boolean isCorrectRotateDirection = (Math.abs(s.direction().getX())>Math.abs(s.direction().getY())
+                && Math.abs(s.direction().getX())>Math.abs(s.direction().getZ()));
         
-        boolean isCorrectCameraDirection = (Math.abs(s1.direction().getY())>Math.abs(s1.direction().getZ())
-                && Math.abs(s1.direction().getY())>Math.abs(s1.direction().getX()));
+        boolean isCorrectCameraDirection = (Math.abs(s.direction().getY())>Math.abs(s.direction().getZ())
+                && Math.abs(s.direction().getY())>Math.abs(s.direction().getX()));
         
         if(isCorrectRotateDirection)
         {
             isRotateSwipe = true;
             isCameraSwipe = false;
+            if( isDirectionChanged(s) )
+                timeBetweenRotateSwipes = Math.abs(timePreviousIntendedRotateSwipe - s.frame().timestamp());
         }
         else if(isCorrectCameraDirection)
         {
             isCameraSwipe = true;
             isRotateSwipe = false;
+            if( isDirectionChanged(s) )
+                timeBetweenCameraSwipes = Math.abs(timePreviousIntendedCameraSwipe - s.frame().timestamp());
         }
         
         /*boolean isMostRightOrLeftSwipe = (s2 == null) || 
@@ -290,31 +324,29 @@ public class GestureRotateControl extends LeapControl
                 && s1.startPosition().getX() > s2.startPosition().getX()));
         */
         boolean isCorrectHand = false;
-        if(!s1.hands().isEmpty())
-            isCorrectHand = (s1.hands().get(0).equals(getRotateHand()));
+        if(!s.hands().isEmpty())
+            isCorrectHand = (s.hands().get(0).equals(getRotateHand()));
         
         if(!"".equals(rejectedOn))
             rejectedOn = "";
         if(!isCorrectRotateDirection && !isCorrectCameraDirection)
             rejectedOn = rejectedOn + " + swipe direction ";
-        //if(!isMostRightOrLeftSwipe && s2 != null)
-        //    rejectedOn = rejectedOn + " + swipe hand (" + s1.startPosition().getX() + " < " + s2.startPosition().getX();
         if(!isCorrectHand)
             rejectedOn = rejectedOn + " + left/right hand ";
        
-        //System.out.println(isCorrectDirection + " " + isMostRightOrLeftSwipe 
-        //        + " " + isCorrectHand);
         return (isCorrectRotateDirection || isCorrectCameraDirection) 
                 && isCorrectHand; //&&is MostRightOrLeftSwipe;
     }
     
     private boolean isIntendedAsRotateSwipe(SwipeGesture s)
     {
-        boolean isAtRegularSwipePosition = (s.position().getZ() >= (averageZRotateSwipe-ROTATE_Z_SENS_VALUE*stdevZRotateSwipe) &&
-        s.position().getZ() <= (averageZRotateSwipe+ROTATE_Z_SENS_VALUE*stdevZRotateSwipe));
+        boolean isAtRegularSwipePosition = (s.position().getZ() >= (averageZPartialRotateSwipe-ROTATE_Z_SENS_VALUE*stdevZPartialRotateSwipe) &&
+        s.position().getZ() <= (averageZPartialRotateSwipe+ROTATE_Z_SENS_VALUE*stdevZPartialRotateSwipe));
 
-        boolean isOffRegularSwipeDuration = (s.duration() >= (averageDurationRotateSwipe-ROTATE_DURATION_SENS_VALUE*stdevDurationRotateSwipe) 
-        && s.duration() <= (averageDurationRotateSwipe+ROTATE_DURATION_SENS_VALUE*stdevDurationRotateSwipe));
+        boolean isOffRegularSwipeDuration = (s.duration() == 0) 
+                || 
+                (s.duration() >= (averagePartialDurationRotate-ROTATE_PART_DURATION_SENS_VALUE*stdevPartialDurationRotate) 
+                && s.duration() <= (averagePartialDurationRotate+ROTATE_PART_DURATION_SENS_VALUE*stdevPartialDurationRotate));
         
         boolean isFakeSwipe = timeBetweenRotateSwipes < minimalTimeBetweenRotateSwipes;
 
@@ -330,11 +362,13 @@ public class GestureRotateControl extends LeapControl
     
     private boolean isIntendedAsCameraSwipe(SwipeGesture s)
     {
-        boolean isAtRegularSwipePosition = (s.position().getZ() >= (averageZCameraSwipe-CAMERA_Z_SENS_VALUE*stdevZCameraSwipe) &&
-        s.position().getZ() <= (averageZCameraSwipe+CAMERA_Z_SENS_VALUE*stdevZCameraSwipe));
+        boolean isAtRegularSwipePosition = (s.position().getZ() >= (averageZPartialCameraSwipe-CAMERA_Z_SENS_VALUE*stdevZPartialCameraSwipe) &&
+        s.position().getZ() <= (averageZPartialCameraSwipe+CAMERA_Z_SENS_VALUE*stdevZPartialCameraSwipe));
 
-        boolean isOffRegularSwipeDuration = (s.duration() >= (averageDurationCameraSwipe-CAMERA_DURATION_SENS_VALUE*stdevDurationCameraSwipe) 
-        && s.duration() <= (averageDurationCameraSwipe+CAMERA_DURATION_SENS_VALUE*stdevDurationCameraSwipe));
+        boolean isOffRegularSwipeDuration = (s.duration() == 0)
+                ||
+                (s.duration() >= (averagePartialDurationCamera-CAMERA_PART_DURATION_SENS_VALUE*stdevPartialDurationCamera) 
+        && s.duration() <= (averagePartialDurationCamera+CAMERA_PART_DURATION_SENS_VALUE*stdevPartialDurationCamera));
         
         boolean isFakeSwipe = timeBetweenCameraSwipes < minimalTimeBetweenCameraSwipes;
 
@@ -364,10 +398,9 @@ public class GestureRotateControl extends LeapControl
             if(lastDirectionRotate == null || speed == 0.0)
                 velocity = rotateVelocity;
             else if(lastDirectionRotate.getX()>0)
-                velocity = rotateVelocity + (1/(frame.currentFramesPerSecond()*(speed/ROTATE_SPEED_INCREASE)));  
+                velocity = rotateVelocity + ((1/frame.currentFramesPerSecond())+(speed/ROTATE_SPEED_INCREASE));  
             else if(lastDirectionRotate.getX()<0)
-                velocity = rotateVelocity - (1/(frame.currentFramesPerSecond()*(speed/ROTATE_SPEED_INCREASE)));
-            
+                velocity = rotateVelocity - ((1/frame.currentFramesPerSecond())+(speed/ROTATE_SPEED_INCREASE));
             if(Math.abs(velocity) > MAX_VELOCITY_ROTATE )
                 return Math.signum(velocity)*MAX_VELOCITY_ROTATE;
             if(Math.abs(velocity) < MIN_VELOCITY_ROTATE )
@@ -378,9 +411,9 @@ public class GestureRotateControl extends LeapControl
             if(lastDirectionCamera == null || speed == 0.0)
                 velocity = cameraVelocity;
             else if(lastDirectionCamera.getY()>0)
-                velocity = cameraVelocity + (1/(frame.currentFramesPerSecond()*(speed/CAMERA_SPEED_INCREASE)));  
+                velocity = cameraVelocity + ((1/frame.currentFramesPerSecond())+(speed/CAMERA_SPEED_INCREASE));  
             else if(lastDirectionCamera.getY()<0)
-                velocity = cameraVelocity - (1/(frame.currentFramesPerSecond()*(speed/CAMERA_SPEED_INCREASE)));
+                velocity = cameraVelocity - ((1/frame.currentFramesPerSecond())+(speed/CAMERA_SPEED_INCREASE));
             
             
             if(Math.abs(velocity) > MAX_VELOCITY_CAMERA )
@@ -401,53 +434,72 @@ public class GestureRotateControl extends LeapControl
             return 0;
     }
     
-    private void calculateUserVariablesForRotate(SwipeGesture rotateSwipe)
+    private void calculateUserVariablesForRotate(SwipeGesture rotateSwipe, boolean isNewAndIntended)
     {
-        nrRotateSwipes++;
-        double previousAverage = averageZRotateSwipe, 
+        nrPartialRotateSwipes++;
+        double previousAverage = averageZPartialRotateSwipe, 
                 zCoordinate = rotateSwipe.position().getZ(),
                 duration = rotateSwipe.duration();
         
-        averageZRotateSwipe = calculateAverage(averageZRotateSwipe, zCoordinate, nrRotateSwipes);
-        if(nrRotateSwipes > 1)
-            stdevZRotateSwipe = calculateStdev(stdevZRotateSwipe, previousAverage, averageZRotateSwipe, zCoordinate);
+        averageZPartialRotateSwipe = calculateAverage(averageZPartialRotateSwipe, zCoordinate, nrPartialRotateSwipes);
+        if(nrPartialRotateSwipes > 1)
+            stdevZPartialRotateSwipe = calculateStdev(stdevZPartialRotateSwipe, previousAverage, averageZPartialRotateSwipe, zCoordinate);
         
-        if(rotateSwipe.state().equals(Gesture.State.STATE_STOP) && rotateSwipe.duration() != 0.0)
+        previousAverage = averagePartialDurationRotate;
+        averagePartialDurationRotate = calculateAverage(averagePartialDurationRotate, duration, nrPartialRotateSwipes);
+        if(nrPartialRotateSwipes > 1)
+            stdevPartialDurationRotate = calculateStdev(stdevPartialDurationRotate, previousAverage, averagePartialDurationRotate, duration);
+        
+        
+        summedPartialRotateSwipes += duration;
+        if(isNewAndIntended)
         {
+            nrIntendedRotateSwipes++;
             previousAverage = averageDurationRotateSwipe;
-            averageDurationRotateSwipe = calculateAverage(averageDurationRotateSwipe, duration, nrRotateSwipes);
-            if(nrRotateSwipes > 1)
+            averageDurationRotateSwipe = calculateAverage(averageDurationRotateSwipe, summedPartialRotateSwipes, nrIntendedRotateSwipes);
+            if(nrIntendedRotateSwipes > 1)
             {
-                stdevDurationRotateSwipe = calculateStdev(stdevDurationRotateSwipe, previousAverage, averageDurationRotateSwipe, duration);
-                minimalTimeBetweenRotateSwipes = calculateMinimalTimeBetweenGestures(averageDurationRotateSwipe, stdevDurationRotateSwipe, ROTATE_TIME_BETWEEN_SENSITIVITY);
+                stdevDurationRotateSwipe = calculateStdev(stdevDurationRotateSwipe, previousAverage, averageDurationRotateSwipe, summedPartialRotateSwipes);
             }
             if(averageDurationRotateSwipe < (ROTATE_MIN_ACCEPT_DURATION-ROTATE_DURATION_SENS_VALUE*stdevDurationRotateSwipe))
                 averageDurationRotateSwipe =  ROTATE_MIN_ACCEPT_DURATION;
+            summedPartialRotateSwipes = 0.0;
+            minimalTimeBetweenRotateSwipes = calculateMinimalTimeBetweenGestures(averageDurationRotateSwipe, 
+                stdevDurationRotateSwipe, ROTATE_TIME_BETWEEN_SENSITIVITY);
         }
     }
     
-    private void calculateUserVariablesForCamera(SwipeGesture cameraSwipe)
+    private void calculateUserVariablesForCamera(SwipeGesture cameraSwipe, boolean isNewAndIntended)
     {
-        nrCameraSwipes++;
-        double previousAverage = averageZCameraSwipe, 
-                zCoordinate = cameraSwipe.position().getZ(),
-                duration = cameraSwipe.duration();
+        nrPartialCameraSwipes++;
+        double previousAverage = averageZPartialCameraSwipe, 
+               zCoordinate = cameraSwipe.position().getZ(),
+               duration = cameraSwipe.duration();
         
-        averageZCameraSwipe = calculateAverage(averageZCameraSwipe, zCoordinate, nrCameraSwipes);
-        if(nrCameraSwipes > 1)
-            stdevZCameraSwipe = calculateStdev(stdevZCameraSwipe, previousAverage, averageZCameraSwipe, zCoordinate);
+        averageZPartialCameraSwipe = calculateAverage(averageZPartialCameraSwipe, zCoordinate, nrPartialCameraSwipes);
+        if(nrPartialCameraSwipes > 1)
+            stdevZPartialCameraSwipe = calculateStdev(stdevZPartialCameraSwipe, previousAverage, averageZPartialCameraSwipe, zCoordinate);
         
-        if(cameraSwipe.state().equals(Gesture.State.STATE_STOP) && cameraSwipe.duration() != 0.0)
+        previousAverage = averagePartialDurationCamera;
+        averagePartialDurationCamera = calculateAverage(averagePartialDurationCamera, duration, nrPartialCameraSwipes);
+        if(nrPartialCameraSwipes > 1)
+            stdevPartialDurationCamera = calculateStdev(stdevPartialDurationCamera, previousAverage, averagePartialDurationCamera, duration);
+        
+        summedPartialCameraSwipes += duration;
+        if(isNewAndIntended)
         {
+            nrIntendedCameraSwipes++;
             previousAverage = averageDurationCameraSwipe;
-            averageDurationCameraSwipe = calculateAverage(averageDurationCameraSwipe, duration, nrCameraSwipes);
-            if(nrCameraSwipes > 1)
+            averageDurationCameraSwipe = calculateAverage(averageDurationCameraSwipe, summedPartialCameraSwipes, nrIntendedCameraSwipes);
+            if(nrIntendedCameraSwipes > 1)
             {
-                stdevDurationCameraSwipe = calculateStdev(stdevDurationCameraSwipe, previousAverage, averageDurationCameraSwipe, duration);
-                minimalTimeBetweenCameraSwipes = calculateMinimalTimeBetweenGestures(averageDurationCameraSwipe, stdevDurationCameraSwipe, CAMERA_TIME_BETWEEN_SENSITIVITY);
+                stdevDurationCameraSwipe = calculateStdev(stdevDurationCameraSwipe, previousAverage, averageDurationCameraSwipe, summedPartialCameraSwipes);
             }
             if(averageDurationCameraSwipe < (CAMERA_MIN_ACCEPT_DURATION-CAMERA_DURATION_SENS_VALUE*stdevDurationCameraSwipe))
                 averageDurationCameraSwipe =  CAMERA_MIN_ACCEPT_DURATION;
+            summedPartialCameraSwipes = 0.0;
+            minimalTimeBetweenCameraSwipes = calculateMinimalTimeBetweenGestures(averageDurationCameraSwipe, 
+                stdevDurationCameraSwipe, CAMERA_TIME_BETWEEN_SENSITIVITY);
         }
     }
     
@@ -463,15 +515,17 @@ public class GestureRotateControl extends LeapControl
             if("rotate".equals(swipeType))
             {
                 System.out.println("User variables of a " + swipeType + " swipe:");
-                System.out.println("\tDuration:\t\t" + averageDurationRotateSwipe + " +/- " + stdevDurationRotateSwipe*ROTATE_DURATION_SENS_VALUE + "\t\tsensValue = "+ROTATE_DURATION_SENS_VALUE);
-                System.out.println("\tZ coordinate:\t\t" + averageZRotateSwipe + " +/- " + stdevZRotateSwipe*ROTATE_Z_SENS_VALUE + "\t\tsensValue = "+ROTATE_Z_SENS_VALUE);
+                System.out.println("\tPart. Duration:\t\t" + averagePartialDurationRotate + " +/- " + stdevPartialDurationRotate*ROTATE_PART_DURATION_SENS_VALUE + "\t\tsensValue = "+ROTATE_PART_DURATION_SENS_VALUE);
+                System.out.println("\tPart. Z coordinate:\t" + averageZPartialRotateSwipe + " +/- " + stdevZPartialRotateSwipe*ROTATE_Z_SENS_VALUE + "\t\tsensValue = "+ROTATE_Z_SENS_VALUE);
+                System.out.println("\tSwipe Duration:\t\t" + averageDurationRotateSwipe + " +/- " + stdevDurationRotateSwipe*ROTATE_DURATION_SENS_VALUE + "\t\tsensValue = "+ROTATE_DURATION_SENS_VALUE);
                 System.out.println("\tMin. Time between:\t" + minimalTimeBetweenRotateSwipes);
             }
             else if("camera".equals(swipeType))
             {
                 System.out.println("User variables of a " + swipeType + " swipe:");
-                System.out.println("\tDuration:\t\t" + averageDurationCameraSwipe + " +/- " + stdevDurationCameraSwipe*CAMERA_DURATION_SENS_VALUE + "\t\tsensValue = "+ CAMERA_DURATION_SENS_VALUE);
-                System.out.println("\tZ coordinate:\t\t" + averageZCameraSwipe + " +/- " + stdevZCameraSwipe*CAMERA_Z_SENS_VALUE + "\t\tsensValue = "+ CAMERA_Z_SENS_VALUE);
+                System.out.println("\tPart. Duration:\t\t" + averagePartialDurationCamera + " +/- " + stdevPartialDurationCamera*CAMERA_PART_DURATION_SENS_VALUE + "\t\tsensValue = "+ CAMERA_PART_DURATION_SENS_VALUE);
+                System.out.println("\tPart. Z coordinate:\t" + averageZPartialCameraSwipe + " +/- " + stdevZPartialCameraSwipe*CAMERA_Z_SENS_VALUE + "\t\tsensValue = "+ CAMERA_Z_SENS_VALUE);
+                System.out.println("\tSwipe Duration:\t\t" + averageDurationCameraSwipe + " +/- " + stdevDurationCameraSwipe*CAMERA_DURATION_SENS_VALUE + "\t\tsensValue = "+ CAMERA_DURATION_SENS_VALUE);
                 System.out.println("\tMin. Time between:\t" + minimalTimeBetweenCameraSwipes);
             }
         }
@@ -479,7 +533,8 @@ public class GestureRotateControl extends LeapControl
         {
             if("rotate".equals(swipeType))
             {
-                System.out.println(swipeType + " Swipe data:");
+                System.out.println(swipeType + " Swipe data (id:"+ rotateSwipe.id() +"):");
+                System.out.println("State:\t" + rotateSwipe.state().toString());
                 System.out.println("\tDirection:\t" + rotateSwipe.direction());
                 System.out.println("\tDuration:\t" + rotateSwipe.duration());
                 System.out.println("\tSpeed:\t\t" + rotateSwipe.speed());
@@ -488,7 +543,8 @@ public class GestureRotateControl extends LeapControl
             }
             else if("camera".equals(swipeType))
             {
-                System.out.println(swipeType + " Swipe data:");
+                System.out.println(swipeType + " Swipe data (id:"+ cameraSwipe.id() +"):");
+                System.out.println("State:\t" + cameraSwipe.state().toString());
                 System.out.println("\tDirection:\t" + cameraSwipe.direction());
                 System.out.println("\tDuration:\t" + cameraSwipe.duration());
                 System.out.println("\tSpeed:\t\t" + cameraSwipe.speed());
@@ -526,7 +582,26 @@ public class GestureRotateControl extends LeapControl
     
     private double calculateMinimalTimeBetweenGestures(double average, double stdev, double sensitivityValue)
     {
-        double relativeStdev = stdev/(stdev+average);
-        return average*relativeStdev*sensitivityValue;
+        //double relativeStdev = stdev/(stdev+average);
+        //return average*relativeStdev*sensitivityValue;
+        return sensitivityValue * (average + stdev);
+    }
+
+    private boolean isDirectionChanged(SwipeGesture s) 
+    {
+        if(isRotateSwipe)
+        {
+            if(lastDirectionRotate == null)
+                return true;
+            return Math.signum(lastDirectionRotate.getX()) != Math.signum(s.direction().getX());
+        }
+        else if(isCameraSwipe)
+        {
+            if(lastDirectionCamera == null)
+                return true;
+            return Math.signum(lastDirectionCamera.getY()) != Math.signum(s.direction().getY());
+        }
+        else
+            return false;
     }
 }
