@@ -24,6 +24,7 @@ import leaptest.controller.BlockContainerDissolveControl;
 import leaptest.controller.BlockContainerShadowControl;
 import leaptest.controller.BlockDragControl;
 import leaptest.controller.BlockTargetHelperControl;
+import leaptest.controller.GestureGrabControl;
 import leaptest.controller.GridCamControl;
 import leaptest.controller.GridRingColorControl;
 import leaptest.controller.KeyboardGridCamControl;
@@ -85,12 +86,15 @@ public class Main extends SimpleApplication {
         int griddim = 7;
         float cameradistance = 100f, cameraangle = FastMath.PI/4f;
         Vector3f blockdims = Vector3f.UNIT_XYZ.mult(6);
+        Vector3f LEAPSCALE = new Vector3f(0.1f,0.1f,0.1f);
+
         
         // Add models
         BlockContainer world = new BlockContainer();
         GridCam camera = new GridCam(cameradistance,cameraangle, Vector3f.ZERO);
         Grid grid = new Grid(griddim,griddim,griddim, blockdims);
-        Block creationblock = new Block(MaterialManager.creationblock,new Vector3f(-grid.getRadius()-2*blockdims.x,blockdims.y/2,0f),blockdims);
+        Block creationblock = new Block(MaterialManager.creationblock,new Vector3f(-grid.getRadius()-2*blockdims.x,blockdims.y/2,0f),blockdims),
+                selected = null;
         
         // Do some random stuff with the models for testing...
         grid.rotate(0.5f);
@@ -151,7 +155,8 @@ public class Main extends SimpleApplication {
         
         // Create a Leap Motion controller
         leap = new Controller();
-        controllers.add(new LeapHandControl(leap, handmodel, new Vector3f(0.1f,0.1f,0.1f)));
+        controllers.add(new LeapHandControl(leap, handmodel, LEAPSCALE));
+        controllers.add(new GestureGrabControl(leap, world, grid, selected, creationblock, LEAPSCALE));
         //controllers.add(new GestureCreateControl(leap,world,blocksize));
 
         // Add keyboard control

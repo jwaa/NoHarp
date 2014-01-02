@@ -52,7 +52,7 @@ public class ConfigSettings {
     
     public boolean getSetting(String key)
     {
-        Boolean ret = null;
+        Boolean ret = false;
         for (Entry<String,String> entry : settings)
         {
             //System.out.println("-" + entry.getKey() + "-");
