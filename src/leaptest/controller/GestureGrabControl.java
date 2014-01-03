@@ -25,44 +25,48 @@ import leaptest.view.MaterialManager;
  */
 public class GestureGrabControl extends LeapControl {
 
-    //private final static int HAND_PALM_THRESHOLD = 1;
+    //Thresholds
     private final static int GETTING_SMALLER_THRESHOLD = 5;
     private final static int GETTING_BIGGER_THRESHOLD = 3;
     private final static int STAYING_THE_SAME_THRESHOLD = 2;
     private final static double GRABBING_THRESHOLD = 0.98;
     private final static double RELEASE_THRESHOLD = 1.01;
+    //Transelations of the coordinates
     private final static float Y_TRANSELATION = -3.0f;
+    private Vector3f LEAPSCALE;
+    //Attributes to detect grabbing and releasing
+    private int gettingSmaller, gettingBigger, stayingTheSame;
+    //Attribute to set right or left handiness
+    private boolean isRightHanded = true;
     private Frame frame;
     private Frame previousFrame;
-    private Controller leap;
-    private boolean isRightHanded = true;
-    private int gettingSmaller, gettingBigger;
-    private int stayingTheSame;
-    private Block dragging, creationBlock;
-    private BlockContainer world;
-    private Grid grid;
-    private Vector3f LEAPSCALE;
+    private BlockDragControl bdc;
 
     public GestureGrabControl(Controller leap, BlockContainer world, Grid grid, Block selected, Block creationblock, Vector3f LEAPSCALE) {//world2Grid uit Grid
         super(leap);
-        this.leap = leap;
+        this.bdc = new BlockDragControl(world, grid, creationblock) {
+            @Override
+            public void update(float tpf) {
+                this.update(tpf);
+            }
+        };
         this.gettingSmaller = 0;
         this.gettingBigger = 0;
         this.stayingTheSame = 0;
-        this.dragging = selected;
-        this.creationBlock = creationblock;
-        this.world = world;
-        this.grid = grid;
+        bdc.dragging = selected;
+        bdc.creationblock = creationblock;
+        bdc.world = world;
+        bdc.grid = grid;
         this.LEAPSCALE = LEAPSCALE;
     }
 
     @Override
     public void update(float tpf) {
         if (frame != null) {
-            if (dragging == null) {
+            if (bdc.dragging == null) {
                 grab();
             }
-            if (dragging != null) {
+            if (bdc.dragging != null) {
                 if (!release()) {
                     drag();
                 }
@@ -71,6 +75,9 @@ public class GestureGrabControl extends LeapControl {
         }
     }
 
+    /**
+     * Checks whether one is trying to grab a block and if so grabs the block.
+     */
     private void grab() {
         HandList hands = frame.hands();
         Hand hand = getGrabHand(hands);
@@ -90,43 +97,31 @@ public class GestureGrabControl extends LeapControl {
                 this.stayingTheSame = 0;
             }
             if (this.gettingSmaller > GETTING_SMALLER_THRESHOLD) {
-                dragging = detectBlock(hand);
+                Vector3f coordinates = getTransformedCoordinates(hand);
+                bdc.dragging = bdc.getBlockAt(coordinates);
+                bdc.liftBlock(bdc.dragging);
                 this.gettingSmaller = 0;
                 this.stayingTheSame = 0;
-                System.out.print(Math.random());
-                System.out.println("Ik grab!");
             }
         }
     }
 
+    /**
+     * Moves the block that is currently hold according to the hand movement and
+     * the rules present in the environment.
+     */
     private void drag() {
-        if (grid.containsBlock(dragging)) {
-            //dragging.setPosition(grid.grid2world(dragging.getPosition()));
-            world.addBlock(dragging);
-            grid.removeFromGrid(dragging);
-
-            // TODO correct position
-        } else if (!world.containsBlock(dragging)) {
-            world.addBlock(dragging);
-        }
-        dragging.setLifted(true);
-        CollisionResults cr = new CollisionResults();
-        grid.collideAboveBlock(dragging, cr);
-        for (CollisionResult c : cr) {
-            ((Block) c.getGeometry()).setFalling(true);
-        }
-        
         HandList hands = frame.hands();
         Hand hand = getGrabHand(hands);
-        Vector3f pos = new Vector3f(hand.palmPosition().getX(),hand.palmPosition().getY(),hand.palmPosition().getZ());
-        pos = pos.mult(LEAPSCALE);
-        dragging.setPosition(pos);
-
-        if (grid.withinGrid(dragging.getPosition())) {
-            grid.snapToGrid(dragging);
-        }
+        Vector3f coordinates = getTransformedCoordinates(hand);
+        bdc.moveBlock(coordinates);
     }
 
+    /**
+     * Checks whether one is releasing the block and if so releases it.
+     *
+     * @return a boolean which says whether the block is released.
+     */
     private boolean release() {
         HandList hands = frame.hands();
         Hand hand = getGrabHand(hands);
@@ -147,19 +142,7 @@ public class GestureGrabControl extends LeapControl {
             }
             if (this.gettingBigger > GETTING_BIGGER_THRESHOLD) {
                 System.out.println("Release");
-                dragging.setLifted(false);
-                dragging.setFalling(true);
-                if (grid.withinGrid(dragging.getPosition())) {
-                    grid.snapToGrid(dragging);
-                    dragging.setPosition(grid.world2grid(dragging.getPosition()));
-                    dragging.setRotation(0f);
-                    world.removeBlock(dragging);
-                    grid.addBlock(dragging);
-                } else {
-                    dragging.setDissolving(true);
-                }
-
-                dragging = null;
+                bdc.releaseBlock();
                 this.gettingBigger = 0;
                 this.stayingTheSame = 0;
                 return true;
@@ -173,6 +156,14 @@ public class GestureGrabControl extends LeapControl {
         frame = controller.frame();
     }
 
+    /**
+     * When more hands are visible for the leap the hand which is used for
+     * grabbing is selected. This is the right most hand when one is right
+     * handed en de left most hand when one is right handed
+     *
+     * @param hands, list of hands detected by de leap
+     * @return the hand which has to grab
+     */
     private Hand getGrabHand(HandList hands) {
         if (isRightHanded) {
             return hands.rightmost();
@@ -180,22 +171,17 @@ public class GestureGrabControl extends LeapControl {
         return hands.leftmost();
     }
 
-    private Block detectBlock(Hand hand) {
+    /**
+     * Transforms the coordinates of the handpalm so that they fit into the
+     * block world.
+     *
+     * @param hand, the hand of which the coordinates need to be transformed.
+     * @return the transformed coordinates.
+     */
+    private Vector3f getTransformedCoordinates(Hand hand) {
         Vector3f coordinates = new Vector3f(hand.palmPosition().getX(), hand.palmPosition().getY(), hand.palmPosition().getZ());
         coordinates = coordinates.mult(LEAPSCALE);
         coordinates.y = coordinates.y + Y_TRANSELATION;
-        //coordinates.x = coordinates.x*LEAPSCALE.x;
-        //coordinates.y = coordinates.y*LEAPSCALE.y;
-        //coordinates.z = coordinates.z*LEAPSCALE.z;
-        System.out.print(coordinates.x);
-        System.out.print(",");
-        System.out.print(coordinates.y);
-        System.out.print(",");
-        System.out.println(coordinates.z);
-        Block result = grid.getBlockAt(coordinates);
-        if (result != null) {
-            System.out.println("HOI");
-        }
-        return grid.getBlockAt(coordinates);
+        return coordinates;
     }
 }
