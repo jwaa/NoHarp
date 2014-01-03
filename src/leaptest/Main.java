@@ -86,14 +86,14 @@ public class Main extends SimpleApplication {
         int griddim = 7;
         float cameradistance = 100f, cameraangle = FastMath.PI/4f;
         Vector3f blockdims = Vector3f.UNIT_XYZ.mult(6);
-        Vector3f LEAPSCALE = new Vector3f(0.1f,0.1f,0.1f);
+        Vector3f LEAPSCALE = new Vector3f(0.27f,0.1f,0.1f);
 
         
         // Add models
         BlockContainer world = new BlockContainer();
         GridCam camera = new GridCam(cameradistance,cameraangle, Vector3f.ZERO);
         Grid grid = new Grid(griddim,griddim,griddim, blockdims);
-        Block creationblock = new Block(MaterialManager.creationblock,new Vector3f(-grid.getRadius()-2*blockdims.x,blockdims.y/2,0f),blockdims),
+        Block creationblock = new Block(MaterialManager.creationblock,new Vector3f(-grid.getRadius()-blockdims.x,blockdims.y/2,0f),blockdims),
                 selected = null;
         
         // Do some random stuff with the models for testing...

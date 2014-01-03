@@ -32,7 +32,7 @@ public class GestureGrabControl extends LeapControl {
     private final static double GRABBING_THRESHOLD = 0.98;
     private final static double RELEASE_THRESHOLD = 1.01;
     //Transelations of the coordinates
-    private final static float Y_TRANSELATION = -3.0f;
+    private final static float Y_TRANSELATION = -4.5f;
     private Vector3f LEAPSCALE;
     //Attributes to detect grabbing and releasing
     private int gettingSmaller, gettingBigger, stayingTheSame;
