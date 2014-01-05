@@ -27,12 +27,14 @@ import leaptest.controller.GridCamControl;
 import leaptest.controller.GridRingColorControl;
 import leaptest.controller.KeyboardGridCamControl;
 import leaptest.controller.KeyboardGridControl;
+import leaptest.controller.KeyboardLeapCalibratorControl;
 import leaptest.controller.MouseBlockControl;
 import leaptest.controller.Updatable;
 import leaptest.model.Block;
 import leaptest.model.BlockContainer;
 import leaptest.model.Grid;
 import leaptest.model.GridCam;
+import leaptest.model.LeapCalibrator;
 import leaptest.view.BlockCap;
 import leaptest.view.MaterialManager;
 import leaptest.view.GridLines;
@@ -84,7 +86,7 @@ public class Main extends SimpleApplication {
         int griddim = 7;
         float cameradistance = 100f, cameraangle = FastMath.PI/4f;
         Vector3f blockdims = Vector3f.UNIT_XYZ.mult(6);
-        
+            
         // Add models
         BlockContainer world = new BlockContainer();
         GridCam camera = new GridCam(cameradistance,cameraangle, Vector3f.ZERO);
@@ -142,15 +144,18 @@ public class Main extends SimpleApplication {
         // Set-up looping controllers (order matters!!)
         controllers = new ArrayList<Updatable>();
         
-        // Create a Leap Motion controller
+        // Create a Leap Motion interface and put it within the calibrator
         leap = new Controller();
-        controllers.add(new LeapHandControl(leap, handmodel, new Vector3f(0.1f,0.1f,0.1f)));
-        //controllers.add(new GestureCreateControl(leap,world,blocksize));
+        LeapCalibrator calib = new LeapCalibrator(leap);
+        
+        calib.loadFromFile("leap.calib");
+        controllers.add(new LeapHandControl(calib, handmodel));
 
         // Add keyboard control
         controllers.add(new KeyboardControl(this));  
         controllers.add(new KeyboardGridControl(inputManager,grid));
         controllers.add(new KeyboardGridCamControl(inputManager,camera));
+        controllers.add(new KeyboardLeapCalibratorControl(inputManager,calib));
         
         // Add mouse control
         BlockDragControl bdc = new MouseBlockControl(inputManager,cam,world,grid,creationblock);
