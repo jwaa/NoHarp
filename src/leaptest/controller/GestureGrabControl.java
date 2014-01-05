@@ -4,26 +4,18 @@
  */
 package leaptest.controller;
 
-import com.jme3.collision.CollisionResult;
-import com.jme3.collision.CollisionResults;
-import com.jme3.input.InputManager;
-import com.jme3.math.Plane;
-import com.jme3.math.Ray;
-import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.Camera;
-import com.jme3.scene.Geometry;
 import com.leapmotion.leap.*;
 import leaptest.model.Block;
 import leaptest.model.BlockContainer;
 import leaptest.model.Grid;
-import leaptest.view.MaterialManager;
 
 /**
  *
  * @author Annet
  */
-public class GestureGrabControl extends LeapControl {
+public class GestureGrabControl extends LeapControl
+{
 
     //Thresholds
     private final static int GETTING_SMALLER_THRESHOLD = 5;
@@ -34,6 +26,11 @@ public class GestureGrabControl extends LeapControl {
     //Transelations of the coordinates
     private final static float Y_TRANSELATION = -4.5f;
     private Vector3f LEAPSCALE;
+    //Marges in which to look for a block
+    private final static float Y_MARGE = 1.0f;
+    private final static float X_MARGE = 1.0f;
+    private final static float Z_MARGE = 1.0f;
+    private final static float MARGE_STEPS = 0.5f;
     //Attributes to detect grabbing and releasing
     private int gettingSmaller, gettingBigger, stayingTheSame;
     //Attribute to set right or left handiness
@@ -42,11 +39,14 @@ public class GestureGrabControl extends LeapControl {
     private Frame previousFrame;
     private BlockDragControl bdc;
 
-    public GestureGrabControl(Controller leap, BlockContainer world, Grid grid, Block selected, Block creationblock, Vector3f LEAPSCALE) {//world2Grid uit Grid
+    public GestureGrabControl(Controller leap, BlockContainer world, Grid grid, Block selected, Block creationblock, Vector3f LEAPSCALE)
+    {//world2Grid uit Grid
         super(leap);
-        this.bdc = new BlockDragControl(world, grid, creationblock) {
+        this.bdc = new BlockDragControl(world, grid, creationblock)
+        {
             @Override
-            public void update(float tpf) {
+            public void update(float tpf)
+            {
                 this.update(tpf);
             }
         };
@@ -61,16 +61,15 @@ public class GestureGrabControl extends LeapControl {
     }
 
     @Override
-    public void update(float tpf) {
-        if (frame != null) {
-            if (bdc.dragging == null) {
+    public void update(float tpf)
+    {
+        if (frame != null)
+        {
+            if (bdc.dragging == null)
                 grab();
-            }
-            if (bdc.dragging != null) {
-                if (!release()) {
+            if (bdc.dragging != null)
+                if (!release())
                     drag();
-                }
-            }
             previousFrame = frame;
         }
     }
@@ -78,27 +77,30 @@ public class GestureGrabControl extends LeapControl {
     /**
      * Checks whether one is trying to grab a block and if so grabs the block.
      */
-    private void grab() {
+    private void grab()
+    {
         HandList hands = frame.hands();
         Hand hand = getGrabHand(hands);
-        if (previousFrame != null) {
-            if (hand == null) {
+        if (previousFrame != null)
+        {
+            if (hand == null)
                 return;
-            }
-            if (hand.scaleFactor(previousFrame) < GRABBING_THRESHOLD) {
+            if (hand.scaleFactor(previousFrame) < GRABBING_THRESHOLD)
+            {
                 this.gettingSmaller++;
                 this.stayingTheSame = 0;
             }
-            if (hand.scaleFactor(previousFrame) >= 1.0) {
+            if (hand.scaleFactor(previousFrame) >= 1.0)
                 this.stayingTheSame++;
-            }
-            if (this.stayingTheSame > STAYING_THE_SAME_THRESHOLD) {
+            if (this.stayingTheSame > STAYING_THE_SAME_THRESHOLD)
+            {
                 this.gettingSmaller = 0;
                 this.stayingTheSame = 0;
             }
-            if (this.gettingSmaller > GETTING_SMALLER_THRESHOLD) {
+            if (this.gettingSmaller > GETTING_SMALLER_THRESHOLD)
+            {
                 Vector3f coordinates = getTransformedCoordinates(hand);
-                bdc.dragging = bdc.getBlockAt(coordinates);
+                bdc.dragging = findBlockWithinMarges(coordinates);
                 bdc.liftBlock(bdc.dragging);
                 this.gettingSmaller = 0;
                 this.stayingTheSame = 0;
@@ -110,7 +112,8 @@ public class GestureGrabControl extends LeapControl {
      * Moves the block that is currently hold according to the hand movement and
      * the rules present in the environment.
      */
-    private void drag() {
+    private void drag()
+    {
         HandList hands = frame.hands();
         Hand hand = getGrabHand(hands);
         Vector3f coordinates = getTransformedCoordinates(hand);
@@ -122,25 +125,28 @@ public class GestureGrabControl extends LeapControl {
      *
      * @return a boolean which says whether the block is released.
      */
-    private boolean release() {
+    private boolean release()
+    {
         HandList hands = frame.hands();
         Hand hand = getGrabHand(hands);
-        if (previousFrame != null) {
-            if (hand == null) {
+        if (previousFrame != null)
+        {
+            if (hand == null)
                 return false;
-            }
-            if (hand.scaleFactor(previousFrame) > RELEASE_THRESHOLD) {
+            if (hand.scaleFactor(previousFrame) > RELEASE_THRESHOLD)
+            {
                 this.gettingBigger++;
                 this.stayingTheSame = 0;
             }
-            if (hand.scaleFactor(previousFrame) <= 1.0) {
+            if (hand.scaleFactor(previousFrame) <= 1.0)
                 this.stayingTheSame++;
-            }
-            if (this.stayingTheSame > STAYING_THE_SAME_THRESHOLD) {
+            if (this.stayingTheSame > STAYING_THE_SAME_THRESHOLD)
+            {
                 this.gettingBigger = 0;
                 this.stayingTheSame = 0;
             }
-            if (this.gettingBigger > GETTING_BIGGER_THRESHOLD) {
+            if (this.gettingBigger > GETTING_BIGGER_THRESHOLD)
+            {
                 System.out.println("Release");
                 bdc.releaseBlock();
                 this.gettingBigger = 0;
@@ -152,7 +158,8 @@ public class GestureGrabControl extends LeapControl {
     }
 
     @Override
-    protected void onFrame(Controller leap) {
+    protected void onFrame(Controller leap)
+    {
         frame = controller.frame();
     }
 
@@ -164,10 +171,10 @@ public class GestureGrabControl extends LeapControl {
      * @param hands, list of hands detected by de leap
      * @return the hand which has to grab
      */
-    private Hand getGrabHand(HandList hands) {
-        if (isRightHanded) {
+    private Hand getGrabHand(HandList hands)
+    {
+        if (isRightHanded)
             return hands.rightmost();
-        }
         return hands.leftmost();
     }
 
@@ -178,10 +185,63 @@ public class GestureGrabControl extends LeapControl {
      * @param hand, the hand of which the coordinates need to be transformed.
      * @return the transformed coordinates.
      */
-    private Vector3f getTransformedCoordinates(Hand hand) {
+    private Vector3f getTransformedCoordinates(Hand hand)
+    {
         Vector3f coordinates = new Vector3f(hand.palmPosition().getX(), hand.palmPosition().getY(), hand.palmPosition().getZ());
         coordinates = coordinates.mult(LEAPSCALE);
         coordinates.y = coordinates.y + Y_TRANSELATION;
         return coordinates;
+    }
+
+    private Block findBlockWithinMarges(Vector3f coordinates)
+    {
+        Block found = null;
+        //Begins at zero and start looking at more positive numbers.
+        for (int x = 0; x <= (int) (X_MARGE / MARGE_STEPS); x++)
+        {
+            for (int z = 0; z <= (int) (Z_MARGE / MARGE_STEPS); z++)
+            {
+                for (int y = 0; y <= (int) (Y_MARGE / MARGE_STEPS); y++)
+                {
+                    Vector3f margeCoordinates = coordinates.clone();
+                    margeCoordinates.y += (y * MARGE_STEPS);
+                    margeCoordinates.z += (z * MARGE_STEPS);
+                    margeCoordinates.x += (x * MARGE_STEPS);
+                    System.out.println(margeCoordinates);
+                    found = bdc.getBlockAt(margeCoordinates);
+                    if (found != null)
+                        break;
+                }
+                if (found != null)
+                    break;
+            }
+            if (found != null)
+                break;
+        }
+
+        //Looks at the more negative numbers.
+        if (found == null)
+            for (int x = 1; x <= (int) (X_MARGE / MARGE_STEPS); x++)
+            {
+                for (int z = 1; z <= (int) (Z_MARGE / MARGE_STEPS); z++)
+                {
+                    for (int y = 1; y <= (int) (Y_MARGE / MARGE_STEPS); y++)
+                    {
+                        Vector3f margeCoordinates = coordinates.clone();
+                        margeCoordinates.y -= (y * MARGE_STEPS);
+                        margeCoordinates.z -= (z * MARGE_STEPS);
+                        margeCoordinates.x -= (x * MARGE_STEPS);
+                        System.out.println(margeCoordinates);
+                        found = bdc.getBlockAt(margeCoordinates);
+                        if (found != null)
+                            break;
+                    }
+                    if (found != null)
+                        break;
+                }
+                if (found != null)
+                    break;
+            }
+        return found;
     }
 }
