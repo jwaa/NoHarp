@@ -19,22 +19,28 @@ public class GestureGrabControl extends LeapControl
 
     //Thresholds
     private final static int GETTING_SMALLER_THRESHOLD = 5;
-    private final static int GETTING_BIGGER_THRESHOLD = 3;
+    private final static int GETTING_BIGGER_THRESHOLD = 2;
     private final static int STAYING_THE_SAME_THRESHOLD = 2;
     private final static double GRABBING_THRESHOLD = 0.98;
     private final static double RELEASE_THRESHOLD = 1.01;
+    
     //Transelations of the coordinates
     private final static float Y_TRANSELATION = -4.5f;
     private Vector3f LEAPSCALE;
+    
     //Marges in which to look for a block
     private final static float Y_MARGE = 1.0f;
     private final static float X_MARGE = 1.0f;
     private final static float Z_MARGE = 1.0f;
     private final static float MARGE_STEPS = 0.5f;
+    
     //Attributes to detect grabbing and releasing
     private int gettingSmaller, gettingBigger, stayingTheSame;
+    
     //Attribute to set right or left handiness
     private boolean isRightHanded = true;
+    
+    //Other attributes
     private Frame frame;
     private Frame previousFrame;
     private BlockDragControl bdc;
@@ -207,7 +213,6 @@ public class GestureGrabControl extends LeapControl
                     margeCoordinates.y += (y * MARGE_STEPS);
                     margeCoordinates.z += (z * MARGE_STEPS);
                     margeCoordinates.x += (x * MARGE_STEPS);
-                    System.out.println(margeCoordinates);
                     found = bdc.getBlockAt(margeCoordinates);
                     if (found != null)
                         break;
@@ -231,7 +236,6 @@ public class GestureGrabControl extends LeapControl
                         margeCoordinates.y -= (y * MARGE_STEPS);
                         margeCoordinates.z -= (z * MARGE_STEPS);
                         margeCoordinates.x -= (x * MARGE_STEPS);
-                        System.out.println(margeCoordinates);
                         found = bdc.getBlockAt(margeCoordinates);
                         if (found != null)
                             break;
