@@ -14,8 +14,9 @@ FPScounter 1
 % Model loading
 ModelFile models/export.model
 
-% Leap calibration file
-CalibFile leap.calib
+% Specific class settings / calibrations 
+SetFolder settings/
+SetExtension .set
 
 % Controllers
 Leap 1
