@@ -99,7 +99,7 @@ public class Main extends SimpleApplication {
         
         // Populate grid with stored model
         grid.rotate(0.5f);
-        BlockModel bm = new BlockModel(config.getSettingValue("Export"));
+        BlockModel bm = new BlockModel(config.getValue("ModelFile"));
         bm.populateGrid(MaterialManager.normal, grid);
         
         // VIEWS
@@ -146,24 +146,35 @@ public class Main extends SimpleApplication {
         // CONTROLS
         // Set-up looping controllers (order matters!!)
         controllers = new ArrayList<Updatable>();
-        
+  
         // Create a Leap Motion interface and put it within the calibrator
         leap = new Controller();
         LeapCalibrator calib = new LeapCalibrator(leap);
-        
-        calib.loadFromFile(config.getSettingValue("Calib"));
-        controllers.add(new LeapHandControl(calib, handmodel));
+        calib.loadFromFile(config.getValue("CalibFile"));
+        if (config.isSet("Leap"))
+        {
+            controllers.add(new LeapHandControl(calib, handmodel));
+        }
 
         // Add keyboard control
-        controllers.add(new KeyboardControl(this));  
-        controllers.add(new KeyboardGridControl(inputManager,grid));
-        controllers.add(new KeyboardGridCamControl(inputManager,camera));
-        controllers.add(new KeyboardLeapCalibratorControl(inputManager,calib));
-        controllers.add(new KeyboardGridSaveControl(inputManager,grid,config.getSettingValue("Export")));
+        controllers.add(new KeyboardControl(this)); 
+        if (config.isSet("Debug"))
+        {
+            controllers.add(new KeyboardLeapCalibratorControl(inputManager,calib));
+            controllers.add(new KeyboardGridSaveControl(inputManager,grid,config.getValue("ModelFile")));
+        }
         
-        // Add mouse control
-        BlockDragControl bdc = new MouseBlockControl(inputManager,cam,world,grid,creationblock);
-        controllers.add(bdc);
+        BlockDragControl bdc = null;
+        if (config.isSet("MouseAndKeyboard"))
+        {
+            // Add keyboard control
+            controllers.add(new KeyboardGridControl(inputManager,grid));
+            controllers.add(new KeyboardGridCamControl(inputManager,camera));
+
+            // Add mouse control
+            bdc = new MouseBlockControl(inputManager,cam,world,grid,creationblock);
+            controllers.add(bdc);
+        }
 
         // Add model effectors
         controllers.add(new GridCamControl(cam,camera));
@@ -171,7 +182,8 @@ public class Main extends SimpleApplication {
         controllers.add(new BlockContainerDissolveControl(world));     
        
         // Add visual effectors
-        controllers.add(new BlockTargetHelperControl(bdc, rootNode, blockdims));
+        if (bdc != null)
+            controllers.add(new BlockTargetHelperControl(bdc, rootNode, blockdims));
         controllers.add(new BlockContainerColorControl(grid));
         controllers.add(new BlockContainerColorControl(world)); 
         controllers.add(new GridRingColorControl(grid,gridring));

@@ -1,6 +1,6 @@
 % Turn logging & debugging on/off
 Log 1
-Debug 0
+Debug 1
 
 % Screen settings
 Menu 0
@@ -8,9 +8,15 @@ FullScreen 0
 ScreenWidth 800
 ScreenHeight 600
 ScreenFrequency 0
-Shadows 0
 FPS 30
 FPScounter 1
 
-% Camera modes ( FirstPerson | ThirdPerson | Spectator )
-Camera ThirdPerson
+% Model loading
+ModelFile models/export.model
+
+% Leap calibration file
+CalibFile leap.calib
+
+% Controllers
+Leap 1
+MouseAndKeyboard 1
