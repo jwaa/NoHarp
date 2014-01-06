@@ -10,6 +10,7 @@ import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  *
@@ -61,6 +62,17 @@ public class BlockContainer extends Node {
     {
         b.removeFromParent();
         blocks.remove(b);
+    }
+    
+    public void removeAllBlocks()
+    {
+        Iterator<Block> iter = blocks.iterator();
+        while (iter.hasNext())
+        {
+            Block b = iter.next();
+            b.removeFromParent();
+            iter.remove();
+        }
     }
     
     public boolean containsBlock(Block b)

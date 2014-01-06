@@ -27,11 +27,13 @@ import leaptest.controller.GridCamControl;
 import leaptest.controller.GridRingColorControl;
 import leaptest.controller.KeyboardGridCamControl;
 import leaptest.controller.KeyboardGridControl;
+import leaptest.controller.KeyboardGridSaveControl;
 import leaptest.controller.KeyboardLeapCalibratorControl;
 import leaptest.controller.MouseBlockControl;
 import leaptest.controller.Updatable;
 import leaptest.model.Block;
 import leaptest.model.BlockContainer;
+import leaptest.model.BlockModel;
 import leaptest.model.Grid;
 import leaptest.model.GridCam;
 import leaptest.model.LeapCalibrator;
@@ -95,11 +97,10 @@ public class Main extends SimpleApplication {
         Grid grid = new Grid(griddim,griddim,griddim, blockdims);
         Block creationblock = new Block(MaterialManager.creationblock,new Vector3f(-grid.getRadius()-2*blockdims.x,blockdims.y/2,0f),blockdims);
         
-        // Do some random stuff with the models for testing...
+        // Populate grid with stored model
         grid.rotate(0.5f);
-        grid.addBlock(new Block(MaterialManager.normal,new Vector3f(0f,blockdims.y/2,0f),blockdims));
-        grid.addBlock(new Block(MaterialManager.normal,new Vector3f(-17f,blockdims.y/2,0f),blockdims));
-        grid.addBlock(new Block(MaterialManager.normal,new Vector3f(-17f+blockdims.x,blockdims.y/2,0f),blockdims));
+        BlockModel bm = new BlockModel(config.getSettingValue("Export"));
+        bm.populateGrid(MaterialManager.normal, grid);
         
         // VIEWS
         // Add views         
@@ -150,7 +151,7 @@ public class Main extends SimpleApplication {
         leap = new Controller();
         LeapCalibrator calib = new LeapCalibrator(leap);
         
-        calib.loadFromFile("leap.calib");
+        calib.loadFromFile(config.getSettingValue("Calib"));
         controllers.add(new LeapHandControl(calib, handmodel));
 
         // Add keyboard control
@@ -158,6 +159,7 @@ public class Main extends SimpleApplication {
         controllers.add(new KeyboardGridControl(inputManager,grid));
         controllers.add(new KeyboardGridCamControl(inputManager,camera));
         controllers.add(new KeyboardLeapCalibratorControl(inputManager,calib));
+        controllers.add(new KeyboardGridSaveControl(inputManager,grid,config.getSettingValue("Export")));
         
         // Add mouse control
         BlockDragControl bdc = new MouseBlockControl(inputManager,cam,world,grid,creationblock);
