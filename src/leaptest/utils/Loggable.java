@@ -1,4 +1,4 @@
-package leaptest;
+package leaptest.utils;
 
 /**
  * Loggable Interface for logging states of classes

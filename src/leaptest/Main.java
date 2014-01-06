@@ -35,6 +35,8 @@ import leaptest.model.BlockContainer;
 import leaptest.model.Grid;
 import leaptest.model.GridCam;
 import leaptest.model.LeapCalibrator;
+import leaptest.utils.ConfigSettings;
+import leaptest.utils.DefaultAppSettings;
 import leaptest.view.BlockCap;
 import leaptest.view.MaterialManager;
 import leaptest.view.GridLines;
