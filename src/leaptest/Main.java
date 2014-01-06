@@ -28,7 +28,7 @@ import leaptest.controller.GridRingColorControl;
 import leaptest.controller.KeyboardGridCamControl;
 import leaptest.controller.KeyboardGridControl;
 import leaptest.controller.KeyboardGridSaveControl;
-import leaptest.controller.KeyboardLeapCalibratorControl;
+import leaptest.controller.KeyboardTweakerControl;
 import leaptest.controller.MouseBlockControl;
 import leaptest.controller.Updatable;
 import leaptest.model.Block;
@@ -39,6 +39,7 @@ import leaptest.model.GridCam;
 import leaptest.model.LeapCalibrator;
 import leaptest.utils.ConfigSettings;
 import leaptest.utils.DefaultAppSettings;
+import leaptest.utils.Tweaker;
 import leaptest.view.BlockCap;
 import leaptest.view.MaterialManager;
 import leaptest.view.GridLines;
@@ -63,7 +64,7 @@ public class Main extends SimpleApplication {
      * @param args - ignored
      */
     public static void main(String[] args) {
-        ConfigSettings config = new ConfigSettings("settings.txt"); 
+        ConfigSettings config = new ConfigSettings("config.txt"); 
         Main app = new Main(config);
         DefaultAppSettings.apply(app,config);         
         app.start();
@@ -96,6 +97,7 @@ public class Main extends SimpleApplication {
         GridCam camera = new GridCam(cameradistance,cameraangle, Vector3f.ZERO);
         Grid grid = new Grid(griddim,griddim,griddim, blockdims);
         Block creationblock = new Block(MaterialManager.creationblock,new Vector3f(-grid.getRadius()-2*blockdims.x,blockdims.y/2,0f),blockdims);
+        Tweaker tweaker = new Tweaker();
         
         // Populate grid with stored model
         grid.rotate(0.5f);
@@ -150,7 +152,8 @@ public class Main extends SimpleApplication {
         // Create a Leap Motion interface and put it within the calibrator
         leap = new Controller();
         LeapCalibrator calib = new LeapCalibrator(leap);
-        calib.loadFromFile(config.getValue("CalibFile"));
+        //calib.loadFromFile(config.getValue("CalibFile"));
+
         if (config.isSet("Leap"))
         {
             controllers.add(new LeapHandControl(calib, handmodel));
@@ -160,7 +163,8 @@ public class Main extends SimpleApplication {
         controllers.add(new KeyboardControl(this)); 
         if (config.isSet("Debug"))
         {
-            controllers.add(new KeyboardLeapCalibratorControl(inputManager,calib));
+            tweaker.registerTweakable(calib);
+            controllers.add(new KeyboardTweakerControl(inputManager,tweaker,config.getValue("SetFolder"),config.getValue("SetExtension")));
             controllers.add(new KeyboardGridSaveControl(inputManager,grid,config.getValue("ModelFile")));
         }
         

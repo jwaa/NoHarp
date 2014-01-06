@@ -11,6 +11,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Scanner;
+import leaptest.utils.TweakSet;
+import leaptest.utils.TweakVariable;
+import leaptest.utils.Tweakable;
 
 /**
  * LeapCalibrator data class. Holds the data to convert leap coordinates to 
@@ -18,7 +21,7 @@ import java.util.Scanner;
  * can also  save/load the settings to a file.
  * @author Sil van de Leemput
  */
-public class LeapCalibrator {
+public class LeapCalibrator implements Tweakable {
         
     private Vector3f scale, offset;
 
@@ -66,53 +69,32 @@ public class LeapCalibrator {
         Vector3f world = new Vector3f(leap.getX(),leap.getY(),leap.getZ());
         return (world.mult(scale)).add(offset);
     }
-    
-    public boolean loadFromFile(String filename)
+
+    public TweakSet initTweakables() 
     {
-        File f = new File(filename);
-        if (!f.exists())
-            return false;
-        try
-        {
-            Scanner scan = new Scanner(f);
-            float []data = new float[6]; 
-            int i=0;
-            while (scan.hasNextLine())
-            {
-                String []s2 = scan.nextLine().replace("(", "").replace(")","").split(",");
-                for (int j=0; j<s2.length; j++)
-                {
-                    data[i] = (float) Float.parseFloat(s2[j]);
-                    i++;
-                }
-            }
-            scan.close();
-            scale = new Vector3f(data[0],data[1],data[2]);
-            offset = new Vector3f(data[3],data[4],data[5]);
-        } catch (Exception e) 
-        {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
+        TweakSet set = new TweakSet("LeapCalibrator",this);
+        set.add(new TweakVariable <Vector3f>("scale",scale));
+        set.add(new TweakVariable <Vector3f>("offset",offset));
+        return set;
     }
-    
-    public void writeToFile(String filename)
+
+    public void setVariable(TweakVariable variable) 
     {
-        File f = new File(filename);
-        try
+        boolean isScale = variable.getName().equals("scale");
+        boolean isVector3f = isScale || variable.getName().equals("offset");
+        if (isVector3f)
         {
-            FileWriter fr = new FileWriter(f);
-            BufferedWriter br = new BufferedWriter(fr);
-            br.write(scale.toString());
-            br.newLine();
-            br.write(offset.toString());
-            br.close();
-            fr.close();
-        } catch (Exception e) 
-        {
-            e.printStackTrace();
+            Vector3f vec = (Vector3f) variable.getValue();
+            if (isScale)
+                scale = vec;
+            else
+                offset = vec;
         }
     }
     
+    @Override
+    public String toString()
+    {
+        return scale + "\n" + offset;
+    }
 }
