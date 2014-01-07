@@ -1,0 +1,23 @@
+% Turn logging & debugging on/off
+Log 1
+Debug 1
+
+% Screen settings
+Menu 0
+FullScreen 0
+ScreenWidth 800
+ScreenHeight 600
+ScreenFrequency 0
+FPS 30
+FPScounter 1
+
+% Model loading
+ModelFile models/export.model
+
+% Specific class settings / calibrations 
+SetFolder settings/
+SetExtension .set
+
+% Controllers
+Leap 1
+MouseAndKeyboard 1

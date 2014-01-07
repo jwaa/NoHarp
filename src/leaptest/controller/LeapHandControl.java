@@ -5,11 +5,11 @@
 package leaptest.controller;
 
 import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
 import com.leapmotion.leap.Controller;
 import com.leapmotion.leap.Finger;
 import com.leapmotion.leap.Frame;
 import com.leapmotion.leap.Hand;
+import leaptest.model.LeapCalibrator;
 import leaptest.view.HandView;
 
 /**
@@ -21,17 +21,14 @@ public class LeapHandControl extends LeapControl {
     private HandView hand;
     private Frame frame;
     
-    private Vector3f scalar;
-    
     private boolean showHands = true, 
                   showFingers = true, 
                   showSpheres = false;
     
-    public LeapHandControl(Controller control, HandView hand, Vector3f scalar)
+    public LeapHandControl(LeapCalibrator calib, HandView hand)
     {
-        super(control);
+        super(calib);
         this.hand = hand;
-        this.scalar = scalar;
     }
 
     public void update(float tpf)
@@ -46,7 +43,7 @@ public class LeapHandControl extends LeapControl {
                 {
                     if (i<hand.fingers.length)
                     {
-                        hand.fingers[i].setLocalTranslation(f.tipPosition().getX()*scalar.x, f.tipPosition().getY()*scalar.y, f.tipPosition().getZ()*scalar.z);
+                        hand.fingers[i].setLocalTranslation(calib.leap2world(f.tipPosition()));
                         hand.attachChild(hand.fingers[i]);
                     }
                     i++;
@@ -62,26 +59,18 @@ public class LeapHandControl extends LeapControl {
                         Quaternion q = new Quaternion();
                         q.fromAngles(h.direction().pitch(), -h.direction().yaw(), h.palmNormal().roll());
                         hand.hands[i].setLocalRotation(q);
-                        hand.hands[i].setLocalTranslation(h.palmPosition().getX()*scalar.x, h.palmPosition().getY()*scalar.y, h.palmPosition().getZ()*scalar.z);
+                        hand.hands[i].setLocalTranslation(calib.leap2world(h.palmPosition()));
                         hand.attachChild(hand.hands[i]);
                     }
                     if (showSpheres)
                     {
-                        hand.spheres[i].setLocalTranslation(h.sphereCenter().getX()*scalar.x, h.sphereCenter().getY()*scalar.y, h.sphereCenter().getZ()*scalar.z);
-                        hand.spheres[i].setLocalScale(h.sphereRadius()*scalar.x);
+                        hand.spheres[i].setLocalTranslation(calib.leap2world(h.sphereCenter()));
+                        hand.spheres[i].setLocalScale(h.sphereRadius()*calib.getScale().x);
                         hand.attachChild(hand.spheres[i]);
                     }
                 }
                 i++;
             }
-
-//            if (frame.pointables().count()>0)
-//            {
-//                x = frame.pointables().frontmost().tipPosition().getX(); 
-//                y = frame.pointables().frontmost().tipPosition().getY();
-//                z = frame.pointables().frontmost().tipPosition().getZ();
-//            }
-//            hand.setLocalTranslation(x, y/50, z/20);
         }
     }
 
@@ -93,6 +82,6 @@ public class LeapHandControl extends LeapControl {
     
     protected void onFrame(Controller leap)
     {
-        frame = controller.frame();
+        frame = leap.frame();
     }
 }
