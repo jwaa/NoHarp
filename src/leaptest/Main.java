@@ -13,6 +13,7 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.ViewPort;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
@@ -59,6 +60,8 @@ public class Main extends SimpleApplication {
 
     private ArrayList<Updatable> controllers;
     
+    public static enum ViewPortMode {Single, WithImage, ThreeSplit};
+    
     /**
      * Loads application config settings from file
      * applies settings and fires up application
@@ -95,25 +98,45 @@ public class Main extends SimpleApplication {
             
         // Add models
         BlockContainer world = new BlockContainer();
-        GridCam camera = new GridCam(cameradistance,cameraangle, Vector3f.ZERO);
+        GridCam camera = new GridCam(cameradistance, cameraangle, Vector3f.ZERO);
         Grid grid = new Grid(griddim,griddim,griddim, blockdims);
-        Block creationblock = new Block(MaterialManager.creationblock,new Vector3f(-grid.getRadius()-2*blockdims.x,blockdims.y/2,0f),blockdims);
+        Block creationblock = new Block(MaterialManager.creationblock, new Vector3f(-grid.getRadius()-2*blockdims.x,blockdims.y/2,0f), blockdims);
         Tweaker tweaker = new Tweaker();
         
         // Populate grid with stored model
-        grid.rotate(0.5f);
+        //grid.rotate(0.5f);
         BlockModel bm = new BlockModel(config.getValue("ModelFile"));
         bm.populateGrid(MaterialManager.normal, grid);
         
         // VIEWS
-        // Add views        
-        if (config.getSetting("ShowModel"))
+        // Set viewports
+        ColorRGBA backgroundColor = ColorRGBA.DarkGray;
+        viewPort.setBackgroundColor(backgroundColor);
+        switch (ViewPortMode.valueOf(config.getValue("ViewPortMode")))
         {
-            //viewPort.
-            cam.setViewPort(0f, 0.7f, 0f, 1f);
-            Camera cam2 = cam.clone();
+            case ThreeSplit:
+                float width = 0.33f;
+                cam.setViewPort(0f, width, 0f, 0.33f);
+                Camera cam2 = cam.clone(), cam3 = cam.clone();
+                cam2.setViewPort(0f,width, 0.33f, 0.66f);
+                cam2.setLocation(new Vector3f(blockdims.z*griddim*2,8f,0));
+                cam2.lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
+                
+                ViewPort view2 = renderManager.createMainView("View2", cam2);
+                view2.setClearFlags(true, true, true);
+                view2.attachScene(rootNode);
+                view2.setBackgroundColor(backgroundColor);
+                
+                cam3.setViewPort(0f,width, 0.66f, 1f);
+                cam3.setLocation(new Vector3f(0,blockdims.z*griddim*2,0));
+                cam3.lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
+                
+                ViewPort view3 = renderManager.createMainView("View3", cam3);
+                view3.setClearFlags(true, true, true);
+                view3.attachScene(rootNode);
+                view3.setBackgroundColor(backgroundColor);               
         }
-        viewPort.setBackgroundColor(ColorRGBA.DarkGray);
+        // Build scene from view models
         GridRing gridring = new GridRing(grid.getRadius());
         HandView handmodel = new HandView(assetManager);
         Floor floor = new Floor(300);
