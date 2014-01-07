@@ -46,6 +46,7 @@ import leaptest.view.BlockCap;
 import leaptest.view.MaterialManager;
 import leaptest.view.GridLines;
 import leaptest.view.GridRing;
+import leaptest.view.GuiModelPicture;
 
 /**
  * Main class executes a simple JMonkeyEngine Application
@@ -134,7 +135,12 @@ public class Main extends SimpleApplication {
                 ViewPort view3 = renderManager.createMainView("View3", cam3);
                 view3.setClearFlags(true, true, true);
                 view3.attachScene(rootNode);
-                view3.setBackgroundColor(backgroundColor);               
+                view3.setBackgroundColor(backgroundColor);   
+                break;
+            case WithImage:
+                GuiModelPicture modelpicture = new GuiModelPicture(assetManager,settings,1);
+                guiNode.attachChild(modelpicture);
+                break;
         }
         // Build scene from view models
         GridRing gridring = new GridRing(grid.getRadius());
