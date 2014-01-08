@@ -81,7 +81,7 @@ public class BlockModel {
             elements = 0;
             Scanner scan = new Scanner(f);
             String []s = scan.nextLine().split(" ");
-            int height = Integer.parseInt(s[0]), width = Integer.parseInt(s[1]);
+            int height = Integer.parseInt(s[1]), width = Integer.parseInt(s[0]);
             this.model = new int[height][width];
             for (int i=0; i<height; i++)
             {
@@ -211,7 +211,7 @@ public class BlockModel {
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append(model.length).append(" ").append(model[0].length).append("\n");
+        sb.append(model[0].length).append(" ").append(model.length).append("\n");
         for (int i = 0; i < model.length; i++) 
         {
             for (int j = 0; j < model[0].length; j++) 
