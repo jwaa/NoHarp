@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package leaptest;
+package leaptest.utils;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.system.AppSettings;
@@ -17,13 +17,13 @@ public class DefaultAppSettings {
     public static void apply(SimpleApplication app, ConfigSettings config)
     {
         // Grab settings from config
-        int fps = Integer.valueOf(config.getSettingValue("FPS")).intValue();
-        boolean fullscreen = config.getSetting("FullScreen");
-        boolean menu = config.getSetting("Menu");
-        boolean fpscounter = config.getSetting("FPScounter");
-        int width = Integer.valueOf(config.getSettingValue("ScreenWidth")).intValue();
-        int height = Integer.valueOf(config.getSettingValue("ScreenHeight")).intValue();
-        int freq = Integer.valueOf(config.getSettingValue("ScreenFrequency")).intValue();                
+        int fps = Integer.valueOf(config.getValue("FPS")).intValue();
+        boolean fullscreen = config.isSet("FullScreen");
+        boolean menu = config.isSet("Menu");
+        boolean fpscounter = config.isSet("FPScounter");
+        int width = Integer.valueOf(config.getValue("ScreenWidth")).intValue();
+        int height = Integer.valueOf(config.getValue("ScreenHeight")).intValue();
+        int freq = Integer.valueOf(config.getValue("ScreenFrequency")).intValue();                
 
         AppSettings settings = new AppSettings(true);
         // Relevant settings

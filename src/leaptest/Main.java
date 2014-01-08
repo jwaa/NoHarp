@@ -29,12 +29,19 @@ import leaptest.controller.GridCamControl;
 import leaptest.controller.GridRingColorControl;
 import leaptest.controller.KeyboardGridCamControl;
 import leaptest.controller.KeyboardGridControl;
+import leaptest.controller.KeyboardGridSaveControl;
+import leaptest.controller.KeyboardTweakerControl;
 import leaptest.controller.MouseBlockControl;
 import leaptest.controller.Updatable;
 import leaptest.model.Block;
 import leaptest.model.BlockContainer;
+import leaptest.model.BlockModel;
 import leaptest.model.Grid;
 import leaptest.model.GridCam;
+import leaptest.model.LeapCalibrator;
+import leaptest.utils.ConfigSettings;
+import leaptest.utils.DefaultAppSettings;
+import leaptest.utils.Tweaker;
 import leaptest.view.BlockCap;
 import leaptest.view.MaterialManager;
 import leaptest.view.GridLines;
@@ -59,7 +66,7 @@ public class Main extends SimpleApplication {
      * @param args - ignored
      */
     public static void main(String[] args) {
-        ConfigSettings config = new ConfigSettings("settings.txt"); 
+        ConfigSettings config = new ConfigSettings("config.txt"); 
         Main app = new Main(config);
         DefaultAppSettings.apply(app,config);         
         app.start();
@@ -86,30 +93,26 @@ public class Main extends SimpleApplication {
         int griddim = 7;
         float cameradistance = 100f, cameraangle = FastMath.PI/4f;
         Vector3f blockdims = Vector3f.UNIT_XYZ.mult(6);
-        Vector3f LEAPSCALE = new Vector3f(0.27f,0.1f,0.1f);
-
-        
         // Add models
         BlockContainer world = new BlockContainer();
         GridCam camera = new GridCam(cameradistance,cameraangle, Vector3f.ZERO);
         Grid grid = new Grid(griddim,griddim,griddim, blockdims);
-        Block creationblock = new Block(MaterialManager.creationblock,new Vector3f(-grid.getRadius()-blockdims.x,blockdims.y/2,0f),blockdims),
-                selected = null;
+        Block creationblock = new Block(MaterialManager.creationblock,new Vector3f(-grid.getRadius()-2*blockdims.x,blockdims.y/2,0f),blockdims);
+        Tweaker tweaker = new Tweaker();
         
-        // Do some random stuff with the models for testing...
+        // Populate grid with stored model
         grid.rotate(0.5f);
-        grid.addBlock(new Block(MaterialManager.normal,new Vector3f(0f,blockdims.y/2,0f),blockdims));
-        grid.addBlock(new Block(MaterialManager.normal,new Vector3f(-17f,blockdims.y/2,0f),blockdims));
-        grid.addBlock(new Block(MaterialManager.normal,new Vector3f(-17f+blockdims.x,blockdims.y/2,0f),blockdims));
+        BlockModel bm = new BlockModel(config.getValue("ModelFile"));
+        bm.populateGrid(MaterialManager.normal, grid);
         
         // VIEWS
         // Add views        
-        if (config.getSetting("ShowModel"))
-        {
+       // if (config.getSetting("ShowModel"))
+       // {
             //viewPort.
-            cam.setViewPort(0f, 0.7f, 0f, 1f);
-            Camera cam2 = cam.clone();
-        }
+      //      cam.setViewPort(0f, 0.7f, 0f, 1f);
+     //       Camera cam2 = cam.clone();
+     //   }
         viewPort.setBackgroundColor(ColorRGBA.DarkGray);
         GridRing gridring = new GridRing(grid.getRadius());
         HandView handmodel = new HandView(assetManager);
@@ -152,21 +155,37 @@ public class Main extends SimpleApplication {
         // CONTROLS
         // Set-up looping controllers (order matters!!)
         controllers = new ArrayList<Updatable>();
-        
-        // Create a Leap Motion controller
+  
+        // Create a Leap Motion interface and put it within the calibrator
         leap = new Controller();
-        controllers.add(new LeapHandControl(leap, handmodel, LEAPSCALE));
-        controllers.add(new GestureGrabControl(leap, world, grid, selected, creationblock, LEAPSCALE));
-        //controllers.add(new GestureCreateControl(leap,world,blocksize));
+        LeapCalibrator calib = new LeapCalibrator(leap);
+        //calib.loadFromFile(config.getValue("CalibFile"));
+        if (config.isSet("Leap"))
+        {
+            controllers.add(new LeapHandControl(calib, handmodel));
+            controllers.add(new GestureGrabControl(calib, world, grid, null, creationblock));
+        }
 
         // Add keyboard control
-        controllers.add(new KeyboardControl(this));  
-        controllers.add(new KeyboardGridControl(inputManager,grid));
-        controllers.add(new KeyboardGridCamControl(inputManager,camera));
+        controllers.add(new KeyboardControl(this)); 
+        if (config.isSet("Debug"))
+        {
+            tweaker.registerTweakable(calib);
+            controllers.add(new KeyboardTweakerControl(inputManager,tweaker,config.getValue("SetFolder"),config.getValue("SetExtension")));
+            controllers.add(new KeyboardGridSaveControl(inputManager,grid,config.getValue("ModelFile")));
+        }
         
-        // Add mouse control
-        BlockDragControl bdc = new MouseBlockControl(inputManager,cam,world,grid,creationblock);
-        controllers.add(bdc);
+        BlockDragControl bdc = null;
+        if (config.isSet("MouseAndKeyboard"))
+        {
+            // Add keyboard control
+            controllers.add(new KeyboardGridControl(inputManager,grid));
+            controllers.add(new KeyboardGridCamControl(inputManager,camera));
+
+            // Add mouse control
+            bdc = new MouseBlockControl(inputManager,cam,world,grid,creationblock);
+            controllers.add(bdc);
+        }
 
         // Add model effectors
         controllers.add(new GridCamControl(cam,camera));
@@ -174,7 +193,8 @@ public class Main extends SimpleApplication {
         controllers.add(new BlockContainerDissolveControl(world));     
        
         // Add visual effectors
-        controllers.add(new BlockTargetHelperControl(bdc, rootNode, blockdims));
+        if (bdc != null)
+            controllers.add(new BlockTargetHelperControl(bdc, rootNode, blockdims));
         controllers.add(new BlockContainerColorControl(grid));
         controllers.add(new BlockContainerColorControl(world)); 
         controllers.add(new GridRingColorControl(grid,gridring));

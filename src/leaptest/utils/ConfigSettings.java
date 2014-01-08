@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package leaptest;
+package leaptest.utils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -50,7 +50,7 @@ public class ConfigSettings {
         }
     }
     
-    public boolean getSetting(String key)
+    public boolean isSet(String key)
     {
         Boolean ret = false;
         for (Entry<String,String> entry : settings)
@@ -65,7 +65,7 @@ public class ConfigSettings {
         return ret;
     }
 
-    public String getSettingValue(String key) {
+    public String getValue(String key) {
         String ret = null;
         for (Entry<String,String> entry : settings)
             if (entry.getKey().equals(key))

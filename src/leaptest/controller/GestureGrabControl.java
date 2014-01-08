@@ -9,6 +9,7 @@ import com.leapmotion.leap.*;
 import leaptest.model.Block;
 import leaptest.model.BlockContainer;
 import leaptest.model.Grid;
+import leaptest.model.LeapCalibrator;
 
 /**
  *
@@ -45,9 +46,9 @@ public class GestureGrabControl extends LeapControl
     private Frame previousFrame;
     private BlockDragControl bdc;
 
-    public GestureGrabControl(Controller leap, BlockContainer world, Grid grid, Block selected, Block creationblock, Vector3f LEAPSCALE)
+    public GestureGrabControl(LeapCalibrator calib, BlockContainer world, Grid grid, Block selected, Block creationblock)
     {//world2Grid uit Grid
-        super(leap);
+        super(calib);
         this.bdc = new BlockDragControl(world, grid, creationblock)
         {
             @Override
@@ -63,7 +64,6 @@ public class GestureGrabControl extends LeapControl
         bdc.creationblock = creationblock;
         bdc.world = world;
         bdc.grid = grid;
-        this.LEAPSCALE = LEAPSCALE;
     }
 
     @Override
@@ -166,7 +166,7 @@ public class GestureGrabControl extends LeapControl
     @Override
     protected void onFrame(Controller leap)
     {
-        frame = controller.frame();
+        frame = calib.getLeapController().frame();
     }
 
     /**
