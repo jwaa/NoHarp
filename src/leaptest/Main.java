@@ -163,8 +163,17 @@ public class Main extends SimpleApplication {
         if (config.isSet("Leap"))
         {
             controllers.add(new LeapHandControl(calib, handmodel));
-            controllers.add(new GestureGrabControl(calib, world, grid, null, creationblock));
-            controllers.add(new GestureRotateControl(calib, grid, camera));
+            GestureGrabControl grab = new GestureGrabControl(calib, world, grid, null, creationblock);
+            controllers.add(grab);
+            GestureRotateControl rotate = new GestureRotateControl(calib, grid, camera);
+            controllers.add(rotate);
+            
+            if (config.isSet("Debug"))
+            {
+                tweaker.registerTweakable(calib);
+                //tweaker.registerTweakable(grab);
+                tweaker.registerTweakable(rotate);
+            }
         }
 
         // Add keyboard control
