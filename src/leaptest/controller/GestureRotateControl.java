@@ -77,7 +77,7 @@ public class GestureRotateControl extends LeapControl
     private double MIN_VELOCITY_ROTATE = 0.001;
     private double MAX_VELOCITY_CAMERA = 0.025;
     private double MIN_VELOCITY_CAMERA = 0.0001;
-    private boolean IS_RIGHT_HANDED = false;
+    private boolean IS_RIGHT_HANDED = true;
     private boolean INVERT_Y_AXIS_FOR_CAMERA = false;
     
     
