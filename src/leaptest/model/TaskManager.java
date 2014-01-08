@@ -25,11 +25,31 @@ public class TaskManager {
         for(int i=0;i<listOfFiles.length; i++)
         {
             bm.add(new BlockModel(path + listOfFiles[i].getName()));
-            System.out.println(path + listOfFiles[i].getName());
         }
         
-        
+       
     
     }
     
+    // private function lijstje sorteren Collection.sort
+    // export eruit halen in map
+    
+    
+    
+    /**
+     * volgende task starten
+     */
+    public void nextTask()
+    {
+        
+    }
+    
+    /**
+     * teruggeven welke task die nu aan t doen is
+     * @return 
+     */
+    public int getTask() 
+    {
+        return 0; //TODO fix
+    }
 }
