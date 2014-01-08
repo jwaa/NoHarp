@@ -36,7 +36,6 @@ public class BlockModel {
 
     public void populateGrid(Material blockmat, Grid g)
     {
-        System.out.println(model);
         Vector3f offset = new Vector3f(
               -FastMath.floor((float) (model.length)/2f),
               0.5f,
@@ -79,12 +78,12 @@ public class BlockModel {
         {
             elements = 0;
             Scanner scan = new Scanner(f);
-            String []s = scan.nextLine().split(" ");
+            String []s = scan.nextLine().replace("\t"," ").split(" ");
             int height = Integer.parseInt(s[1]), width = Integer.parseInt(s[0]);
             this.model = new int[height][width];
             for (int i=0; i<height; i++)
             {
-                s = scan.nextLine().split(" ");
+                s = scan.nextLine().replace("\t"," ").split(" ");
                 for (int j=0; j<width; j++)
                 {
                     model[i][j] = Integer.parseInt(s[j]);
