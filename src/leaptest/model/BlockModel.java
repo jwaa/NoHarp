@@ -31,8 +31,7 @@ public class BlockModel {
     
     public BlockModel(String filename)
     {
-        load(filename);      
-        System.out.println(filename);
+        load(filename);
     }
 
     public void populateGrid(Material blockmat, Grid g)
