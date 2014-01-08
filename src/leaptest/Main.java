@@ -103,7 +103,7 @@ public class Main extends SimpleApplication {
         
         // Populate grid with stored model
         grid.rotate(0.5f);
-        BlockModel bm = new BlockModel(config.getValue("ModelFile"));
+        BlockModel bm = new BlockModel(config.getValue("ModelFolder") + config.getValue("ModelFile"));
         bm.populateGrid(MaterialManager.normal, grid);
         
         // VIEWS

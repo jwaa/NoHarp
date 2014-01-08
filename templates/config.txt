@@ -19,7 +19,8 @@ BlockSize 7.5
 Righthanded 1
 
 % Model loading
-ModelFile models/export.model
+ModelFolder models/
+ModelFile export.model
 
 % Specific class settings / calibrations 
 SetFolder settings/
