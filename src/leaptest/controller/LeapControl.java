@@ -2,15 +2,18 @@ package leaptest.controller;
 
 import com.leapmotion.leap.Controller;
 import com.leapmotion.leap.Listener;
+import leaptest.model.LeapCalibrator;
 
 public abstract class LeapControl implements Updatable {
 
-    protected Controller controller;
+    private Controller controller;
     private LeapListener leap;
+    protected LeapCalibrator calib;
     
-    public LeapControl(Controller control)
+    public LeapControl(LeapCalibrator calib)
     {
-        this.controller = control;
+        this.calib = calib;
+        controller = calib.getLeapController();
         leap = new LeapListener(this);
         controller.addListener(leap);   
     }
