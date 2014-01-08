@@ -105,7 +105,7 @@ public class GestureGrabControl extends LeapControl
             }
             if (this.gettingSmaller > GETTING_SMALLER_THRESHOLD)
             {
-                Vector3f coordinates = getTransformedCoordinates(hand);
+                Vector3f coordinates = calib.leap2world(hand.palmPosition());
                 bdc.dragging = findBlockWithinMarges(coordinates);
                 bdc.liftBlock(bdc.dragging);
                 this.gettingSmaller = 0;
@@ -122,7 +122,7 @@ public class GestureGrabControl extends LeapControl
     {
         HandList hands = frame.hands();
         Hand hand = getGrabHand(hands);
-        Vector3f coordinates = getTransformedCoordinates(hand);
+        Vector3f coordinates = calib.leap2world(hand.palmPosition());
         bdc.moveBlock(coordinates);
     }
 
@@ -182,21 +182,6 @@ public class GestureGrabControl extends LeapControl
         if (isRightHanded)
             return hands.rightmost();
         return hands.leftmost();
-    }
-
-    /**
-     * Transforms the coordinates of the handpalm so that they fit into the
-     * block world.
-     *
-     * @param hand, the hand of which the coordinates need to be transformed.
-     * @return the transformed coordinates.
-     */
-    private Vector3f getTransformedCoordinates(Hand hand)
-    {
-        Vector3f coordinates = new Vector3f(hand.palmPosition().getX(), hand.palmPosition().getY(), hand.palmPosition().getZ());
-        coordinates = coordinates.mult(LEAPSCALE);
-        coordinates.y = coordinates.y + Y_TRANSELATION;
-        return coordinates;
     }
 
     private Block findBlockWithinMarges(Vector3f coordinates)
