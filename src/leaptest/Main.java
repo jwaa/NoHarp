@@ -90,9 +90,10 @@ public class Main extends SimpleApplication {
         
         // MODELS
         // Model settings...
-        int griddim = 7;
-        float cameradistance = 100f, cameraangle = FastMath.PI/4f;
-        Vector3f blockdims = Vector3f.UNIT_XYZ.mult(6);
+        int griddim = Integer.parseInt(config.getValue("GridSize"));
+        float cameradistance = Float.parseFloat(config.getValue("CamDist")), 
+                 cameraangle = Float.parseFloat(config.getValue("CamAngle"));//FastMath.PI/4f;
+        Vector3f blockdims = Vector3f.UNIT_XYZ.mult(Float.parseFloat(config.getValue("BlockSize")));
         // Add models
         BlockContainer world = new BlockContainer();
         GridCam camera = new GridCam(cameradistance,cameraangle, Vector3f.ZERO);
@@ -107,12 +108,6 @@ public class Main extends SimpleApplication {
         
         // VIEWS
         // Add views        
-       // if (config.getSetting("ShowModel"))
-       // {
-            //viewPort.
-      //      cam.setViewPort(0f, 0.7f, 0f, 1f);
-     //       Camera cam2 = cam.clone();
-     //   }
         viewPort.setBackgroundColor(ColorRGBA.DarkGray);
         GridRing gridring = new GridRing(grid.getRadius());
         HandView handmodel = new HandView(assetManager);
