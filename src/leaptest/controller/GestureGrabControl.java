@@ -10,37 +10,32 @@ import leaptest.model.Block;
 import leaptest.model.BlockContainer;
 import leaptest.model.Grid;
 import leaptest.model.LeapCalibrator;
+import leaptest.utils.TweakSet;
+import leaptest.utils.TweakVariable;
+import leaptest.utils.Tweakable;
 
 /**
  *
  * @author Annet
  */
-public class GestureGrabControl extends LeapControl
+public class GestureGrabControl extends LeapControl implements Tweakable
 {
 
     //Thresholds
-    private final static int GETTING_SMALLER_THRESHOLD = 5;
-    private final static int GETTING_BIGGER_THRESHOLD = 2;
-    private final static int STAYING_THE_SAME_THRESHOLD = 2;
-    private final static double GRABBING_THRESHOLD = 0.98;
-    private final static double RELEASE_THRESHOLD = 1.01;
-    
-    //Transelations of the coordinates
-    private final static float Y_TRANSELATION = -4.5f;
-    private Vector3f LEAPSCALE;
-    
+    private int gettingSmallerThreshold;
+    private int gettingBiggerThreshold;
+    private int stayingTheSameThreshold;
+    private double grabbingThreshold;
+    private double releaseThreshold;
     //Marges in which to look for a block
-    private final static float Y_MARGE = 1.0f;
-    private final static float X_MARGE = 1.0f;
-    private final static float Z_MARGE = 1.0f;
-    private final static float MARGE_STEPS = 0.5f;
-    
+    private float yMarge;
+    private float xMarge;
+    private float zMarge;
+    private float margeSteps;
     //Attributes to detect grabbing and releasing
     private int gettingSmaller, gettingBigger, stayingTheSame;
-    
     //Attribute to set right or left handiness
     private boolean isRightHanded = true;
-    
     //Other attributes
     private Frame frame;
     private Frame previousFrame;
@@ -64,6 +59,15 @@ public class GestureGrabControl extends LeapControl
         bdc.creationblock = creationblock;
         bdc.world = world;
         bdc.grid = grid;
+        gettingSmallerThreshold = 5;
+        gettingBiggerThreshold = 2;
+        stayingTheSameThreshold = 2;
+        grabbingThreshold = 0.98;
+        releaseThreshold = 1.01;
+        yMarge = 1.0f;
+        xMarge = 1.0f;
+        zMarge = 1.0f;
+        margeSteps = 0.5f;
     }
 
     @Override
@@ -91,19 +95,19 @@ public class GestureGrabControl extends LeapControl
         {
             if (hand == null)
                 return;
-            if (hand.scaleFactor(previousFrame) < GRABBING_THRESHOLD)
+            if (hand.scaleFactor(previousFrame) < grabbingThreshold)
             {
                 this.gettingSmaller++;
                 this.stayingTheSame = 0;
             }
             if (hand.scaleFactor(previousFrame) >= 1.0)
                 this.stayingTheSame++;
-            if (this.stayingTheSame > STAYING_THE_SAME_THRESHOLD)
+            if (this.stayingTheSame > stayingTheSameThreshold)
             {
                 this.gettingSmaller = 0;
                 this.stayingTheSame = 0;
             }
-            if (this.gettingSmaller > GETTING_SMALLER_THRESHOLD)
+            if (this.gettingSmaller > gettingSmallerThreshold)
             {
                 Vector3f coordinates = calib.leap2world(hand.palmPosition());
                 bdc.dragging = findBlockWithinMarges(coordinates);
@@ -139,19 +143,19 @@ public class GestureGrabControl extends LeapControl
         {
             if (hand == null)
                 return false;
-            if (hand.scaleFactor(previousFrame) > RELEASE_THRESHOLD)
+            if (hand.scaleFactor(previousFrame) > releaseThreshold)
             {
                 this.gettingBigger++;
                 this.stayingTheSame = 0;
             }
             if (hand.scaleFactor(previousFrame) <= 1.0)
                 this.stayingTheSame++;
-            if (this.stayingTheSame > STAYING_THE_SAME_THRESHOLD)
+            if (this.stayingTheSame > stayingTheSameThreshold)
             {
                 this.gettingBigger = 0;
                 this.stayingTheSame = 0;
             }
-            if (this.gettingBigger > GETTING_BIGGER_THRESHOLD)
+            if (this.gettingBigger > gettingBiggerThreshold)
             {
                 System.out.println("Release");
                 bdc.releaseBlock();
@@ -188,16 +192,16 @@ public class GestureGrabControl extends LeapControl
     {
         Block found = null;
         //Begins at zero and start looking at more positive numbers.
-        for (int x = 0; x <= (int) (X_MARGE / MARGE_STEPS); x++)
+        for (int x = 0; x <= (int) (xMarge / margeSteps); x++)
         {
-            for (int z = 0; z <= (int) (Z_MARGE / MARGE_STEPS); z++)
+            for (int z = 0; z <= (int) (zMarge / margeSteps); z++)
             {
-                for (int y = 0; y <= (int) (Y_MARGE / MARGE_STEPS); y++)
+                for (int y = 0; y <= (int) (yMarge / margeSteps); y++)
                 {
                     Vector3f margeCoordinates = coordinates.clone();
-                    margeCoordinates.y += (y * MARGE_STEPS);
-                    margeCoordinates.z += (z * MARGE_STEPS);
-                    margeCoordinates.x += (x * MARGE_STEPS);
+                    margeCoordinates.y += (y * margeSteps);
+                    margeCoordinates.z += (z * margeSteps);
+                    margeCoordinates.x += (x * margeSteps);
                     found = bdc.getBlockAt(margeCoordinates);
                     if (found != null)
                         break;
@@ -211,16 +215,16 @@ public class GestureGrabControl extends LeapControl
 
         //Looks at the more negative numbers.
         if (found == null)
-            for (int x = 1; x <= (int) (X_MARGE / MARGE_STEPS); x++)
+            for (int x = 1; x <= (int) (xMarge / margeSteps); x++)
             {
-                for (int z = 1; z <= (int) (Z_MARGE / MARGE_STEPS); z++)
+                for (int z = 1; z <= (int) (zMarge / margeSteps); z++)
                 {
-                    for (int y = 1; y <= (int) (Y_MARGE / MARGE_STEPS); y++)
+                    for (int y = 1; y <= (int) (yMarge / margeSteps); y++)
                     {
                         Vector3f margeCoordinates = coordinates.clone();
-                        margeCoordinates.y -= (y * MARGE_STEPS);
-                        margeCoordinates.z -= (z * MARGE_STEPS);
-                        margeCoordinates.x -= (x * MARGE_STEPS);
+                        margeCoordinates.y -= (y * margeSteps);
+                        margeCoordinates.z -= (z * margeSteps);
+                        margeCoordinates.x -= (x * margeSteps);
                         found = bdc.getBlockAt(margeCoordinates);
                         if (found != null)
                             break;
@@ -232,5 +236,72 @@ public class GestureGrabControl extends LeapControl
                     break;
             }
         return found;
+    }
+
+    public TweakSet initTweakables()
+    {
+        TweakSet set = new TweakSet("GrabControl", this);
+        set.add(new TweakVariable<Integer>("gettingSmallerThreshold", gettingSmallerThreshold));
+        set.add(new TweakVariable<Integer>("gettingBiggerThreshold", gettingBiggerThreshold));
+        set.add(new TweakVariable<Integer>("stayingTheSameThreshold", stayingTheSameThreshold));
+        set.add(new TweakVariable<Double>("grabbingThreshold", grabbingThreshold));
+        set.add(new TweakVariable<Double>("releaseThreshold", releaseThreshold));
+
+        set.add(new TweakVariable<Float>("yMarge", yMarge));
+        set.add(new TweakVariable<Float>("xMarge", xMarge));
+        set.add(new TweakVariable<Float>("zMarge", zMarge));
+        set.add(new TweakVariable<Float>("margeSteps", margeSteps));
+        return set;
+    }
+
+    private enum Variable
+    {
+
+        gettingSmallerThreshold, gettingBiggerThreshold, stayingTheSameThreshold,
+        grabbingThreshold, releaseThreshold, yMarge, xMarge, zMarge, margeSteps
+    };
+
+    public void setVariable(TweakVariable var)
+    {
+        Variable variable = Variable.valueOf(var.getName());
+        switch (variable)
+        {
+            case gettingSmallerThreshold:
+                if (var.getValue() instanceof Integer)
+                    gettingSmallerThreshold = (Integer) var.getValue();
+                break;
+            case gettingBiggerThreshold:
+                if (var.getValue() instanceof Integer)
+                    gettingBiggerThreshold = (Integer) var.getValue();
+                break;
+            case stayingTheSameThreshold:
+                if (var.getValue() instanceof Integer)
+                    stayingTheSameThreshold = (Integer) var.getValue();
+                break;
+            case grabbingThreshold:
+                if (var.getValue() instanceof Double)
+                    grabbingThreshold = (Double) var.getValue();
+                break;
+            case releaseThreshold:
+                if (var.getValue() instanceof Double)
+                    releaseThreshold = (Double) var.getValue();
+                break;
+            case yMarge:
+                if (var.getValue() instanceof Float)
+                    yMarge = (Float) var.getValue();
+                break;
+            case xMarge:
+                if (var.getValue() instanceof Float)
+                    xMarge = (Float) var.getValue();
+                break;
+            case zMarge:
+                if (var.getValue() instanceof Float)
+                    zMarge = (Float) var.getValue();
+                break;
+            case margeSteps:
+                if (var.getValue() instanceof Float)
+                    margeSteps = (Float) var.getValue();
+                break;
+        }
     }
 }
