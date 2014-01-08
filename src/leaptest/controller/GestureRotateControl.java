@@ -14,6 +14,7 @@ import com.leapmotion.leap.Vector;
 import java.util.ArrayList;
 import leaptest.model.Grid;
 import leaptest.model.GridCam;
+import leaptest.model.LeapCalibrator;
 
 /**
  *
@@ -38,7 +39,7 @@ public class GestureRotateControl extends LeapControl
     */
     private final double ROTATE_Z_SENSITIVITY = 0.9;
     private final double ROTATE_DURATION_SENSITIVITY = 0.25;
-    private final double ROTATE_TIME_BETWEEN_SENSITIVITY = 1;
+    private final double ROTATE_TIME_BETWEEN_SENSITIVITY = 0.6;
     private final double ROTATE_PART_SENSITIVITY = 0.5;
     private final double ROTATE_MIN_ACCEPT_DURATION = 75000;
     
@@ -127,7 +128,7 @@ public class GestureRotateControl extends LeapControl
     private String rejectedOn = "";
     
     
-    public GestureRotateControl(Controller leap, Grid grid, GridCam camera)
+    public GestureRotateControl(LeapCalibrator leap, Grid grid, GridCam camera)
     {
         super(leap);
         this.grid = grid;
@@ -212,7 +213,7 @@ public class GestureRotateControl extends LeapControl
     @Override
     protected void onFrame(Controller leap) 
     {
-        frame = controller.frame();
+        frame = leap.frame();
     }
     
     @Override

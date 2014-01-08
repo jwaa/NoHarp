@@ -24,6 +24,7 @@ import leaptest.controller.BlockContainerShadowControl;
 import leaptest.controller.BlockDragControl;
 import leaptest.controller.BlockTargetHelperControl;
 import leaptest.controller.GestureGrabControl;
+import leaptest.controller.GestureRotateControl;
 import leaptest.controller.GridCamControl;
 import leaptest.controller.GridRingColorControl;
 import leaptest.controller.KeyboardGridCamControl;
@@ -163,6 +164,7 @@ public class Main extends SimpleApplication {
         {
             controllers.add(new LeapHandControl(calib, handmodel));
             controllers.add(new GestureGrabControl(calib, world, grid, null, creationblock));
+            controllers.add(new GestureRotateControl(calib, grid, camera));
         }
 
         // Add keyboard control

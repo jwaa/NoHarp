@@ -69,8 +69,10 @@ public abstract class BlockDragControl implements Updatable {
     
     protected void moveBlock(Vector3f position)
     {
-        // Calculate direction and distance between current position and target
         target = position;
+        if (grid.withinGrid(target)) 
+            target=grid.snapToGrid(target);  
+        // Calculate direction and distance between current position and target
         Vector3f cpos = dragging.getPosition();
         Vector3f dir = target.subtract(cpos).normalize().mult(1.5f);
         float dist = cpos.distance(target);
@@ -86,7 +88,10 @@ public abstract class BlockDragControl implements Updatable {
             dragging.setPosition(results.getClosestCollision().getContactPoint().subtract(dir));
         }
         else
-            dragging.setPosition(target);
+            dragging.setPosition(target);      
+        
+        if (grid.withinGrid(dragging.getPosition())) 
+            grid.snapToGrid(dragging);  
     }
     
     protected Block getBlockAt(Vector3f pos)

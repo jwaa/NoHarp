@@ -166,7 +166,7 @@ public class GestureGrabControl extends LeapControl
     @Override
     protected void onFrame(Controller leap)
     {
-        frame = calib.getLeapController().frame();
+        frame = leap.frame();
     }
 
     /**
