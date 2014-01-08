@@ -11,6 +11,13 @@ ScreenFrequency 0
 FPS 30
 FPScounter 1
 
+% World settings
+GridSize 5
+BlockSize 7.5
+
+% User settings
+Righthanded 1
+
 % Model loading
 ModelFile models/export.model
 
@@ -21,3 +28,8 @@ SetExtension .set
 % Controllers
 Leap 1
 MouseAndKeyboard 1
+
+% Viewport ( Single | WithImage | ThreeSplit )
+ViewPortMode WithImage
+CamDist 100
+CamAngle 0.7853
