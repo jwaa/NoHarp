@@ -16,7 +16,9 @@ import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
 import com.leapmotion.leap.Controller;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import leaptest.controller.GridGravityControl;
 import leaptest.controller.BlockContainerColorControl;
 import leaptest.controller.BlockContainerDissolveControl;
@@ -69,10 +71,20 @@ public class Main extends SimpleApplication
      */
     public static void main(String[] args)
     {
-        ConfigSettings config = new ConfigSettings("config.txt");
-        Main app = new Main(config);
-        DefaultAppSettings.apply(app, config);
-        app.start();
+        File folder = new File("models/");
+        File[] listOfFiles = folder.listFiles();
+        
+        for(int i=0;i<listOfFiles.length;i++)
+        {   
+            String fileName = listOfFiles[i].toString();
+            System.out.println(fileName);
+            if (fileName.contains(".model"))
+            {
+                BlockModel bm = new BlockModel(fileName);
+                String fileNameExport;
+                bm.export(fileName.replace(".model", ".jpg"));
+            }
+        }
     }
 
     /**
