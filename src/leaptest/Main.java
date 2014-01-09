@@ -104,7 +104,7 @@ public class Main extends SimpleApplication
         GridCam camera = new GridCam(cameradistance, cameraangle, Vector3f.ZERO);
         Grid grid = new Grid(griddim, griddim, griddim, blockdims);
         Block creationblock = new Block(MaterialManager.creationblock, new Vector3f(-grid.getRadius() - 2 * blockdims.x, blockdims.y / 2, 0f), blockdims);
-        //TaskManager taskmanager = new TaskManager(config.getValue("ModelFolder"));
+        TaskManager taskmanager = new TaskManager(config.getValue("ModelFolder"));
         Tweaker tweaker = new Tweaker();
         
         
