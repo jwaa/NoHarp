@@ -46,7 +46,7 @@ import leaptest.view.BlockCap;
 import leaptest.view.MaterialManager;
 import leaptest.view.GridLines;
 import leaptest.view.GridRing;
-import leaptest.view.GuiModelPicture;
+import leaptest.view.ModelDisplay;
 
 /**
  * Main class executes a simple JMonkeyEngine Application
@@ -60,8 +60,6 @@ public class Main extends SimpleApplication {
     private Controller leap;
 
     private ArrayList<Updatable> controllers;
-    
-    public static enum ViewPortMode {Single, WithImage, ThreeSplit};
     
     /**
      * Loads application config settings from file
@@ -111,50 +109,12 @@ public class Main extends SimpleApplication {
         
         // VIEWS
         // Set viewports
-        ColorRGBA backgroundColor = ColorRGBA.DarkGray;
-        viewPort.setBackgroundColor(backgroundColor);
-        switch (ViewPortMode.valueOf(config.getValue("ViewPortMode")))
+        viewPort.setBackgroundColor(ColorRGBA.DarkGray);
+        
+        if (config.isSet("ShowModelImage"))
         {
-            case ThreeSplit:
-            {
-                float width = 0.33f;
-                cam.setViewPort(0f, width, 0f, 0.33f);
-                Camera cam2 = cam.clone(), cam3 = cam.clone();
-                cam2.setViewPort(0f,width, 0.33f, 0.66f);
-                cam2.setLocation(new Vector3f(blockdims.z*griddim*2,8f,0));
-                cam2.lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
-
-                ViewPort view2 = renderManager.createMainView("View2", cam2);
-                view2.setClearFlags(true, true, true);
-                view2.attachScene(rootNode);
-                view2.setBackgroundColor(backgroundColor);
-
-                cam3.setViewPort(0f,width, 0.66f, 1f);
-                cam3.setLocation(new Vector3f(0,blockdims.z*griddim*2,0));
-                cam3.lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
-
-                ViewPort view3 = renderManager.createMainView("View3", cam3);
-                view3.setClearFlags(true, true, true);
-                view3.attachScene(rootNode);
-                view3.setBackgroundColor(backgroundColor); 
-
-                break;
-            }
-            case WithImage:
-            {
-                Camera cam2 = cam.clone();
-                cam2.setViewPort(0f,1f, 0.33f, 0.66f);
-                cam2.setLocation(new Vector3f(blockdims.z*griddim*2,8f,0));
-                cam2.lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
-                ViewPort view2 = renderManager.createMainView("View2", cam2);
-                view2.setClearFlags(true, true, true);
-                view2.attachScene(rootNode);
-                view2.setBackgroundColor(backgroundColor);
-                GuiModelPicture modelpicture = new GuiModelPicture(assetManager,settings,1);
-                guiNode.attachChild(modelpicture);
-                
-                break;
-            }
+            ModelDisplay modelpicture = new ModelDisplay(assetManager,settings,1);
+            guiNode.attachChild(modelpicture);
         }
         // Build scene from view models
         GridRing gridring = new GridRing(grid.getRadius());
