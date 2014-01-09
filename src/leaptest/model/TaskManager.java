@@ -18,13 +18,13 @@ public class TaskManager {
      * bm contains a list of 9 random models: 3 easy, 3 normal, 3 hard (in that order)
      */
     private ArrayList <BlockModel> bm;
-    String [] all_tasks = new String [9];
+    private String [] all_tasks = new String [9];
     private int counter;
     private int number_of_tasks = 9;
     
     public TaskManager(String path)
     {
-        counter = 0;
+        counter = -1;
         bm = new ArrayList<BlockModel>();
         
         File folder = new File(path);
@@ -74,21 +74,32 @@ public class TaskManager {
 
     /**
      * Start next task
+     * @return returns the new task
      */
-    public void nextTask()
+    public BlockModel nextTask()
     {
         counter++;
+        return bm.get(counter);
     }
     
     /**
-     * Return number of current task
-     * @return 
+     * Gets the number of the current task
+     * @return number of current task
      */
-    public int getTask() 
+    public int getTaskId() 
     {
         return Integer.parseInt(all_tasks[counter].replaceAll("\\D+",""));
     }
  
+    /**
+     * Gets current task
+     * @return current task
+     */
+    public BlockModel getTask()
+    {
+        return bm.get(counter);
+    }
+    
     private static class LengthCompare implements Comparator<String>
     {
         public int compare(String s1, String s2)

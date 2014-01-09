@@ -109,19 +109,12 @@ public class Main extends SimpleApplication
         TaskManager taskmanager = new TaskManager(config.getValue("ModelFolder"));
         Tweaker tweaker = new Tweaker();
         
-        
-        // Populate grid with stored model
-
-        grid.rotate(0.5f);
-        BlockModel bm = new BlockModel(config.getValue("ModelFolder") + config.getValue("ModelFile"));
-        bm.populateGrid(MaterialManager.normal, grid);
-
         // VIEWS
         // Set viewports
         viewPort.setBackgroundColor(ColorRGBA.DarkGray);
         if (config.isSet("ShowModelImage"))
         {
-            ModelDisplay modelpicture = new ModelDisplay(assetManager,settings,1);
+            ModelDisplay modelpicture = new ModelDisplay(assetManager, settings, taskmanager, grid, config.getValue("ModelImgBase"));
             guiNode.attachChild(modelpicture);
         }
         // Build scene from view models
