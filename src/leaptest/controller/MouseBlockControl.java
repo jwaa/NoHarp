@@ -4,8 +4,6 @@
  */
 package leaptest.controller;
 
-import com.jme3.collision.CollisionResult;
-import com.jme3.collision.CollisionResults;
 import com.jme3.input.InputManager;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
@@ -18,14 +16,12 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import leaptest.model.Block;
 import com.jme3.math.Plane;
-import leaptest.model.BlockContainer;
-import leaptest.model.Grid;
 
 /**
  *
  * @author silvandeleemput
  */
-public class MouseBlockControl extends BlockDragControl implements AnalogListener {
+public class MouseBlockControl implements AnalogListener, Updatable {
     // Linked data
     private InputManager inputManager;
     private Camera cam;
@@ -34,9 +30,11 @@ public class MouseBlockControl extends BlockDragControl implements AnalogListene
     private boolean clickinit, clickrelease;
     private float liftdelta;
     
-    public MouseBlockControl(InputManager inputManager, Camera cam, BlockContainer world, Grid grid, Block creationblock)
+    private BlockDragControl bdc;
+    
+    public MouseBlockControl(InputManager inputManager, Camera cam, BlockDragControl bdc)
     {
-        super(world,grid,creationblock);
+        this.bdc = bdc;
         this.cam = cam;
         this.inputManager = inputManager;
         configureInputs(inputManager);
@@ -69,7 +67,7 @@ public class MouseBlockControl extends BlockDragControl implements AnalogListene
         // Aim the ray from the clicked spot forwards
         Ray ray = new Ray(click3d, dir);
         
-        return getBlockCollideWith(ray);
+        return bdc.getBlockCollideWith(ray);
     }
     
     private ActionListener actionListener = new ActionListener() {
@@ -98,18 +96,11 @@ public class MouseBlockControl extends BlockDragControl implements AnalogListene
     
     private void updateBlock()
     {
-        // Every block above the old position of the dragged block switches 
-        // to falling state
-        CollisionResults cr = new CollisionResults();
-        grid.collideAboveBlock(dragging, cr);
-        for (CollisionResult c : cr)
-            ((Block) c.getGeometry()).setFalling(true);
-
-        if (target.y + liftdelta > dragging.getDimensions().y/2)
-            target.y += liftdelta;
-        else
-            target.y = dragging.getDimensions().y/2;
-
+        Vector3f target = bdc.getTarget();
+        
+        target.y += liftdelta; // set y
+        
+        // Calculate position clicked on the screen to 3D coordinates
         Vector2f click2d = inputManager.getCursorPosition();
         Vector3f click3d = cam.getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 0f).clone();
         Vector3f dir = cam.getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
@@ -120,15 +111,10 @@ public class MouseBlockControl extends BlockDragControl implements AnalogListene
         if (ray.intersectsWherePlane(new Plane(Vector3f.UNIT_Y,0f), dir))
         {
             dir.y = target.y;
-            target = dir;
+            target = dir; // set x and z
         }
-        if (grid.withinGrid(target)) 
-            target=grid.snapToGrid(target);  
-        
-        moveBlock(target);
-        
-        if (grid.withinGrid(dragging.getPosition())) 
-            grid.snapToGrid(dragging);        
+        // try to move the block to position
+        bdc.moveBlock(target);       
     }
     
     public void update(float tpf) 
@@ -136,15 +122,15 @@ public class MouseBlockControl extends BlockDragControl implements AnalogListene
         // On a new click start dragging
         if (clickinit)
         {
-            liftBlock(detectBlock());
+            bdc.liftBlock(detectBlock());
         } 
         // On button release drop block if dragging
-        else if (clickrelease && dragging != null) 
+        else if (clickrelease && bdc.getSelected() != null) 
         {
-            releaseBlock();
+            bdc.releaseBlock();
         }     
         // While dragging update position of block
-        if (dragging != null)
+        if (bdc.getSelected() != null)
         {
             updateBlock();
         }

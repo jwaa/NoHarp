@@ -5,11 +5,11 @@
 package leaptest.controller;
 
 import com.jme3.collision.Collidable;
+import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
-import com.jme3.scene.Node;
 import leaptest.model.Block;
 import leaptest.model.BlockContainer;
 import leaptest.model.Grid;
@@ -19,7 +19,7 @@ import leaptest.view.MaterialManager;
  *
  * @author silvandeleemput
  */
-public abstract class BlockDragControl implements Updatable {
+public class BlockDragControl {
     // Linked data
     protected BlockContainer world;
     protected Grid grid;
@@ -34,7 +34,7 @@ public abstract class BlockDragControl implements Updatable {
         this.world = world;
     }
    
-    protected void liftBlock(Block block)
+    public void liftBlock(Block block)
     {
         dragging = block;
         if (dragging != null)
@@ -50,7 +50,7 @@ public abstract class BlockDragControl implements Updatable {
         }       
     }
 
-    protected void releaseBlock()
+    public void releaseBlock()
     {
         dragging.setLifted(false);
         dragging.setFalling(true);
@@ -67,11 +67,25 @@ public abstract class BlockDragControl implements Updatable {
         dragging = null;    
     }    
     
-    protected void moveBlock(Vector3f position)
+    public void moveBlock(Vector3f position)
     {
         target = position;
+        
+        // Every block above the old position of the dragged block switches 
+        // to falling state
+        CollisionResults cr = new CollisionResults();
+        grid.collideAboveBlock(dragging, cr);
+        for (CollisionResult c : cr)
+            ((Block) c.getGeometry()).setFalling(true);
+        
+        // Make sure block does not sink into floor
+        if (target.y <= dragging.getDimensions().y/2)
+            target.y = dragging.getDimensions().y/2;
+        
+        // Snap target vector 2 grid
         if (grid.withinGrid(target)) 
-            target=grid.snapToGrid(target);  
+            target=grid.snapToGrid(target);
+        
         // Calculate direction and distance between current position and target
         Vector3f cpos = dragging.getPosition();
         Vector3f dir = target.subtract(cpos).normalize().mult(1.5f);
@@ -90,11 +104,12 @@ public abstract class BlockDragControl implements Updatable {
         else
             dragging.setPosition(target);      
         
+        // Snap dragging block to grid
         if (grid.withinGrid(dragging.getPosition())) 
             grid.snapToGrid(dragging);  
     }
     
-    protected Block getBlockAt(Vector3f pos)
+    public Block getBlockAt(Vector3f pos)
     {
         Block result;
         // If is creation block get new block 
@@ -108,7 +123,7 @@ public abstract class BlockDragControl implements Updatable {
         return grid.getBlockAt(pos);    
     }
     
-    protected Block getBlockCollideWith(Collidable ray)
+    public Block getBlockCollideWith(Collidable ray)
     {
         CollisionResults results = new CollisionResults();
         
@@ -140,7 +155,5 @@ public abstract class BlockDragControl implements Updatable {
     {
         return dragging;
     }
-    
-    public abstract void update(float tpf);
     
 }
