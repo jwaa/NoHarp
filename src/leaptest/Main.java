@@ -116,31 +116,45 @@ public class Main extends SimpleApplication {
         switch (ViewPortMode.valueOf(config.getValue("ViewPortMode")))
         {
             case ThreeSplit:
+            {
                 float width = 0.33f;
                 cam.setViewPort(0f, width, 0f, 0.33f);
                 Camera cam2 = cam.clone(), cam3 = cam.clone();
                 cam2.setViewPort(0f,width, 0.33f, 0.66f);
                 cam2.setLocation(new Vector3f(blockdims.z*griddim*2,8f,0));
                 cam2.lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
-                
+
                 ViewPort view2 = renderManager.createMainView("View2", cam2);
                 view2.setClearFlags(true, true, true);
                 view2.attachScene(rootNode);
                 view2.setBackgroundColor(backgroundColor);
-                
+
                 cam3.setViewPort(0f,width, 0.66f, 1f);
                 cam3.setLocation(new Vector3f(0,blockdims.z*griddim*2,0));
                 cam3.lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
-                
+
                 ViewPort view3 = renderManager.createMainView("View3", cam3);
                 view3.setClearFlags(true, true, true);
                 view3.attachScene(rootNode);
-                view3.setBackgroundColor(backgroundColor);   
+                view3.setBackgroundColor(backgroundColor); 
+
                 break;
+            }
             case WithImage:
+            {
+                Camera cam2 = cam.clone();
+                cam2.setViewPort(0f,1f, 0.33f, 0.66f);
+                cam2.setLocation(new Vector3f(blockdims.z*griddim*2,8f,0));
+                cam2.lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
+                ViewPort view2 = renderManager.createMainView("View2", cam2);
+                view2.setClearFlags(true, true, true);
+                view2.attachScene(rootNode);
+                view2.setBackgroundColor(backgroundColor);
                 GuiModelPicture modelpicture = new GuiModelPicture(assetManager,settings,1);
                 guiNode.attachChild(modelpicture);
+                
                 break;
+            }
         }
         // Build scene from view models
         GridRing gridring = new GridRing(grid.getRadius());
