@@ -122,9 +122,9 @@ public class GestureRotateControl extends LeapControl
     
             
     
-    private final boolean isShowWhyRejected = true;
-    private final boolean isShowSwipeData = true;
-    private final boolean isShowUserVariables = true;
+    private final boolean isShowWhyRejected = false;
+    private final boolean isShowSwipeData = false;
+    private final boolean isShowUserVariables = false;
     private String rejectedOn = "";
     
     

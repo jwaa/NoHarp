@@ -39,6 +39,7 @@ import leaptest.model.BlockModel;
 import leaptest.model.Grid;
 import leaptest.model.GridCam;
 import leaptest.model.LeapCalibrator;
+import leaptest.model.TaskManager;
 import leaptest.utils.ConfigSettings;
 import leaptest.utils.DefaultAppSettings;
 import leaptest.utils.Tweaker;
@@ -96,15 +97,17 @@ public class Main extends SimpleApplication
         // Model settings...
         int griddim = Integer.parseInt(config.getValue("GridSize"));
         float cameradistance = Float.parseFloat(config.getValue("CamDist")), 
-                 cameraangle = Float.parseFloat(config.getValue("CamAngle"));//FastMath.PI/4f;
+                 cameraangle = Float.parseFloat(config.getValue("CamAngle"));
         Vector3f blockdims = Vector3f.UNIT_XYZ.mult(Float.parseFloat(config.getValue("BlockSize")));
         // Add models
         BlockContainer world = new BlockContainer();
         GridCam camera = new GridCam(cameradistance, cameraangle, Vector3f.ZERO);
         Grid grid = new Grid(griddim, griddim, griddim, blockdims);
         Block creationblock = new Block(MaterialManager.creationblock, new Vector3f(-grid.getRadius() - 2 * blockdims.x, blockdims.y / 2, 0f), blockdims);
+        //TaskManager taskmanager = new TaskManager(config.getValue("ModelFolder"));
         Tweaker tweaker = new Tweaker();
-
+        
+        
         // Populate grid with stored model
         grid.rotate(0.5f);
         BlockModel bm = new BlockModel(config.getValue("ModelFolder") + config.getValue("ModelFile"));
@@ -158,12 +161,13 @@ public class Main extends SimpleApplication
         // Create a Leap Motion interface and put it within the calibrator
         leap = new Controller();
         LeapCalibrator calib = new LeapCalibrator(leap);
-        //calib.loadFromFile(config.getValue("CalibFile"));
         if (config.isSet("Leap"))
         {
             controllers.add(new LeapHandControl(calib, handmodel));
-            GestureGrabControl ggc = new GestureGrabControl(calib, world, grid, null, creationblock);
+            BlockDragControl leapbdc = new BlockDragControl(world, grid, creationblock);
+            GestureGrabControl ggc = new GestureGrabControl(calib, leapbdc, config.isSet("Righthanded"));
             controllers.add(ggc);
+            controllers.add(new BlockTargetHelperControl(leapbdc, rootNode, blockdims));
             controllers.add(new GestureRotateControl(calib, grid, camera));
             if (config.isSet("Debug"))
                 tweaker.registerTweakable(ggc);
@@ -175,10 +179,10 @@ public class Main extends SimpleApplication
         {
             tweaker.registerTweakable(calib);
             controllers.add(new KeyboardTweakerControl(inputManager, tweaker, config.getValue("SetFolder"), config.getValue("SetExtension")));
-            controllers.add(new KeyboardGridSaveControl(inputManager, grid, config.getValue("ModelFile")));
+            controllers.add(new KeyboardGridSaveControl(inputManager, grid, config.getValue("ModelFolder") + config.getValue("ModelFile")));
         }
 
-        BlockDragControl bdc = null;
+
         if (config.isSet("MouseAndKeyboard"))
         {
             // Add keyboard control
@@ -186,8 +190,10 @@ public class Main extends SimpleApplication
             controllers.add(new KeyboardGridCamControl(inputManager, camera));
 
             // Add mouse control
-            bdc = new MouseBlockControl(inputManager, cam, world, grid, creationblock);
-            controllers.add(bdc);
+            BlockDragControl mbdc = new BlockDragControl(world, grid, creationblock);
+            MouseBlockControl mbc = new MouseBlockControl(inputManager, cam, mbdc);
+            controllers.add(mbc);
+            controllers.add(new BlockTargetHelperControl(mbdc, rootNode, blockdims));
         }
 
         // Add model effectors
@@ -196,8 +202,6 @@ public class Main extends SimpleApplication
         controllers.add(new BlockContainerDissolveControl(world));
 
         // Add visual effectors
-        if (bdc != null)
-            controllers.add(new BlockTargetHelperControl(bdc, rootNode, blockdims));
         controllers.add(new BlockContainerColorControl(grid));
         controllers.add(new BlockContainerColorControl(world));
         controllers.add(new GridRingColorControl(grid, gridring));

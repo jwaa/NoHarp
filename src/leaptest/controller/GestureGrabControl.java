@@ -7,8 +7,6 @@ package leaptest.controller;
 import com.jme3.math.Vector3f;
 import com.leapmotion.leap.*;
 import leaptest.model.Block;
-import leaptest.model.BlockContainer;
-import leaptest.model.Grid;
 import leaptest.model.LeapCalibrator;
 import leaptest.utils.TweakSet;
 import leaptest.utils.TweakVariable;
@@ -41,24 +39,14 @@ public class GestureGrabControl extends LeapControl implements Tweakable
     private Frame previousFrame;
     private BlockDragControl bdc;
 
-    public GestureGrabControl(LeapCalibrator calib, BlockContainer world, Grid grid, Block selected, Block creationblock)
-    {//world2Grid uit Grid
+    public GestureGrabControl(LeapCalibrator calib, BlockDragControl bdc, boolean isRightHanded)
+    {
         super(calib);
-        this.bdc = new BlockDragControl(world, grid, creationblock)
-        {
-            @Override
-            public void update(float tpf)
-            {
-                this.update(tpf);
-            }
-        };
+        this.bdc = bdc;
         this.gettingSmaller = 0;
         this.gettingBigger = 0;
         this.stayingTheSame = 0;
-        bdc.dragging = selected;
-        bdc.creationblock = creationblock;
-        bdc.world = world;
-        bdc.grid = grid;
+        this.isRightHanded = isRightHanded;
         gettingSmallerThreshold = 5;
         gettingBiggerThreshold = 2;
         stayingTheSameThreshold = 2;
@@ -157,7 +145,6 @@ public class GestureGrabControl extends LeapControl implements Tweakable
             }
             if (this.gettingBigger > gettingBiggerThreshold)
             {
-                System.out.println("Release");
                 bdc.releaseBlock();
                 this.gettingBigger = 0;
                 this.stayingTheSame = 0;
@@ -193,9 +180,7 @@ public class GestureGrabControl extends LeapControl implements Tweakable
         Block found = null;
         //Begins at zero and start looking at more positive numbers.
         for (int x = 0; x <= (int) (xMarge / margeSteps); x++)
-        {
             for (int z = 0; z <= (int) (zMarge / margeSteps); z++)
-            {
                 for (int y = 0; y <= (int) (yMarge / margeSteps); y++)
                 {
                     Vector3f margeCoordinates = coordinates.clone();
@@ -204,37 +189,23 @@ public class GestureGrabControl extends LeapControl implements Tweakable
                     margeCoordinates.x += (x * margeSteps);
                     found = bdc.getBlockAt(margeCoordinates);
                     if (found != null)
-                        break;
+                        return found;
                 }
-                if (found != null)
-                    break;
-            }
-            if (found != null)
-                break;
-        }
 
         //Looks at the more negative numbers.
-        if (found == null)
-            for (int x = 1; x <= (int) (xMarge / margeSteps); x++)
-            {
-                for (int z = 1; z <= (int) (zMarge / margeSteps); z++)
+        for (int x = 1; x <= (int) (xMarge / margeSteps); x++)
+            for (int z = 1; z <= (int) (zMarge / margeSteps); z++)
+                for (int y = 1; y <= (int) (yMarge / margeSteps); y++)
                 {
-                    for (int y = 1; y <= (int) (yMarge / margeSteps); y++)
-                    {
-                        Vector3f margeCoordinates = coordinates.clone();
-                        margeCoordinates.y -= (y * margeSteps);
-                        margeCoordinates.z -= (z * margeSteps);
-                        margeCoordinates.x -= (x * margeSteps);
-                        found = bdc.getBlockAt(margeCoordinates);
-                        if (found != null)
-                            break;
-                    }
+                    Vector3f margeCoordinates = coordinates.clone();
+                    margeCoordinates.y -= (y * margeSteps);
+                    margeCoordinates.z -= (z * margeSteps);
+                    margeCoordinates.x -= (x * margeSteps);
+                    found = bdc.getBlockAt(margeCoordinates);
                     if (found != null)
-                        break;
+                        return found;
                 }
-                if (found != null)
-                    break;
-            }
+
         return found;
     }
 
