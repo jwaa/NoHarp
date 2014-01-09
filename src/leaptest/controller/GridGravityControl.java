@@ -34,9 +34,8 @@ public class GridGravityControl implements Updatable {
     }
     
     private class IntPair {
-      final int x;
-      final int y;
-      IntPair(int x, int y) {this.x=x;this.y=y;}
+        public final int x, y;
+        IntPair(int x, int y) {this.x=x;this.y=y;}
     }
     
     public void update(float tpf) {
