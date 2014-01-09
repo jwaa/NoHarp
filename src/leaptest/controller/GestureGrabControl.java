@@ -23,8 +23,8 @@ public class GestureGrabControl extends LeapControl implements Tweakable
     private int gettingSmallerThreshold;
     private int gettingBiggerThreshold;
     private int stayingTheSameThreshold;
-    private double grabbingThreshold;
-    private double releaseThreshold;
+    private float grabbingThreshold;
+    private float releaseThreshold;
     //Marges in which to look for a block
     private float yMarge;
     private float xMarge;
@@ -50,8 +50,8 @@ public class GestureGrabControl extends LeapControl implements Tweakable
         gettingSmallerThreshold = 5;
         gettingBiggerThreshold = 2;
         stayingTheSameThreshold = 2;
-        grabbingThreshold = 0.98;
-        releaseThreshold = 1.01;
+        grabbingThreshold = 0.98f;
+        releaseThreshold = 1.01f;
         yMarge = 1.0f;
         xMarge = 1.0f;
         zMarge = 1.0f;
@@ -215,8 +215,8 @@ public class GestureGrabControl extends LeapControl implements Tweakable
         set.add(new TweakVariable<Integer>("gettingSmallerThreshold", gettingSmallerThreshold));
         set.add(new TweakVariable<Integer>("gettingBiggerThreshold", gettingBiggerThreshold));
         set.add(new TweakVariable<Integer>("stayingTheSameThreshold", stayingTheSameThreshold));
-        set.add(new TweakVariable<Double>("grabbingThreshold", grabbingThreshold));
-        set.add(new TweakVariable<Double>("releaseThreshold", releaseThreshold));
+        set.add(new TweakVariable<Float>("grabbingThreshold", grabbingThreshold));
+        set.add(new TweakVariable<Float>("releaseThreshold", releaseThreshold));
 
         set.add(new TweakVariable<Float>("yMarge", yMarge));
         set.add(new TweakVariable<Float>("xMarge", xMarge));
@@ -250,12 +250,12 @@ public class GestureGrabControl extends LeapControl implements Tweakable
                     stayingTheSameThreshold = (Integer) var.getValue();
                 break;
             case grabbingThreshold:
-                if (var.getValue() instanceof Double)
-                    grabbingThreshold = (Double) var.getValue();
+                if (var.getValue() instanceof Float)
+                    grabbingThreshold = (Float) var.getValue();
                 break;
             case releaseThreshold:
-                if (var.getValue() instanceof Double)
-                    releaseThreshold = (Double) var.getValue();
+                if (var.getValue() instanceof Float)
+                    releaseThreshold = (Float) var.getValue();
                 break;
             case yMarge:
                 if (var.getValue() instanceof Float)

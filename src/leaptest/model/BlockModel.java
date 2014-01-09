@@ -3,6 +3,10 @@ package leaptest.model;
 import com.jme3.material.Material;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.font.FontRenderContext;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,6 +27,7 @@ public class BlockModel
 
     private int[][] model;
     private int elements;
+    private static final int EXPORT_SCALING = 21;
 
     public BlockModel(Grid g)
     {
@@ -83,13 +88,13 @@ public class BlockModel
         {
             elements = 0;
             Scanner scan = new Scanner(f);
-            String []s = scan.nextLine().replace("\t"," ").split(" ");
+            String[] s = scan.nextLine().replace("\t", " ").split(" ");
             int height = Integer.parseInt(s[1]), width = Integer.parseInt(s[0]);
             this.model = new int[height][width];
             for (int i = 0; i < height; i++)
             {
-                s = scan.nextLine().replace("\t"," ").split(" ");
-                for (int j=0; j<width; j++)
+                s = scan.nextLine().replace("\t", " ").split(" ");
+                for (int j = 0; j < width; j++)
                 {
                     model[i][j] = Integer.parseInt(s[j]);
                     elements += model[i][j];
@@ -224,9 +229,35 @@ public class BlockModel
 
     public void export(String filename)
     {
-        int width = model.length * 100;
-        int height = model[0].length * 100;
+        int width = model.length * EXPORT_SCALING + 1;
+        int height = model[0].length * EXPORT_SCALING + 1;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        int rgbWhite = 16777215;
+        int rgbBlack = 0;
+
+        // Make lines
+        for (int i = 0; i < width; i++)
+            for (int j = 0; j < height; j++)
+                if (i % EXPORT_SCALING == 0 || j % EXPORT_SCALING == 0)
+                    img.setRGB(i, j, rgbBlack);
+                else
+                    img.setRGB(i, j, rgbWhite);
+
+        // Set font
+        Font f = new Font(Font.MONOSPACED, Font.PLAIN, 24);
+        Graphics g = img.getGraphics();
+        g.setColor(Color.black);
+        g.setFont(f);
+
+        //Draw numbers
+        for (int i = 0; i < model.length; i++)
+            for (int j = 0; j < model[0].length; j++)
+                if (model[i][j] != 0)
+                {
+                    String str = Integer.toString(model[i][j]);
+                    g.drawString(str, (EXPORT_SCALING / 4) + i * EXPORT_SCALING, 20 + j * EXPORT_SCALING);
+                }
+        g.dispose();
         File output = new File(filename);
         try
         {
