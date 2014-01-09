@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -28,8 +29,18 @@ public class TaskManager {
         bm = new ArrayList<BlockModel>();
         
         File folder = new File(path);
-        File[] listOfFiles = folder.listFiles();
-        Arrays.sort(listOfFiles);
+        File[] listOfFilesTemp = folder.listFiles();
+        Arrays.sort(listOfFilesTemp);
+        
+        ArrayList<File> listOfFiles2 = new ArrayList<File>();
+        for(int i =0;i<listOfFilesTemp.length;i++)
+        {
+            if(!listOfFilesTemp[i].getName().equals("export.model"));
+            {
+                listOfFiles2.add(listOfFilesTemp[i]);
+            }
+        }
+        File[] listOfFiles = listOfFiles2.toArray(new File[listOfFiles2.size()]);;
         
         String[] listOfFileNames = new String [listOfFiles.length];
         for(int i=0;i<listOfFiles.length;i++)
@@ -70,6 +81,11 @@ public class TaskManager {
             bm.add(new BlockModel(path + allHardModels[i]));
             //System.out.println(path + allHardModels[i]);
         }
+        
+        //for(int i=0;i<9; i++)
+        //{
+        //    System.out.println(Integer.parseInt(all_tasks[i].replaceAll("\\D+","")));
+        //}
     }
 
     /**
