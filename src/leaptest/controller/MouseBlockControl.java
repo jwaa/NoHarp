@@ -34,6 +34,9 @@ public class MouseBlockControl implements AnalogListener, Updatable, Loggable {
     
     //Log data
     private Vector2f prevMouseLoc;
+    private boolean isBlockGrabbed;
+    private boolean isBlockReleased;
+    private boolean isBlockDragged;
     
     private BlockDragControl bdc;
     
@@ -127,16 +130,19 @@ public class MouseBlockControl implements AnalogListener, Updatable, Loggable {
         // On a new click start dragging
         if (clickinit)
         {
+            isBlockGrabbed = true;
             bdc.liftBlock(detectBlock());
         } 
         // On button release drop block if dragging
         else if (clickrelease && bdc.getSelected() != null) 
         {
+            isBlockReleased = true;
             bdc.releaseBlock();
         }     
         // While dragging update position of block
         if (bdc.getSelected() != null)
         {
+            isBlockDragged = true;
             updateBlock();
         }
         // Reset click and delta states for next cycle
@@ -157,6 +163,16 @@ public class MouseBlockControl implements AnalogListener, Updatable, Loggable {
         }
         if(liftdelta != 0.0f)
             log.addEntry(Log.EntryType.ScrollDelta,  Float.toString(liftdelta));
+        if(isBlockGrabbed)
+            log.addEntry(Log.EntryType.BlockGrabbed, Boolean.toString(isBlockGrabbed));
+        if(isBlockReleased)
+            log.addEntry(Log.EntryType.BlockReleased, Boolean.toString(isBlockReleased));
+        if(isBlockDragged)
+            log.addEntry(Log.EntryType.BlockDragged, Boolean.toString(isBlockDragged));
+        
+        isBlockGrabbed = false;
+        isBlockReleased = false;
+        isBlockDragged = false;
     }
     
 }
