@@ -41,6 +41,7 @@ import leaptest.model.LeapCalibrator;
 import leaptest.model.TaskManager;
 import leaptest.utils.ConfigSettings;
 import leaptest.utils.DefaultAppSettings;
+import leaptest.utils.Log;
 import leaptest.utils.Tweaker;
 import leaptest.view.BlockCap;
 import leaptest.view.MaterialManager;
@@ -60,7 +61,8 @@ public class Main extends SimpleApplication
     private ConfigSettings config;
     private Controller leap;
     private ArrayList<Updatable> controllers;
-
+    private Log log;
+    
     /**
      * Loads application config settings from file applies settings and fires up
      * application
@@ -99,7 +101,9 @@ public class Main extends SimpleApplication
         float cameradistance = Float.parseFloat(config.getValue("CamDist")), 
                  cameraangle = Float.parseFloat(config.getValue("CamAngle"));
         Vector3f blockdims = Vector3f.UNIT_XYZ.mult(Float.parseFloat(config.getValue("BlockSize")));
+        
         // Add models
+        log = new Log(config.isSet("Log"));
         BlockContainer world = new BlockContainer();
         GridCam camera = new GridCam(cameradistance, cameraangle, Vector3f.ZERO);
         Grid grid = new Grid(griddim, griddim, griddim, blockdims);
@@ -212,17 +216,20 @@ public class Main extends SimpleApplication
     }
 
     /**
-     * Gracefully shutdowns the application and Leap
+     * Gracefully shutdowns the application and Leap and stores log to file
      */
     public void shutDown()
     {
         leap.delete();
+        if (log.isEnabled())
+            log.save(config.getValue("LogFolder") + config.getValue("UserNumber") + ".log");
         stop();
     }
 
     @Override
     public void simpleUpdate(float tpf)
     {
+        log.log();
         for (Updatable c : controllers)
             c.update(tpf);
     }

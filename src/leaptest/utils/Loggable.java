@@ -6,6 +6,10 @@ package leaptest.utils;
  */
 public interface Loggable {
     
-    public void log(Log log, int timestamp);
+    /**
+     * Gives the implementing class the Log object to write its state to
+     * @param log Log object
+     */
+    public void log(Log log);
     
 }
