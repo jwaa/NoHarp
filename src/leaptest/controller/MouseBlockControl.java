@@ -16,12 +16,14 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import leaptest.model.Block;
 import com.jme3.math.Plane;
+import leaptest.utils.Log;
+import leaptest.utils.Loggable;
 
 /**
  *
  * @author silvandeleemput
  */
-public class MouseBlockControl implements AnalogListener, Updatable {
+public class MouseBlockControl implements AnalogListener, Updatable, Loggable {
     // Linked data
     private InputManager inputManager;
     private Camera cam;
@@ -29,6 +31,9 @@ public class MouseBlockControl implements AnalogListener, Updatable {
     // Process data
     private boolean clickinit, clickrelease;
     private float liftdelta;
+    
+    //Log data
+    private Vector2f prevMouseLoc;
     
     private BlockDragControl bdc;
     
@@ -95,7 +100,7 @@ public class MouseBlockControl implements AnalogListener, Updatable {
     }
     
     private void updateBlock()
-    {
+    {        
         Vector3f target = bdc.getTarget();
         
         target.y += liftdelta; // set y
@@ -136,6 +141,22 @@ public class MouseBlockControl implements AnalogListener, Updatable {
         }
         // Reset click and delta states for next cycle
         resetStates();
+        
+        // Save mouse location
+        prevMouseLoc = inputManager.getCursorPosition();
+    }
+
+    public void log(Log log) 
+    {
+        Vector2f mouseDelta = inputManager.getCursorPosition().subtract(prevMouseLoc);
+        
+        if(mouseDelta.x != 0 || mouseDelta.y != 0)
+        {
+            String delta = Float.toString(mouseDelta.x)+", "+Float.toString(mouseDelta.y);
+            log.addEntry(Log.EntryType.MouseLocDelta, delta);
+        }
+        if(liftdelta != 0.0f)
+            log.addEntry(Log.EntryType.ScrollDelta,  Float.toString(liftdelta));
     }
     
 }

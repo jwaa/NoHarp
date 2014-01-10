@@ -41,7 +41,7 @@ public class Log {
     }
         
     public enum EntryType {
-        GridRota, CamRota //TODO add all types 
+        ScrollDelta, MouseLocDelta, GridRotate, CamRotate,
     };
     
     public class LogEntry
