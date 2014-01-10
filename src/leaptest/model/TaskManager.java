@@ -42,7 +42,8 @@ public class TaskManager {
         }
         
         File[] listOfFiles = new File[listOfFiles2.size()];
-        listOfFiles = listOfFiles2.toArray(listOfFiles);
+        for (int i=0; i<listOfFiles.length; i++)
+            listOfFiles[i] = listOfFiles2.get(i);
         
         String[] listOfFileNames = new String [listOfFiles.length];
         for(int i=0;i<listOfFiles.length;i++)
@@ -69,7 +70,7 @@ public class TaskManager {
         {   
             all_tasks[i] = allEasyModels[i];
             bm.add(new BlockModel(path + allEasyModels[i]));
-            System.out.println(path + allEasyModels[i]);
+            //System.out.println(path + allEasyModels[i]);
         }
         for(int i=0;i<number_of_tasks/3; i++)
         {

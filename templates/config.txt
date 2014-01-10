@@ -1,6 +1,7 @@
 % Turn logging & debugging on/off
 Log 1
 Debug 1
+LogFolder logs/
 
 % Screen settings
 Menu 0
@@ -22,6 +23,7 @@ BlockSize 7.5
 
 % User settings
 Righthanded 1
+UserNumber 1
 
 % Model loading
 ModelFolder models/
