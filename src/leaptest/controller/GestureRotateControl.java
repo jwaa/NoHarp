@@ -15,12 +15,15 @@ import java.util.ArrayList;
 import leaptest.model.Grid;
 import leaptest.model.GridCam;
 import leaptest.model.LeapCalibrator;
+import leaptest.utils.TweakSet;
+import leaptest.utils.TweakVariable;
+import leaptest.utils.Tweakable;
 
 /**
  *
  * @author Jasper van der Waa & Annet Meijers
  */
-public class GestureRotateControl extends LeapControl
+public class GestureRotateControl extends LeapControl implements Tweakable
 {
     /*
      * Variables to fine tune what swipe for horizontal rotation is accepted
@@ -37,47 +40,47 @@ public class GestureRotateControl extends LeapControl
      * accepted. PLUS the swipes that are 11% more extreme than the expected 
      * extreme swipes.
     */
-    private final double ROTATE_Z_SENSITIVITY = 0.9;
-    private final double ROTATE_DURATION_SENSITIVITY = 0.25;
-    private final double ROTATE_TIME_BETWEEN_SENSITIVITY = 0.6;
-    private final double ROTATE_PART_SENSITIVITY = 0.5;
-    private final double ROTATE_MIN_ACCEPT_DURATION = 75000;
+    private float Rotate_Z_Sensitivity = 0.9f;
+    private float Rotate_Duration_Sensitivity = 0.25f;
+    private float Rotate_Time_Between_Sensitivity = 0.6f;
+    private float Rotate_Part_Sensitivity = 0.5f;
+    private float Rotate_Min_Accept_Duration = 75000f;
     
-    private final double CAMERA_Z_SENSITIVITY = 0.9;
-    private final double CAMERA_DURATION_SENSITIVITY = 0.75;
-    private final double CAMERA_TIME_BETWEEN_SENSITIVITY = 0.5;
-    private final double CAMERA_PART_SENSITIVITY = 0.5;
-    private final double CAMERA_MIN_ACCEPT_DURATION = 75000;
+    private float Camera_Z_Sensitivity = 0.9f;
+    private float Camera_Duration_Sensitivity = 0.75f;
+    private float Camera_Time_Between_Sensitivity = 0.5f;
+    private float Camera_Part_Sensitivity = 0.5f;
+    private float Camera_Min_Accept_Duration = 75000f;
     /*
      * Variables that get adjusted over time for a user.
      * Change the initial values to match more the initial preferences of the 
      * user.
     */
-    private double averageZPartialRotateSwipe = 0.0;
-    private double stdevZPartialRotateSwipe = 60;
-    private double averagePartialDurationRotate = 10000;
-    private double stdevPartialDurationRotate = 1000;
-    private double averageDurationRotateSwipe = 200000;
-    private double stdevDurationRotateSwipe = 20000;
+    private float averageZPartialRotateSwipe = 0.0f;
+    private float stdevZPartialRotateSwipe = 60f;
+    private float averagePartialDurationRotate = 10000f;
+    private float stdevPartialDurationRotate = 1000f;
+    private float averageDurationRotateSwipe = 200000f;
+    private float stdevDurationRotateSwipe = 20000f;
     
-    private double averageZPartialCameraSwipe = 0.0;
-    private double stdevZPartialCameraSwipe = 80;
-    private double averagePartialDurationCamera = 20000;
-    private double stdevPartialDurationCamera = 2000;
-    private double averageDurationCameraSwipe = 200000;
-    private double stdevDurationCameraSwipe = 100000;
+    private float averageZPartialCameraSwipe = 0.0f;
+    private float stdevZPartialCameraSwipe = 80f;
+    private float averagePartialDurationCamera = 20000f;
+    private float stdevPartialDurationCamera = 2000f;
+    private float averageDurationCameraSwipe = 200000f;
+    private float stdevDurationCameraSwipe = 100000f;
     
     /*
      * Variables to fine tune the movement of the grid.
     */
-    private double ROTATE_SPEED_INCREASE = 100000;
-    private double CAMERA_SPEED_INCREASE = 70000;
-    private double ROTATE_DECAY_CONSTANT = 0.85;
-    private double CAMERA_DECAY_CONSTANT = 0.65;
-    private double MAX_VELOCITY_ROTATE = 0.25;
-    private double MIN_VELOCITY_ROTATE = 0.001;
-    private double MAX_VELOCITY_CAMERA = 0.025;
-    private double MIN_VELOCITY_CAMERA = 0.0001;
+    private float Rotate_Speed_Increase = 100000f;
+    private float Camera_Speed_Increase = 70000f;
+    private float Rotate_Decay_Constant = 0.85f;
+    private float Camera_Decay_Constant = 0.65f;
+    private float Max_Velocity_Rotate = 0.25f;
+    private float Min_Velocity_Rotate = 0.001f;
+    private float Max_Velocity_Camera = 0.025f;
+    private float Min_Velocity_Camera = 0.0001f;
     private boolean IS_RIGHT_HANDED = true;
     private boolean INVERT_Y_AXIS_FOR_CAMERA = false;
     
@@ -92,20 +95,20 @@ public class GestureRotateControl extends LeapControl
     
     private boolean isRotateSwipe;
     private Vector lastDirectionRotate;
-    private double rotateVelocity;
-    private double summedPartialRotateSwipes;
+    private float rotateVelocity;
+    private float summedPartialRotateSwipes;
     private int nrPartialRotateSwipes;
     private long timeBetweenRotateSwipes;
-    private double minimalTimeBetweenRotateSwipes;
+    private float minimalTimeBetweenRotateSwipes;
     private int nrIntendedRotateSwipes;
     
     private boolean isCameraSwipe;
     private Vector lastDirectionCamera;
-    private double cameraVelocity;
-    private double summedPartialCameraSwipes;
+    private float cameraVelocity;
+    private float summedPartialCameraSwipes;
     private int nrPartialCameraSwipes;
     private long timeBetweenCameraSwipes;
-    private double minimalTimeBetweenCameraSwipes;    
+    private float minimalTimeBetweenCameraSwipes;    
     private int nrIntendedCameraSwipes;
     
     private long timePreviousIntendedRotateSwipe;
@@ -113,12 +116,12 @@ public class GestureRotateControl extends LeapControl
     private long timePreviousIntendedCameraSwipe;
     private int previousCameraID;
     
-    private final double ROTATE_Z_SENS_VALUE;
-    private final double ROTATE_DURATION_SENS_VALUE;
-    private final double ROTATE_PART_DURATION_SENS_VALUE;
-    private final double CAMERA_Z_SENS_VALUE;
-    private final double CAMERA_DURATION_SENS_VALUE;
-    private final double CAMERA_PART_DURATION_SENS_VALUE;
+    private final float ROTATE_Z_SENS_VALUE;
+    private final float ROTATE_DURATION_SENS_VALUE;
+    private final float ROTATE_PART_DURATION_SENS_VALUE;
+    private final float CAMERA_Z_SENS_VALUE;
+    private final float CAMERA_DURATION_SENS_VALUE;
+    private final float CAMERA_PART_DURATION_SENS_VALUE;
     
             
     
@@ -144,16 +147,16 @@ public class GestureRotateControl extends LeapControl
         timeBetweenCameraSwipes = 0;
         timePreviousIntendedCameraSwipe = Long.MAX_VALUE;
         minimalTimeBetweenRotateSwipes = calculateMinimalTimeBetweenGestures(averageDurationRotateSwipe, 
-                stdevDurationRotateSwipe, ROTATE_TIME_BETWEEN_SENSITIVITY);
+                stdevDurationRotateSwipe, Rotate_Time_Between_Sensitivity);
         minimalTimeBetweenCameraSwipes = calculateMinimalTimeBetweenGestures(averageDurationCameraSwipe, 
-                stdevDurationCameraSwipe, CAMERA_TIME_BETWEEN_SENSITIVITY);
+                stdevDurationCameraSwipe, Camera_Time_Between_Sensitivity);
         
-        ROTATE_Z_SENS_VALUE = calculateSensitivyValue(ROTATE_Z_SENSITIVITY);
-        ROTATE_DURATION_SENS_VALUE = calculateSensitivyValue(ROTATE_DURATION_SENSITIVITY);
-        CAMERA_Z_SENS_VALUE = calculateSensitivyValue(CAMERA_Z_SENSITIVITY);
-        CAMERA_DURATION_SENS_VALUE = calculateSensitivyValue(CAMERA_DURATION_SENSITIVITY);
-        ROTATE_PART_DURATION_SENS_VALUE = calculateSensitivyValue(ROTATE_PART_SENSITIVITY);
-        CAMERA_PART_DURATION_SENS_VALUE = calculateSensitivyValue(CAMERA_PART_SENSITIVITY);
+        ROTATE_Z_SENS_VALUE = calculateSensitivyValue(Rotate_Z_Sensitivity);
+        ROTATE_DURATION_SENS_VALUE = calculateSensitivyValue(Rotate_Duration_Sensitivity);
+        CAMERA_Z_SENS_VALUE = calculateSensitivyValue(Camera_Z_Sensitivity);
+        CAMERA_DURATION_SENS_VALUE = calculateSensitivyValue(Camera_Duration_Sensitivity);
+        ROTATE_PART_DURATION_SENS_VALUE = calculateSensitivyValue(Rotate_Part_Sensitivity);
+        CAMERA_PART_DURATION_SENS_VALUE = calculateSensitivyValue(Camera_Part_Sensitivity);
     }
 
     @Override
@@ -163,7 +166,7 @@ public class GestureRotateControl extends LeapControl
         {
             rotateVelocity = decayVelocity(rotateVelocity);
             cameraVelocity = decayVelocity(cameraVelocity);
-            double rotateSwipeSpeed = 0.0, cameraSwipeSpeed = 0.0;
+            float rotateSwipeSpeed = 0.0f, cameraSwipeSpeed = 0.0f;
             boolean isIntended = false;
             if(isSwiped())
             { 
@@ -391,46 +394,46 @@ public class GestureRotateControl extends LeapControl
             return frame.hands().rightmost();
     }
 
-    private double calculateVelocity(double speed) 
+    private float calculateVelocity(float speed) 
     {
-        double velocity =0.0;      
+        float velocity =0.0f;      
         if(isRotateSwipe)
         {
             if(lastDirectionRotate == null || speed == 0.0)
                 velocity = rotateVelocity;
             else if(lastDirectionRotate.getX()>0)
-                velocity = rotateVelocity + ((1/frame.currentFramesPerSecond())+(speed/ROTATE_SPEED_INCREASE));  
+                velocity = rotateVelocity + ((1/frame.currentFramesPerSecond())+(speed/Rotate_Speed_Increase));  
             else if(lastDirectionRotate.getX()<0)
-                velocity = rotateVelocity - ((1/frame.currentFramesPerSecond())+(speed/ROTATE_SPEED_INCREASE));
-            if(Math.abs(velocity) > MAX_VELOCITY_ROTATE )
-                return Math.signum(velocity)*MAX_VELOCITY_ROTATE;
-            if(Math.abs(velocity) < MIN_VELOCITY_ROTATE )
-                return 0.0;
+                velocity = rotateVelocity - ((1/frame.currentFramesPerSecond())+(speed/Rotate_Speed_Increase));
+            if(Math.abs(velocity) > Max_Velocity_Rotate )
+                return Math.signum(velocity)*Max_Velocity_Rotate;
+            if(Math.abs(velocity) < Min_Velocity_Rotate )
+                return 0.0f;
         }
         else if(isCameraSwipe)
         {
             if(lastDirectionCamera == null || speed == 0.0)
                 velocity = cameraVelocity;
             else if(lastDirectionCamera.getY()>0)
-                velocity = cameraVelocity + ((1/frame.currentFramesPerSecond())+(speed/CAMERA_SPEED_INCREASE));  
+                velocity = cameraVelocity + ((1/frame.currentFramesPerSecond())+(speed/Camera_Speed_Increase));  
             else if(lastDirectionCamera.getY()<0)
-                velocity = cameraVelocity - ((1/frame.currentFramesPerSecond())+(speed/CAMERA_SPEED_INCREASE));
+                velocity = cameraVelocity - ((1/frame.currentFramesPerSecond())+(speed/Camera_Speed_Increase));
             
             
-            if(Math.abs(velocity) > MAX_VELOCITY_CAMERA )
-                return Math.signum(velocity)*MAX_VELOCITY_CAMERA;
-            if(Math.abs(velocity) < MIN_VELOCITY_CAMERA )
-                return 0.0;
+            if(Math.abs(velocity) > Max_Velocity_Camera )
+                return Math.signum(velocity)*Max_Velocity_Camera;
+            if(Math.abs(velocity) < Min_Velocity_Camera )
+                return 0.0f;
         }
         return velocity;
     }
     
-    private double decayVelocity(double velocity)
+    private float decayVelocity(float velocity)
     {
         if(isRotateSwipe)
-            return velocity*ROTATE_DECAY_CONSTANT; 
+            return velocity*Rotate_Decay_Constant; 
         else if(isCameraSwipe)
-            return velocity*CAMERA_DECAY_CONSTANT; 
+            return velocity*Camera_Decay_Constant; 
         else
             return 0;
     }
@@ -438,7 +441,7 @@ public class GestureRotateControl extends LeapControl
     private void calculateUserVariablesForRotate(SwipeGesture rotateSwipe, boolean isNewAndIntended)
     {
         nrPartialRotateSwipes++;
-        double previousAverage = averageZPartialRotateSwipe, 
+        float previousAverage = averageZPartialRotateSwipe, 
                 zCoordinate = rotateSwipe.position().getZ(),
                 duration = rotateSwipe.duration();
         
@@ -462,18 +465,18 @@ public class GestureRotateControl extends LeapControl
             {
                 stdevDurationRotateSwipe = calculateStdev(stdevDurationRotateSwipe, previousAverage, averageDurationRotateSwipe, summedPartialRotateSwipes);
             }
-            if(averageDurationRotateSwipe < (ROTATE_MIN_ACCEPT_DURATION-ROTATE_DURATION_SENS_VALUE*stdevDurationRotateSwipe))
-                averageDurationRotateSwipe =  ROTATE_MIN_ACCEPT_DURATION;
-            summedPartialRotateSwipes = 0.0;
+            if(averageDurationRotateSwipe < (Rotate_Min_Accept_Duration-ROTATE_DURATION_SENS_VALUE*stdevDurationRotateSwipe))
+                averageDurationRotateSwipe =  Rotate_Min_Accept_Duration;
+            summedPartialRotateSwipes = 0.0f;
             minimalTimeBetweenRotateSwipes = calculateMinimalTimeBetweenGestures(averageDurationRotateSwipe, 
-                stdevDurationRotateSwipe, ROTATE_TIME_BETWEEN_SENSITIVITY);
+                stdevDurationRotateSwipe, Rotate_Time_Between_Sensitivity);
         }
     }
     
     private void calculateUserVariablesForCamera(SwipeGesture cameraSwipe, boolean isNewAndIntended)
     {
         nrPartialCameraSwipes++;
-        double previousAverage = averageZPartialCameraSwipe, 
+        float previousAverage = averageZPartialCameraSwipe, 
                zCoordinate = cameraSwipe.position().getZ(),
                duration = cameraSwipe.duration();
         
@@ -496,11 +499,11 @@ public class GestureRotateControl extends LeapControl
             {
                 stdevDurationCameraSwipe = calculateStdev(stdevDurationCameraSwipe, previousAverage, averageDurationCameraSwipe, summedPartialCameraSwipes);
             }
-            if(averageDurationCameraSwipe < (CAMERA_MIN_ACCEPT_DURATION-CAMERA_DURATION_SENS_VALUE*stdevDurationCameraSwipe))
-                averageDurationCameraSwipe =  CAMERA_MIN_ACCEPT_DURATION;
-            summedPartialCameraSwipes = 0.0;
+            if(averageDurationCameraSwipe < (Camera_Min_Accept_Duration-CAMERA_DURATION_SENS_VALUE*stdevDurationCameraSwipe))
+                averageDurationCameraSwipe =  Camera_Min_Accept_Duration;
+            summedPartialCameraSwipes = 0.0f;
             minimalTimeBetweenCameraSwipes = calculateMinimalTimeBetweenGestures(averageDurationCameraSwipe, 
-                stdevDurationCameraSwipe, CAMERA_TIME_BETWEEN_SENSITIVITY);
+                stdevDurationCameraSwipe, Camera_Time_Between_Sensitivity);
         }
     }
     
@@ -555,17 +558,17 @@ public class GestureRotateControl extends LeapControl
         }
     }
 
-    private double calculateStdev(double stdev, double prevAverage, double average, double x) 
+    private float calculateStdev(float stdev, float prevAverage, float average, float x) 
     {
-        return Math.sqrt(stdev+(x-prevAverage)*(x-average));
+        return (float) Math.sqrt(stdev+(x-prevAverage)*(x-average));
     }
 
-    private double calculateAverage(double average, double x, int N) 
+    private float calculateAverage(float average, float x, int N) 
     {
         return (x+(N-1)*average)/N;
     }
     
-    private double calculateSensitivyValue(double sensitivity)
+    private float calculateSensitivyValue(float sensitivity)
     {
         if(sensitivity > 1)
             return 1-1/sensitivity;
@@ -581,11 +584,11 @@ public class GestureRotateControl extends LeapControl
         return -1;
     }
     
-    private double calculateMinimalTimeBetweenGestures(double average, double stdev, double sensitivityValue)
+    private float calculateMinimalTimeBetweenGestures(float average, float stdev, float sensitivityValue)
     {
         //double relativeStdev = stdev/(stdev+average);
         //return average*relativeStdev*sensitivityValue;
-        return sensitivityValue * (average + stdev);
+        return (float) sensitivityValue * (average + stdev);
     }
 
     private boolean isDirectionChanged(SwipeGesture s) 
@@ -604,5 +607,100 @@ public class GestureRotateControl extends LeapControl
         }
         else
             return false;
+    }
+
+    public TweakSet initTweakables() 
+    {   
+        TweakSet set = new TweakSet("GestureRotateControl",this);
+        set.add(new TweakVariable <Float>("Rotate_Z_Sensitivity",Rotate_Z_Sensitivity));
+        set.add(new TweakVariable <Float>("Rotate_Duration_Sensitivity",Rotate_Duration_Sensitivity));
+        set.add(new TweakVariable <Float>("Rotate_Time_Between_Swipes_Sensitivity",Rotate_Time_Between_Sensitivity));
+        set.add(new TweakVariable <Float>("Rotate_Partial_Sensitivity",Rotate_Part_Sensitivity));
+        set.add(new TweakVariable <Float>("Rotate_Min_acceptance_duration",Rotate_Min_Accept_Duration));
+        
+        set.add(new TweakVariable <Float>("Camera_Z_Sensitivity",Camera_Z_Sensitivity));
+        set.add(new TweakVariable <Float>("Camera_Duration_Sensitivity",Camera_Duration_Sensitivity));
+        set.add(new TweakVariable <Float>("Camera_Time_Between_Swipes_Sensitivity",Camera_Time_Between_Sensitivity));
+        set.add(new TweakVariable <Float>("Camera_Partial_Sensitivity",Camera_Part_Sensitivity));
+        set.add(new TweakVariable <Float>("Camera_Min_acceptance_duration",Camera_Min_Accept_Duration));
+    
+        set.add(new TweakVariable <Float>("Rotate_speed_increase",Rotate_Speed_Increase));
+        set.add(new TweakVariable <Float>("Camera_speed_increase",Camera_Speed_Increase));
+        set.add(new TweakVariable <Float>("Rotate_decay_constant",Rotate_Decay_Constant));
+        set.add(new TweakVariable <Float>("Camera_decay_constant",Camera_Decay_Constant));
+        set.add(new TweakVariable <Float>("Max_velocity_rotate",Max_Velocity_Rotate));
+        set.add(new TweakVariable <Float>("Min_velocity_rotate",Min_Velocity_Rotate));
+        set.add(new TweakVariable <Float>("Max_velocity_camera",Max_Velocity_Camera));
+        set.add(new TweakVariable <Float>("Min_velocity_camera",Min_Velocity_Camera));
+        
+        return set;
+    }
+
+    private enum Variables {Rotate_Z_Sensitivity, Rotate_Duration_Sensitivity, Rotate_Time_Between_Swipes_Sensitivity,
+    Rotate_Partial_Sensitivity, Rotate_Min_acceptance_duration, Camera_Z_Sensitivity, Camera_Duration_Sensitivity, 
+    Camera_Time_Between_Swipes_Sensitivity, Camera_Partial_Sensitivity, Camera_Min_acceptance_duration, Rotate_speed_increase,
+    Camera_speed_increase, Rotate_decay_constant, Camera_decay_constant, Max_velocity_rotate, Max_velocity_camera, Min_velocity_camera}
+    
+    public void setVariable(TweakVariable var) 
+    {
+        Variables name = Variables.valueOf(var.getName());
+        float varFloat = (Float) var.getValue();
+        switch (name) 
+        {
+            case Rotate_Z_Sensitivity:
+                Rotate_Z_Sensitivity = varFloat;
+                break;
+            case Rotate_Duration_Sensitivity:
+                Rotate_Duration_Sensitivity = varFloat;
+                break;
+            case Rotate_Time_Between_Swipes_Sensitivity:
+                Rotate_Time_Between_Sensitivity = varFloat;
+                break;
+            case Rotate_Partial_Sensitivity:
+                Rotate_Part_Sensitivity = varFloat;
+                break;
+            case Rotate_Min_acceptance_duration:
+                Rotate_Min_Accept_Duration = varFloat;
+                break;
+            case Camera_Z_Sensitivity:
+                Camera_Z_Sensitivity = varFloat;
+                break;
+            case Camera_Duration_Sensitivity:
+                Camera_Duration_Sensitivity = varFloat;
+                break;
+            case Camera_Time_Between_Swipes_Sensitivity:
+                Camera_Time_Between_Sensitivity = varFloat;
+                break;
+            case Camera_Partial_Sensitivity:
+                Camera_Part_Sensitivity = varFloat;
+                break;
+            case Camera_Min_acceptance_duration:
+                Camera_Min_Accept_Duration = varFloat;
+                break;
+            case Rotate_speed_increase:
+                Rotate_Speed_Increase = varFloat;
+                break;
+            case Camera_speed_increase:
+                Camera_Speed_Increase = varFloat;
+                break;
+            case Rotate_decay_constant:
+                Rotate_Decay_Constant = varFloat;
+                break;
+            case Camera_decay_constant:
+                Camera_Decay_Constant = varFloat;
+                break;
+            case Max_velocity_rotate:
+                Max_Velocity_Rotate = varFloat;
+                break;
+            case Max_velocity_camera:
+                Max_Velocity_Camera = varFloat;
+                break;
+            case Min_velocity_camera:
+                Min_Velocity_Camera = varFloat;
+                break;
+            default :
+                System.err.println("Variable not found");
+                break;
+        }
     }
 }
