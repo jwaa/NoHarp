@@ -43,7 +43,8 @@ public class ModelDisplay extends Node implements Updatable {
         this.attachChild(pic);
         prevtaskid = taskman.getTaskId();
         prevrota = grid.getRotation();
-        //setModel(taskman.getTaskId());
+        newModel();
+        updateModel();
     }
     
     private void newModel()

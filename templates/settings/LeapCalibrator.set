@@ -1,2 +1,2 @@
-scale Vector3f (1.0, 1.0, 1.0)
+scale Vector3f (0.1, 0.1, 0.1)
 offset Vector3f (0.0, 0.0, 0.0)

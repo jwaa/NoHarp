@@ -70,6 +70,7 @@ public class TaskManager {
             bm.add(new BlockModel(path + allHardModels[i]));
             //System.out.println(path + allHardModels[i]);
         }
+        nextTask();
     }
 
     /**

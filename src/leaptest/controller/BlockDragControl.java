@@ -12,7 +12,9 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import leaptest.model.Block;
 import leaptest.model.BlockContainer;
+import leaptest.model.BlockModel;
 import leaptest.model.Grid;
+import leaptest.model.TaskManager;
 import leaptest.view.MaterialManager;
 
 /**
@@ -21,14 +23,16 @@ import leaptest.view.MaterialManager;
  */
 public class BlockDragControl {
     // Linked data
-    protected BlockContainer world;
-    protected Grid grid;
-    protected Block dragging, creationblock;
+    private BlockContainer world;
+    private Grid grid;
+    private Block dragging, creationblock;
+    private TaskManager taskmanager;
     
-    protected Vector3f target;
+    private Vector3f target;
     
-    public BlockDragControl(BlockContainer world, Grid grid, Block creationblock)
+    public BlockDragControl(BlockContainer world, Grid grid, Block creationblock, TaskManager taskmanager)
     {
+        this.taskmanager = taskmanager;
         this.creationblock = creationblock;
         this.grid = grid;
         this.world = world;
@@ -60,12 +64,25 @@ public class BlockDragControl {
             dragging.setPosition(grid.world2grid(dragging.getPosition()));
             dragging.setRotation(0f);
             world.removeBlock(dragging);
-            grid.addBlock(dragging);   
+            grid.addBlock(dragging);
+            if (isTaskComplete())
+                taskmanager.nextTask();
         }
         else
             dragging.setDissolving(true);
         dragging = null;    
     }    
+    
+    private boolean isTaskComplete()
+    {
+        BlockModel ct = taskmanager.getTask();
+        if (ct.getElements() == grid.getBlocks().size())
+        {
+            BlockModel cg = new BlockModel(grid);
+            return cg.equals(ct);
+        }
+        return false;
+    }
     
     public void moveBlock(Vector3f position)
     {

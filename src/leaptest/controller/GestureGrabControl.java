@@ -63,9 +63,9 @@ public class GestureGrabControl extends LeapControl implements Tweakable
     {
         if (frame != null)
         {
-            if (bdc.dragging == null)
+            if (bdc.getSelected() == null)
                 grab();
-            if (bdc.dragging != null)
+            if (bdc.getSelected() != null)
                 if (!release())
                     drag();
             previousFrame = frame;
@@ -98,8 +98,7 @@ public class GestureGrabControl extends LeapControl implements Tweakable
             if (this.gettingSmaller > gettingSmallerThreshold)
             {
                 Vector3f coordinates = calib.leap2world(hand.palmPosition());
-                bdc.dragging = findBlockWithinMarges(coordinates);
-                bdc.liftBlock(bdc.dragging);
+                bdc.liftBlock(findBlockWithinMarges(coordinates));
                 this.gettingSmaller = 0;
                 this.stayingTheSame = 0;
             }

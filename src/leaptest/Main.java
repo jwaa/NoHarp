@@ -166,7 +166,7 @@ public class Main extends SimpleApplication
         if (config.isSet("Leap"))
         {
             controllers.add(new LeapHandControl(calib, handmodel));
-            BlockDragControl leapbdc = new BlockDragControl(world, grid, creationblock);
+            BlockDragControl leapbdc = new BlockDragControl(world, grid, creationblock, taskmanager);
             GestureGrabControl ggc = new GestureGrabControl(calib, leapbdc, config.isSet("Righthanded"));
             controllers.add(ggc);
             controllers.add(new BlockTargetHelperControl(leapbdc, rootNode, blockdims));
@@ -192,7 +192,7 @@ public class Main extends SimpleApplication
             controllers.add(new KeyboardGridCamControl(inputManager, camera));
 
             // Add mouse control
-            BlockDragControl mbdc = new BlockDragControl(world, grid, creationblock);
+            BlockDragControl mbdc = new BlockDragControl(world, grid, creationblock, taskmanager);
             MouseBlockControl mbc = new MouseBlockControl(inputManager, cam, mbdc);
             controllers.add(mbc);
             controllers.add(new BlockTargetHelperControl(mbdc, rootNode, blockdims));

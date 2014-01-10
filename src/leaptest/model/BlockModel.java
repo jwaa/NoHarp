@@ -213,6 +213,15 @@ public class BlockModel
         return false;
     }
 
+    /**
+     * Gives Sum of all non-zero elements
+     * @return number of elements
+     */
+    public int getElements()
+    {
+        return elements;
+    }
+    
     @Override
     public String toString()
     {

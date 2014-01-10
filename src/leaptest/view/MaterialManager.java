@@ -38,7 +38,8 @@ public class MaterialManager {
         falling = generateMaterial(assetManager, ColorRGBA.White);
         gridnormal = generateMaterial(assetManager, ColorRGBA.Red);
         ringrotate = generateMaterial(assetManager, ColorRGBA.Orange);  
-        creationblock = normal;
+        creationblock = generateMaterial(assetManager, ColorRGBA.Green);
+        creationblock.setTexture("DiffuseMap",assetManager.loadTexture("Textures/CubeTexCreate.png"));
         target = generateMaterial(assetManager, new ColorRGBA(1.0f,0f,0.f,0.2f));
         target.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
         floor = generateMaterial(assetManager, new ColorRGBA(0.3f,0.3f,0.70f,1.0f));

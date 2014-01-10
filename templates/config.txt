@@ -11,6 +11,11 @@ ScreenFrequency 0
 FPS 30
 FPScounter 1
 
+% ViewSettings
+ShowModelImage 1
+CamDist 100
+CamAngle 0.7853
+
 % World settings
 GridSize 5
 BlockSize 7.5
@@ -21,6 +26,7 @@ Righthanded 1
 % Model loading
 ModelFolder models/
 ModelFile export.model
+ModelImgBase Textures/models/model
 
 % Specific class settings / calibrations 
 SetFolder settings/
@@ -29,8 +35,3 @@ SetExtension .set
 % Controllers
 Leap 1
 MouseAndKeyboard 1
-
-% Viewport ( Single | WithImage | ThreeSplit )
-ViewPortMode WithImage
-CamDist 100
-CamAngle 0.7853
