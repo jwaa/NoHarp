@@ -43,10 +43,16 @@ public class KeyboardGridCamControl implements AnalogListener, Updatable, Loggab
     }
 
     public void onAnalog(String name, float value, float tpf) {
-          if (name.equals("Rotate Cam Up"))
+        if (name.equals("Rotate Cam Up"))
+        {
+            isKeyPressUp = true;
             inc += delta * tpf;
+        }
         else if (name.equals("Rotate Cam Down"))
+        {
+            isKeyPressDown = true;
             inc -= delta * tpf;
+        }
     }
 
     public void update(float tpf) {
