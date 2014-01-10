@@ -45,9 +45,10 @@ public class KeyboardTweakerControl implements Updatable, ActionListener {
         inputManager.addMapping("PrevVar", new KeyTrigger(KeyInput.KEY_6), new KeyTrigger(KeyInput.KEY_NUMPAD6));        
         inputManager.addMapping("IncDelta", new KeyTrigger(KeyInput.KEY_ADD));
         inputManager.addMapping("DecDelta", new KeyTrigger(KeyInput.KEY_MINUS), new KeyTrigger(KeyInput.KEY_SUBTRACT));
-        inputManager.addMapping("SaveCalib", new KeyTrigger(KeyInput.KEY_F8));  
+        inputManager.addMapping("SaveCalib", new KeyTrigger(KeyInput.KEY_F6));  
+        inputManager.addMapping("LoadCalib", new KeyTrigger(KeyInput.KEY_F5));  
         inputManager.addListener(this, new String[]{"LessX","MoreX","LessY","MoreY","LessZ","MoreZ"}); 
-        inputManager.addListener(this, new String[]{"ToggleSet","NextVar","PrevVar","SaveCalib","IncDelta","DecDelta"});
+        inputManager.addListener(this, new String[]{"ToggleSet","NextVar","PrevVar","SaveCalib","LoadCalib","IncDelta","DecDelta"});
     }
     
     private void change(String name) 
@@ -71,42 +72,50 @@ public class KeyboardTweakerControl implements Updatable, ActionListener {
 
     
     public void onAction(String name, boolean isPressed, float tpf) {
-        if (name.equals("ToggleSet") && isPressed)
-        {
-            TweakSet ts = tweak.nextSet();
-            System.out.println("Tweaking Set: " + ts.getName());
-        }
-        else if (name.equals("NextVar") && isPressed)
-        {
-            TweakVariable tv = tweak.nextVar();
-            System.out.println("Tweaking Var: " + tv.getName());
-        }
-        else if (name.equals("PrevVar") && isPressed)
-        {
-            TweakVariable tv = tweak.prevVar();
-            System.out.println("Tweaking Var: " + tv.getName());
-        }        
-        else if (name.equals("SaveCalib") && isPressed)
-        {
-            TweakSet ts = tweak.getSelectedSet();
-            String filename = pre + ts.getName() + post;
-            ts.save(filename);
-            System.out.println("Tweaking Set: " + ts.getName() + " file saved to: " + filename);
-        }
-        else if (name.equals("IncDelta") && isPressed)
-        {
-            Object delta = tweak.incDelta();
-            System.out.println("Delta set to: " + delta);
-        }
-        else if (name.equals("DecDelta") && isPressed)
-        {
-            Object delta = tweak.decDelta();
-            System.out.println("Delta set to: " + delta);
-        }           
-        else if (isPressed)
-        {
-            change(name);
-        }
+        if (isPressed)
+            if (name.equals("ToggleSet"))
+            {
+                TweakSet ts = tweak.nextSet();
+                System.out.println("Tweaking Set: " + ts.getName());
+            }
+            else if (name.equals("NextVar"))
+            {
+                TweakVariable tv = tweak.nextVar();
+                System.out.println("Tweaking Var: " + tv.getName());
+            }
+            else if (name.equals("PrevVar"))
+            {
+                TweakVariable tv = tweak.prevVar();
+                System.out.println("Tweaking Var: " + tv.getName());
+            }        
+            else if (name.equals("SaveCalib"))
+            {
+                TweakSet ts = tweak.getSelectedSet();
+                String filename = pre + ts.getName() + post;
+                ts.save(filename);
+                System.out.println("Tweaking Set: " + ts.getName() + " file saved to: " + filename);
+            }
+            else if (name.equals("LoadCalib"))
+            {
+                TweakSet ts = tweak.getSelectedSet();
+                String filename = pre + ts.getName() + post;
+                ts.load(filename);
+                System.out.println("Tweaking Set: " + ts.getName() + " file loaded from: " + filename);
+            }
+            else if (name.equals("IncDelta"))
+            {
+                Object delta = tweak.incDelta();
+                System.out.println("Delta set to: " + delta);
+            }
+            else if (name.equals("DecDelta"))
+            {
+                Object delta = tweak.decDelta();
+                System.out.println("Delta set to: " + delta);
+            }           
+            else 
+            {
+                change(name);
+            }
     }
 
 

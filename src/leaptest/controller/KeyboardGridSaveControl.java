@@ -29,7 +29,7 @@ public class KeyboardGridSaveControl implements ActionListener, Updatable {
     
     private void mapInputs(InputManager inputManager)
     {
-        inputManager.addMapping("SaveGrid", new KeyTrigger(KeyInput.KEY_F7));
+        inputManager.addMapping("SaveGrid", new KeyTrigger(KeyInput.KEY_F8));
         inputManager.addListener(this, new String[]{"SaveGrid"});       
     }
 

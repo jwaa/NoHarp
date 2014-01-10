@@ -2,7 +2,7 @@ package leaptest;
 
 import leaptest.view.HandView;
 import leaptest.view.Floor;
-import leaptest.controller.KeyboardControl;
+import leaptest.controller.KeyboardDebugControl;
 import leaptest.controller.LeapHandControl;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
@@ -62,6 +62,7 @@ public class Main extends SimpleApplication
     private Controller leap;
     private ArrayList<Updatable> controllers;
     private Log log;
+    private boolean stopping = false;
     
     /**
      * Loads application config settings from file applies settings and fires up
@@ -164,7 +165,7 @@ public class Main extends SimpleApplication
         if (config.isSet("Leap"))
         {
             controllers.add(new LeapHandControl(calib, handmodel));
-            BlockDragControl leapbdc = new BlockDragControl(world, grid, creationblock, taskmanager);
+            BlockDragControl leapbdc = new BlockDragControl(world, grid, creationblock, taskmanager, this);
             GestureGrabControl ggc = new GestureGrabControl(calib, leapbdc, config.isSet("Righthanded"));
             controllers.add(ggc);
             controllers.add(new BlockTargetHelperControl(leapbdc, rootNode, blockdims));
@@ -174,12 +175,13 @@ public class Main extends SimpleApplication
         }
 
         // Add keyboard control
-        controllers.add(new KeyboardControl(this));
+        controllers.add(new KeyboardDebugControl(this));
         if (config.isSet("Debug"))
         {
             tweaker.registerTweakable(calib);
             controllers.add(new KeyboardTweakerControl(inputManager, tweaker, config.getValue("SetFolder"), config.getValue("SetExtension")));
-            controllers.add(new KeyboardGridSaveControl(inputManager, grid, config.getValue("ModelFolder") + config.getValue("ModelFile")));
+            if (config.isSet("DebugGridSaver"))
+                controllers.add(new KeyboardGridSaveControl(inputManager, grid, config.getValue("ModelFolder") + config.getValue("ModelFile")));
         }
 
 
@@ -190,7 +192,7 @@ public class Main extends SimpleApplication
             controllers.add(new KeyboardGridCamControl(inputManager, camera));
 
             // Add mouse control
-            BlockDragControl mbdc = new BlockDragControl(world, grid, creationblock, taskmanager);
+            BlockDragControl mbdc = new BlockDragControl(world, grid, creationblock, taskmanager, this);
             MouseBlockControl mbc = new MouseBlockControl(inputManager, cam, mbdc);
             controllers.add(mbc);
             controllers.add(new BlockTargetHelperControl(mbdc, rootNode, blockdims));
@@ -216,26 +218,42 @@ public class Main extends SimpleApplication
     }
 
     /**
-     * Gracefully shutdowns the application and Leap and stores log to file
+     * Set shutdown flag
+     * @param shutdown true to shutdown on next update
      */
-    public void shutDown()
+    public void setShutDown(boolean shutdown)
     {
-        leap.delete();
-        if (log.isEnabled())
-            log.save(config.getValue("LogFolder") + config.getValue("UserNumber") + ".log");
-        stop();
+        stopping = shutdown;
     }
-
+    
     @Override
     public void simpleUpdate(float tpf)
     {
         log.log();
         for (Updatable c : controllers)
             c.update(tpf);
+        if (stopping)
+            shutDown();
     }
 
     @Override
     public void simpleRender(RenderManager rm)
     {
+    }
+    
+    /**
+     * Gracefully shutdowns the application and Leap and stores log to file
+     */
+    private void shutDown()
+    {
+        System.out.println("Shutting down...");
+        leap.delete();
+        if (log.isEnabled())
+        {
+            String logfile = config.getValue("LogFolder") + config.getValue("UserNumber") + ".log";
+            log.save(logfile);
+            System.out.println("Saved log to: " + logfile);
+        }
+        stop();
     }
 }

@@ -10,6 +10,7 @@ import com.jme3.collision.CollisionResults;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
+import leaptest.Main;
 import leaptest.model.Block;
 import leaptest.model.BlockContainer;
 import leaptest.model.BlockModel;
@@ -27,15 +28,17 @@ public class BlockDragControl {
     private Grid grid;
     private Block dragging, creationblock;
     private TaskManager taskmanager;
+    private Main main;
     
     private Vector3f target;
     
-    public BlockDragControl(BlockContainer world, Grid grid, Block creationblock, TaskManager taskmanager)
+    public BlockDragControl(BlockContainer world, Grid grid, Block creationblock, TaskManager taskmanager, Main main)
     {
         this.taskmanager = taskmanager;
         this.creationblock = creationblock;
         this.grid = grid;
         this.world = world;
+        this.main = main;
     }
    
     public void liftBlock(Block block)
@@ -48,10 +51,7 @@ public class BlockDragControl {
                world.addBlock(dragging);
                grid.removeFromGrid(dragging);
                if (isTaskComplete())
-               {
-                   taskmanager.nextTask();
-                   grid.removeAllBlocks();
-               }
+                   tryNextTask();
            } else if (!world.containsBlock(dragging))
                world.addBlock(dragging);
            dragging.setLifted(true);
@@ -71,10 +71,7 @@ public class BlockDragControl {
             world.removeBlock(dragging);
             grid.addBlock(dragging);
             if (isTaskComplete())
-            {
-                taskmanager.nextTask();
-                grid.removeAllBlocks();
-            }
+                tryNextTask();
         }
         else
             dragging.setDissolving(true);
@@ -87,6 +84,14 @@ public class BlockDragControl {
         if (ct.getElements() == grid.getBlocks().size())
             return ct.equals(grid);
         return false;
+    }
+    
+    private void tryNextTask()
+    {
+        if (taskmanager.nextTask())
+            grid.removeAllBlocks();    
+        else
+            main.stop();
     }
     
     public void moveBlock(Vector3f position)

@@ -17,41 +17,37 @@ public class TaskManager {
     /*
      * bm contains a list of 9 random models: 3 easy, 3 normal, 3 hard (in that order)
      */
+    private final static int number_of_tasks = 9;
+    
     private ArrayList <BlockModel> bm;
-    private String [] all_tasks = new String [9];
+    private String [] all_tasks = new String [number_of_tasks];
     private int counter;
-    private int number_of_tasks = 9;
+    
     
     public TaskManager(String path)
     {
         counter = -1;
         bm = new ArrayList<BlockModel>();
         
+        // Collect a list of filenames of all model files within path
         File folder = new File(path);
         File[] listOfFilesTemp = folder.listFiles();
-        Arrays.sort(listOfFilesTemp);
-        
         ArrayList<File> listOfFiles2 = new ArrayList<File>();
-        for(int i =0;i<listOfFilesTemp.length;i++)
+        for(int i=0; i<listOfFilesTemp.length; i++)
         {
-            if(listOfFilesTemp[i].getName().contains(path + "model") && 
-                    listOfFilesTemp[i].getName().contains(".model"));
-            {
+            String s = listOfFilesTemp[i].getName();
+            if (s.startsWith("model") && s.endsWith(".model"))
                 listOfFiles2.add(listOfFilesTemp[i]);
-            }
         }
-        
         File[] listOfFiles = new File[listOfFiles2.size()];
         for (int i=0; i<listOfFiles.length; i++)
             listOfFiles[i] = listOfFiles2.get(i);
-        
         String[] listOfFileNames = new String [listOfFiles.length];
         for(int i=0;i<listOfFiles.length;i++)
-        {
             listOfFileNames[i] = listOfFiles[i].getName();
-        }
-        Arrays.sort(listOfFileNames, new LengthCompare());
         
+        Arrays.sort(listOfFileNames, new LengthCompare());
+
         String[] allEasyModels = new String [listOfFileNames.length/3];
         String[] allNormalModels = new String [listOfFileNames.length/3];
         String[] allHardModels = new String [listOfFileNames.length/3];
@@ -70,31 +66,31 @@ public class TaskManager {
         {   
             all_tasks[i] = allEasyModels[i];
             bm.add(new BlockModel(path + allEasyModels[i]));
-            //System.out.println(path + allEasyModels[i]);
+            
         }
         for(int i=0;i<number_of_tasks/3; i++)
         {
             all_tasks[i+(number_of_tasks/3)] = allNormalModels[i];
             bm.add(new BlockModel(path + allNormalModels[i]));
-            //System.out.println(path + allNormalModels[i]);
         }
         for(int i=0;i<3; i++)
         {
             all_tasks[i+2*(number_of_tasks/3)] = allHardModels[i];
             bm.add(new BlockModel(path + allHardModels[i]));
-            //System.out.println(path + allHardModels[i]);
         }
         nextTask();
     }
 
     /**
-     * Start next task
-     * @return returns the new task
+     * Start next task if one is available
+     * @return returns true if nextTask is available
      */
-    public BlockModel nextTask()
+    public boolean nextTask()
     {
+        if (!hasNextTask())
+           return false;
         counter++;
-        return bm.get(counter);
+        return true;
     }
     
     /**
@@ -106,6 +102,16 @@ public class TaskManager {
         return Integer.parseInt(all_tasks[counter].replaceAll("\\D+",""));
     }
  
+    /**
+     * Checks if there is a task available
+     * @return true if a tasks is available
+     */
+    public boolean hasNextTask()
+    {
+        return counter+1 < number_of_tasks;
+    }
+    
+    
     /**
      * Gets current task
      * @return current task

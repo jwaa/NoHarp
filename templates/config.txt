@@ -1,6 +1,7 @@
 % Turn logging & debugging on/off
-Log 1
 Debug 1
+DebugGridSaver 0
+Log 1
 LogFolder logs/
 
 % Screen settings
