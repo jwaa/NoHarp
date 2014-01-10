@@ -191,8 +191,9 @@ public class BlockModel
             // check for equality in 4 different views
             for (int k = 0; k < 4; k++)
             {
-                int[][] build = rotate(bm.model, k);
-                if (exactequal(build, model))
+                //System.out.println(k);
+                int[][] build = rotate(model, k);
+                if (exactequal(build, bm.model))
                     return true;
             }
             return false;
@@ -204,10 +205,12 @@ public class BlockModel
     {
         if (build.length == model.length && build[0].length == model[0].length) // dimensions the same
         {
+            //System.out.println("Dims are the same");
             for (int i = 0; i < model.length; i++)
                 for (int j = 0; j < model[0].length; j++)
                     if (build[i][j] != model[i][j])
                         return false;
+            //System.out.println("Are the same!");
             return true;
         }
         return false;

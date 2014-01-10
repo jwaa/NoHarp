@@ -47,6 +47,11 @@ public class BlockDragControl {
            {
                world.addBlock(dragging);
                grid.removeFromGrid(dragging);
+               if (isTaskComplete())
+               {
+                   taskmanager.nextTask();
+                   grid.removeAllBlocks();
+               }
            } else if (!world.containsBlock(dragging))
                world.addBlock(dragging);
            dragging.setLifted(true);
@@ -66,7 +71,10 @@ public class BlockDragControl {
             world.removeBlock(dragging);
             grid.addBlock(dragging);
             if (isTaskComplete())
+            {
                 taskmanager.nextTask();
+                grid.removeAllBlocks();
+            }
         }
         else
             dragging.setDissolving(true);
@@ -77,10 +85,7 @@ public class BlockDragControl {
     {
         BlockModel ct = taskmanager.getTask();
         if (ct.getElements() == grid.getBlocks().size())
-        {
-            BlockModel cg = new BlockModel(grid);
-            return cg.equals(ct);
-        }
+            return ct.equals(grid);
         return false;
     }
     

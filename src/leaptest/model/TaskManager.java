@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -35,13 +34,15 @@ public class TaskManager {
         ArrayList<File> listOfFiles2 = new ArrayList<File>();
         for(int i =0;i<listOfFilesTemp.length;i++)
         {
-            if(listOfFilesTemp[i].getName().subSequence(0, 4).equals("model") && 
+            if(listOfFilesTemp[i].getName().contains(path + "model") && 
                     listOfFilesTemp[i].getName().contains(".model"));
             {
                 listOfFiles2.add(listOfFilesTemp[i]);
             }
         }
-        File[] listOfFiles = listOfFiles2.toArray(new File[listOfFiles2.size()]);;
+        
+        File[] listOfFiles = new File[listOfFiles2.size()];
+        listOfFiles = listOfFiles2.toArray(listOfFiles);
         
         String[] listOfFileNames = new String [listOfFiles.length];
         for(int i=0;i<listOfFiles.length;i++)
@@ -68,7 +69,7 @@ public class TaskManager {
         {   
             all_tasks[i] = allEasyModels[i];
             bm.add(new BlockModel(path + allEasyModels[i]));
-            //System.out.println(path + allEasyModels[i]);
+            System.out.println(path + allEasyModels[i]);
         }
         for(int i=0;i<number_of_tasks/3; i++)
         {

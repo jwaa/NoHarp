@@ -12,7 +12,6 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
@@ -36,7 +35,6 @@ import leaptest.controller.MouseBlockControl;
 import leaptest.controller.Updatable;
 import leaptest.model.Block;
 import leaptest.model.BlockContainer;
-import leaptest.model.BlockModel;
 import leaptest.model.Grid;
 import leaptest.model.GridCam;
 import leaptest.model.LeapCalibrator;
@@ -112,11 +110,7 @@ public class Main extends SimpleApplication
         // VIEWS
         // Set viewports
         viewPort.setBackgroundColor(ColorRGBA.DarkGray);
-        if (config.isSet("ShowModelImage"))
-        {
-            ModelDisplay modelpicture = new ModelDisplay(assetManager, settings, taskmanager, grid, config.getValue("ModelImgBase"));
-            guiNode.attachChild(modelpicture);
-        }
+
         // Build scene from view models
         GridRing gridring = new GridRing(grid.getRadius());
         HandView handmodel = new HandView(assetManager);
@@ -204,6 +198,12 @@ public class Main extends SimpleApplication
         controllers.add(new BlockContainerDissolveControl(world));
 
         // Add visual effectors
+        if (config.isSet("ShowModelImage"))
+        {
+            ModelDisplay modeldisplay = new ModelDisplay(assetManager, settings, taskmanager, grid, config.getValue("ModelImgBase"));
+            guiNode.attachChild(modeldisplay);
+            controllers.add(modeldisplay);
+        }
         controllers.add(new BlockContainerColorControl(grid));
         controllers.add(new BlockContainerColorControl(world));
         controllers.add(new GridRingColorControl(grid, gridring));
