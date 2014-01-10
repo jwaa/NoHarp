@@ -41,7 +41,8 @@ public class Log {
     }
         
     public enum EntryType {
-        ScrollDelta, MouseLocDelta, MouseClick, MouseReleased
+        ScrollDelta, MouseLocDelta, MouseClick, MouseReleased, KeyPressUp, 
+        KeyPressDown
         
     };
     

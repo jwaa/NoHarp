@@ -168,7 +168,7 @@ public class MouseBlockControl implements AnalogListener, Updatable, Loggable {
         
         
         isClicked = false;
-        ifReleased = false;
+        isReleased = false;
     }
     
 }
