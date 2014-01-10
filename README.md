@@ -14,6 +14,5 @@ Installation notes working environment
 		* Under the Run Category set the "VM Options" to point to the native libraries of the LEAP SDK for your architecture. 
 			* E.g. for a 64-bit system: -Djava.library.path=/path/to/LeapDeveloperKit/LeapSDK/lib/x64
 * Navigate to the "/templates" folder in the repo			
-	* Copy the "/assets" folder including all sub-folders and files from the template folder to replace your local "/assets" folder in your local JM3/BasicGame project directory on your disk.
-	* Copy the settings.txt from the template folder to where you created the leaptest project on your local machine (i.e. not in the repo). Put it in the root of your project folder e.g. "/leaptest".
+	* Copy the entire contents of the folder including all sub-folders and files from the template folder to be put directly under your local JM3/BasicGame project directory on your disk (i.e. not in the repo). Put it in the root of your project folder e.g. "/leaptest".
 * It should all be properly setup now!
