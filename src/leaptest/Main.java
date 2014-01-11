@@ -106,9 +106,12 @@ public class Main extends SimpleApplication
         log = new Log(config.isSet("Log"));
         BlockContainer world = new BlockContainer();
         GridCam camera = new GridCam(cameradistance, cameraangle, Vector3f.ZERO);
+        log.addLoggable(camera);
         Grid grid = new Grid(griddim, griddim, griddim, blockdims);
+        log.addLoggable(grid);
         Block creationblock = new Block(MaterialManager.creationblock, new Vector3f(-grid.getRadius() - 2 * blockdims.x, blockdims.y / 2, 0f), blockdims);
         TaskManager taskmanager = new TaskManager(config.getValue("ModelFolder"));
+        log.addLoggable(taskmanager);
         Tweaker tweaker = new Tweaker();
         
         // VIEWS
@@ -165,6 +168,7 @@ public class Main extends SimpleApplication
         {
             controllers.add(new LeapHandControl(calib, handmodel));
             BlockDragControl leapbdc = new BlockDragControl(world, grid, creationblock, taskmanager);
+            log.addLoggable(leapbdc);
             GestureGrabControl ggc = new GestureGrabControl(calib, leapbdc, config.isSet("Righthanded"));
             controllers.add(ggc);
             controllers.add(new BlockTargetHelperControl(leapbdc, rootNode, blockdims));
@@ -186,13 +190,19 @@ public class Main extends SimpleApplication
         if (config.isSet("MouseAndKeyboard"))
         {
             // Add keyboard control
-            controllers.add(new KeyboardGridControl(inputManager, grid));
-            controllers.add(new KeyboardGridCamControl(inputManager, camera));
+            KeyboardGridControl kbGridControl = new KeyboardGridControl(inputManager, grid);
+            KeyboardGridCamControl kbGridCamControl = new KeyboardGridCamControl(inputManager, camera);
+            controllers.add(kbGridControl);
+            log.addLoggable(kbGridControl);
+            controllers.add(kbGridCamControl);
+            log.addLoggable(kbGridCamControl);
 
             // Add mouse control
             BlockDragControl mbdc = new BlockDragControl(world, grid, creationblock, taskmanager);
+            log.addLoggable(mbdc);
             MouseBlockControl mbc = new MouseBlockControl(inputManager, cam, mbdc);
             controllers.add(mbc);
+            log.addLoggable(mbc);
             controllers.add(new BlockTargetHelperControl(mbdc, rootNode, blockdims));
         }
 
