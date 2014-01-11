@@ -8,6 +8,7 @@ import com.jme3.collision.Collidable;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.math.Ray;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import leaptest.model.Block;
@@ -15,13 +16,15 @@ import leaptest.model.BlockContainer;
 import leaptest.model.BlockModel;
 import leaptest.model.Grid;
 import leaptest.model.TaskManager;
+import leaptest.utils.Log;
+import leaptest.utils.Loggable;
 import leaptest.view.MaterialManager;
 
 /**
  *
  * @author silvandeleemput
  */
-public class BlockDragControl {
+public class BlockDragControl implements Loggable {
     // Linked data
     private BlockContainer world;
     private Grid grid;
@@ -29,6 +32,14 @@ public class BlockDragControl {
     private TaskManager taskmanager;
     
     private Vector3f target;
+    
+    // Log data
+    private int createBlockID;
+    private int deleteBlockID;
+    private int startDragBlockID;
+    private int endDragBlockID;
+    private int moveBlockID;
+    private Vector3f moveBlockVector;
     
     public BlockDragControl(BlockContainer world, Grid grid, Block creationblock, TaskManager taskmanager)
     {
@@ -41,6 +52,7 @@ public class BlockDragControl {
     public void liftBlock(Block block)
     {
         dragging = block;
+        startDragBlockID = dragging.getKey().hashCode();
         if (dragging != null)
         {
            if (grid.containsBlock(dragging))
@@ -61,6 +73,7 @@ public class BlockDragControl {
 
     public void releaseBlock()
     {
+        endDragBlockID = dragging.getKey().hashCode();
         dragging.setLifted(false);
         dragging.setFalling(true);
         if (grid.withinGrid(dragging.getPosition()))
@@ -92,7 +105,7 @@ public class BlockDragControl {
     public void moveBlock(Vector3f position)
     {
         target = position;
-        
+        moveBlockID = dragging.getKey().hashCode();
         // Every block above the old position of the dragged block switches 
         // to falling state
         CollisionResults cr = new CollisionResults();
@@ -107,6 +120,8 @@ public class BlockDragControl {
         // Snap target vector 2 grid
         if (grid.withinGrid(target)) 
             target=grid.snapToGrid(target);
+        
+        moveBlockVector = target;
         
         // Calculate direction and distance between current position and target
         Vector3f cpos = dragging.getPosition();
@@ -135,8 +150,11 @@ public class BlockDragControl {
     {
         Block result;
         // If is creation block get new block 
-        if (creationblock.isInside(pos))
-            return new Block(MaterialManager.normal,creationblock.getPosition(),Vector3f.UNIT_XYZ.mult(creationblock.getDimensions().x));
+        if (creationblock.isInside(pos)) {
+            Block createdBlock = new Block(MaterialManager.normal,creationblock.getPosition(),Vector3f.UNIT_XYZ.mult(creationblock.getDimensions().x));
+            createBlockID = createdBlock.getKey().hashCode();
+            return createdBlock;
+        }
         
         // Check if block is in the world or in the grid
         result = world.getBlockAt(pos);
@@ -176,6 +194,29 @@ public class BlockDragControl {
     public Block getSelected()
     {
         return dragging;
+    }
+
+    public void log(Log log) {
+        if(createBlockID != -1)
+            log.addEntry(Log.EntryType.CreateBlock, Integer.toString(createBlockID));
+        if(deleteBlockID != -1)
+            log.addEntry(Log.EntryType.DeleteBlock, Integer.toString(deleteBlockID));
+        if(startDragBlockID != -1)
+            log.addEntry(Log.EntryType.StartDragBlock, Integer.toString(startDragBlockID));
+        if(endDragBlockID != -1)
+            log.addEntry(Log.EntryType.EndDragBlock, Integer.toString(endDragBlockID));
+        if(moveBlockID != -1 && !moveBlockVector.equals(new Vector3f())){
+            String str = moveBlockID + " " + moveBlockVector.toString();
+            log.addEntry(Log.EntryType.MoveBlock, str);
+        }
+            
+        
+        createBlockID = -1;
+        deleteBlockID = -1;
+        startDragBlockID = -1;
+        endDragBlockID = -1;
+        moveBlockID = -1;
+        moveBlockVector = new Vector3f();
     }
     
 }

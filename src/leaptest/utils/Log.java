@@ -43,7 +43,7 @@ public class Log {
     public enum EntryType {
         ScrollDelta, MouseLocDelta, MouseClick, MouseReleased, KeyPressUp, 
         KeyPressDown, KeyPressLeft, KeyPressRight, CameraRotateDelta, GridRotateDelta,
-        NewTask
+        NewTask, CreateBlock, DeleteBlock, StartDragBlock, EndDragBlock, MoveBlock
         
     };
     
