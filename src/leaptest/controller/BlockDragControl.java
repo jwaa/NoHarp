@@ -90,7 +90,10 @@ public class BlockDragControl implements Loggable {
             }
         }
         else
+        {
+            deleteBlockID = dragging.hashCode();
             dragging.setDissolving(true);
+        }
         dragging = null;    
     }    
     
