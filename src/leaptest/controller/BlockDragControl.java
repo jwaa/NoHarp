@@ -52,7 +52,7 @@ public class BlockDragControl implements Loggable {
     public void liftBlock(Block block)
     {
         dragging = block;
-        startDragBlockID = dragging.getKey().hashCode();
+        startDragBlockID = dragging.hashCode();
         if (dragging != null)
         {
            if (grid.containsBlock(dragging))
@@ -73,7 +73,7 @@ public class BlockDragControl implements Loggable {
 
     public void releaseBlock()
     {
-        endDragBlockID = dragging.getKey().hashCode();
+        endDragBlockID = dragging.hashCode();
         dragging.setLifted(false);
         dragging.setFalling(true);
         if (grid.withinGrid(dragging.getPosition()))
@@ -105,7 +105,7 @@ public class BlockDragControl implements Loggable {
     public void moveBlock(Vector3f position)
     {
         target = position;
-        moveBlockID = dragging.getKey().hashCode();
+        moveBlockID = dragging.hashCode();
         // Every block above the old position of the dragged block switches 
         // to falling state
         CollisionResults cr = new CollisionResults();
@@ -152,7 +152,7 @@ public class BlockDragControl implements Loggable {
         // If is creation block get new block 
         if (creationblock.isInside(pos)) {
             Block createdBlock = new Block(MaterialManager.normal,creationblock.getPosition(),Vector3f.UNIT_XYZ.mult(creationblock.getDimensions().x));
-            createBlockID = createdBlock.getKey().hashCode();
+            createBlockID = createdBlock.hashCode();
             return createdBlock;
         }
         
