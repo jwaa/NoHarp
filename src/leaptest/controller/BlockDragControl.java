@@ -34,12 +34,12 @@ public class BlockDragControl implements Loggable {
     private Vector3f target;
     
     // Log data
-    private int createBlockID;
-    private int deleteBlockID;
-    private int startDragBlockID;
-    private int endDragBlockID;
-    private int moveBlockID;
-    private Vector3f moveBlockVector;
+    private int createBlockID = -1;
+    private int deleteBlockID = -1;
+    private int startDragBlockID = -1;
+    private int endDragBlockID = -1;
+    private int moveBlockID = -1;
+    private Vector3f moveBlockVector = new Vector3f();
     
     public BlockDragControl(BlockContainer world, Grid grid, Block creationblock, TaskManager taskmanager)
     {

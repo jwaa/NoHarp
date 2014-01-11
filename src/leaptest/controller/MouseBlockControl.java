@@ -33,7 +33,7 @@ public class MouseBlockControl implements AnalogListener, Updatable, Loggable {
     private float liftdelta;
     
     //Log data
-    private Vector2f prevMouseLoc;
+    private Vector2f prevMouseLoc = new Vector2f();
     private boolean isClicked;
     private boolean isReleased;
     

@@ -25,7 +25,7 @@ public class TaskManager implements Loggable{
     private int number_of_tasks = 9;
     
     // Log data
-    private int newTaskID;
+    private int newTaskID = -1;
     
     public TaskManager(String path)
     {
