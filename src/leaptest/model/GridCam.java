@@ -6,16 +6,21 @@ package leaptest.model;
 
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
+import leaptest.utils.Log;
+import leaptest.utils.Loggable;
 
 /**
  *
  * @author silvandeleemput
  */
-public class GridCam {
+public class GridCam implements Loggable{
     
     private float distance, rotation;
     private Vector3f focuspoint;
     private Vector3f position;
+    
+    // Log Data
+    private float cameraDelta;
     
     public GridCam(float distance, float rotation, Vector3f focuspoint)
     {
@@ -27,6 +32,7 @@ public class GridCam {
     
     public void rotate(float delta)
     {
+        cameraDelta = delta;
         rotation += delta;
         correctBounds();
     }
@@ -52,5 +58,12 @@ public class GridCam {
     public Vector3f getPosition()
     {
         return position;
+    }
+
+    public void log(Log log) 
+    {
+        if(cameraDelta != 0.0f)
+            log.addEntry(Log.EntryType.CameraDelta, Float.toString(cameraDelta));
+        cameraDelta = 0.0f;
     }
 }
