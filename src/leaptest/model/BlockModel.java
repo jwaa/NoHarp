@@ -238,6 +238,16 @@ public class BlockModel
         }
         return sb.toString();
     }
+    
+    public int getWidth()
+    {
+        return model.length;
+    }
+    
+    public int getHeight()
+    {
+        return model[0].length;
+    }
 
     public void export(String filename)
     {
