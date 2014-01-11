@@ -63,7 +63,7 @@ public class GridCam implements Loggable{
     public void log(Log log) 
     {
         if(cameraDelta != 0.0f)
-            log.addEntry(Log.EntryType.CameraDelta, Float.toString(cameraDelta));
+            log.addEntry(Log.EntryType.CameraRotateDelta, Float.toString(cameraDelta));
         cameraDelta = 0.0f;
     }
 }
