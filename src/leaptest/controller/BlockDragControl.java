@@ -52,9 +52,9 @@ public class BlockDragControl implements Loggable {
     public void liftBlock(Block block)
     {
         dragging = block;
-        startDragBlockID = dragging.hashCode();
         if (dragging != null)
         {
+           startDragBlockID = dragging.hashCode();
            if (grid.containsBlock(dragging))
            {
                world.addBlock(dragging);

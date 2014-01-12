@@ -99,7 +99,7 @@ public class TaskManager implements Loggable{
     public BlockModel nextTask()
     {
         counter++;
-        newTaskID = getTaskId();
+        newTaskID = counter;
         return bm.get(counter);
     }
     
