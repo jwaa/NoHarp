@@ -61,7 +61,9 @@ public class Log {
         @Override
         public String toString()
         {
-            return String.format("%d %s",type, value);
+            //return String.format("%d %s",type, value);
+            System.out.println(type + " " + value);
+            return type + " " + value;
         }
     }
         
