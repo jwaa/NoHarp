@@ -23,6 +23,7 @@ public class Grid extends BlockContainer implements Loggable {
     
     // Log data
     private float rotateDelta;
+    private int snapBlockID = -1;
     
     public Grid(int x, int y, int z, Vector3f cellDimensions)
     {
@@ -100,6 +101,7 @@ public class Grid extends BlockContainer implements Loggable {
     
     public void snapToGrid(Block b)
     {
+        snapBlockID = b.hashCode();
         Vector3f pos = world2grid(b.getPosition());
         pos.x = Math.round(pos.x/cellDimensions.x)*cellDimensions.x;
         pos.z = Math.round(pos.z/cellDimensions.z)*cellDimensions.z;
@@ -122,7 +124,10 @@ public class Grid extends BlockContainer implements Loggable {
     public void log(Log log) {
         if(rotateDelta != 0.0f)
             log.addEntry(Log.EntryType.GridRotateDelta, Float.toString(rotateDelta));
+        if(snapBlockID != -1)
+            log.addEntry(Log.EntryType.SnapBlock, Integer.toString(snapBlockID));
         rotateDelta = 0.0f;
+        snapBlockID = -1;
     }
     
 }
