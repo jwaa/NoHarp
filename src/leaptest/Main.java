@@ -63,8 +63,7 @@ public class Main extends SimpleApplication
     private ArrayList<Updatable> controllers;
     private Log log;
     private BlockDragControl blockDragControl;
-    private GestureGrabControl grabControl;
-    private GestureRotateControl rotateControl;
+    private LeapHandControl leapHandControl;
     private MouseBlockControl mouseBlockControl;
     private KeyboardGridControl kbGridControl;
     private KeyboardGridCamControl kbGridCamControl;
@@ -169,15 +168,20 @@ public class Main extends SimpleApplication
         LeapCalibrator calib = new LeapCalibrator(leap);
         if (config.isSet("Leap"))
         {
-            controllers.add(new LeapHandControl(calib, handmodel));
+            leapHandControl = new LeapHandControl(calib, handmodel);
             blockDragControl = new BlockDragControl(world, grid, creationblock, taskmanager);
-            grabControl = new GestureGrabControl(calib, blockDragControl, config.isSet("Righthanded"));
-            rotateControl = new GestureRotateControl(calib, grid, camera);
-            controllers.add(grabControl);
-            controllers.add(rotateControl);
+            GestureGrabControl ggc = new GestureGrabControl(calib, blockDragControl, config.isSet("Righthanded"));
+            GestureRotateControl grc = new GestureRotateControl(calib, grid, camera);
+            
+            controllers.add(leapHandControl);
+            controllers.add(ggc);
+            controllers.add(grc);
             controllers.add(new BlockTargetHelperControl(blockDragControl, rootNode, blockdims));
             if (config.isSet("Debug"))
-                tweaker.registerTweakable(grabControl);
+            {
+                tweaker.registerTweakable(ggc);
+                tweaker.registerTweakable(grc);
+            }
         }
 
         // Add keyboard control
@@ -228,8 +232,7 @@ public class Main extends SimpleApplication
         
         if(config.isSet("Leap"))
         {
-            //log.addLoggable(rotateControl);
-            //log.addLoggable(grabControl);
+            log.addLoggable(leapHandControl);
         }
         else if (config.isSet("MouseAndKeyboard"))
         {

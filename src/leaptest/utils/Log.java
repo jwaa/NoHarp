@@ -44,7 +44,7 @@ public class Log {
         ScrollDelta, MouseLocDelta, MouseClick, MouseReleased, KeyPressUp, 
         KeyPressDown, KeyPressLeft, KeyPressRight, CameraRotateDelta, GridRotateDelta,
         NewTask, CreateBlock, DeleteBlock, StartDragBlock, EndDragBlock, MoveBlock,
-        SnapBlock
+        SnapBlock, Finger, Hand
     };
     
     public class LogEntry
