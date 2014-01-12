@@ -40,6 +40,7 @@ public class BlockDragControl implements Loggable {
     private int endDragBlockID = -1;
     private int moveBlockID = -1;
     private Vector3f moveBlockVector = new Vector3f();
+    private Vector3f prevMoveBlockVector = new Vector3f();
     
     public BlockDragControl(BlockContainer world, Grid grid, Block creationblock, TaskManager taskmanager)
     {
@@ -124,7 +125,11 @@ public class BlockDragControl implements Loggable {
         if (grid.withinGrid(target)) 
             target=grid.snapToGrid(target);
         
-        moveBlockVector = target;
+        if(!prevMoveBlockVector.equals(target))
+        {
+            moveBlockVector = target.clone();
+            prevMoveBlockVector = target.clone();
+        }
         
         // Calculate direction and distance between current position and target
         Vector3f cpos = dragging.getPosition();
