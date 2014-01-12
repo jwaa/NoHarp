@@ -62,6 +62,12 @@ public class Main extends SimpleApplication
     private Controller leap;
     private ArrayList<Updatable> controllers;
     private Log log;
+    private BlockDragControl blockDragControl;
+    private GestureGrabControl grabControl;
+    private GestureRotateControl rotateControl;
+    private MouseBlockControl mouseBlockControl;
+    private KeyboardGridControl kbGridControl;
+    private KeyboardGridCamControl kbGridCamControl;
     
     /**
      * Loads application config settings from file applies settings and fires up
@@ -106,12 +112,9 @@ public class Main extends SimpleApplication
         log = new Log(config.isSet("Log"));
         BlockContainer world = new BlockContainer();
         GridCam camera = new GridCam(cameradistance, cameraangle, Vector3f.ZERO);
-        log.addLoggable(camera);
         Grid grid = new Grid(griddim, griddim, griddim, blockdims);
-        log.addLoggable(grid);
         Block creationblock = new Block(MaterialManager.creationblock, new Vector3f(-grid.getRadius() - 2 * blockdims.x, blockdims.y / 2, 0f), blockdims);
         TaskManager taskmanager = new TaskManager(config.getValue("ModelFolder"));
-        log.addLoggable(taskmanager);
         Tweaker tweaker = new Tweaker();
         
         // VIEWS
@@ -167,14 +170,14 @@ public class Main extends SimpleApplication
         if (config.isSet("Leap"))
         {
             controllers.add(new LeapHandControl(calib, handmodel));
-            BlockDragControl leapbdc = new BlockDragControl(world, grid, creationblock, taskmanager);
-            log.addLoggable(leapbdc);
-            GestureGrabControl ggc = new GestureGrabControl(calib, leapbdc, config.isSet("Righthanded"));
-            controllers.add(ggc);
-            controllers.add(new BlockTargetHelperControl(leapbdc, rootNode, blockdims));
-            controllers.add(new GestureRotateControl(calib, grid, camera));
+            blockDragControl = new BlockDragControl(world, grid, creationblock, taskmanager);
+            grabControl = new GestureGrabControl(calib, blockDragControl, config.isSet("Righthanded"));
+            rotateControl = new GestureRotateControl(calib, grid, camera);
+            controllers.add(grabControl);
+            controllers.add(rotateControl);
+            controllers.add(new BlockTargetHelperControl(blockDragControl, rootNode, blockdims));
             if (config.isSet("Debug"))
-                tweaker.registerTweakable(ggc);
+                tweaker.registerTweakable(grabControl);
         }
 
         // Add keyboard control
@@ -190,20 +193,16 @@ public class Main extends SimpleApplication
         if (config.isSet("MouseAndKeyboard"))
         {
             // Add keyboard control
-            KeyboardGridControl kbGridControl = new KeyboardGridControl(inputManager, grid);
-            KeyboardGridCamControl kbGridCamControl = new KeyboardGridCamControl(inputManager, camera);
+            kbGridControl = new KeyboardGridControl(inputManager, grid);
+            kbGridCamControl = new KeyboardGridCamControl(inputManager, camera);
             controllers.add(kbGridControl);
-            log.addLoggable(kbGridControl);
             controllers.add(kbGridCamControl);
-            log.addLoggable(kbGridCamControl);
 
             // Add mouse control
-            BlockDragControl mbdc = new BlockDragControl(world, grid, creationblock, taskmanager);
-            log.addLoggable(mbdc);
-            MouseBlockControl mbc = new MouseBlockControl(inputManager, cam, mbdc);
-            controllers.add(mbc);
-            log.addLoggable(mbc);
-            controllers.add(new BlockTargetHelperControl(mbdc, rootNode, blockdims));
+            blockDragControl = new BlockDragControl(world, grid, creationblock, taskmanager);
+            mouseBlockControl = new MouseBlockControl(inputManager, cam, blockDragControl);
+            controllers.add(mouseBlockControl);
+            controllers.add(new BlockTargetHelperControl(blockDragControl, rootNode, blockdims));
         }
 
         // Add model effectors
@@ -223,6 +222,25 @@ public class Main extends SimpleApplication
         controllers.add(new GridRingColorControl(grid, gridring));
         controllers.add(new BlockContainerShadowControl(grid, blockdims, blockcap));
         controllers.add(new BlockContainerShadowControl(world, blockdims, blockcap));
+        
+        // Add loggables to log (order matters for the log order in log.txt)
+        
+        
+        if(config.isSet("Leap"))
+        {
+            //log.addLoggable(rotateControl);
+            //log.addLoggable(grabControl);
+        }
+        else if (config.isSet("MouseAndKeyboard"))
+        {
+            log.addLoggable(mouseBlockControl);
+            log.addLoggable(kbGridControl);
+            log.addLoggable(kbGridCamControl);
+        }
+        log.addLoggable(blockDragControl);
+        log.addLoggable(camera);
+        log.addLoggable(grid);
+        log.addLoggable(taskmanager);
     }
 
     /**
