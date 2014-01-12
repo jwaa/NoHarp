@@ -34,6 +34,7 @@ public class MouseBlockControl implements AnalogListener, Updatable, Loggable {
     
     //Log data
     private Vector2f prevMouseLoc = new Vector2f();
+    private Vector2f mouseDelta = new Vector2f();
     private boolean isClicked;
     private boolean isReleased;
     
@@ -125,7 +126,7 @@ public class MouseBlockControl implements AnalogListener, Updatable, Loggable {
     }
     
     public void update(float tpf) 
-    {
+    {        
         // On a new click start dragging
         if (clickinit)
         {
@@ -143,18 +144,22 @@ public class MouseBlockControl implements AnalogListener, Updatable, Loggable {
         {
             updateBlock();
         }
+        // Save mouse location data
+        if(!inputManager.getCursorPosition().clone().equals(prevMouseLoc))
+        {
+            mouseDelta = inputManager.getCursorPosition().subtract(prevMouseLoc);
+            prevMouseLoc = inputManager.getCursorPosition().clone();
+        }
         // Reset click and delta states for next cycle
         resetStates();
-        
-        // Save mouse location
-        prevMouseLoc = inputManager.getCursorPosition();
+       
     }
 
     public void log(Log log) 
     {
-        Vector2f mouseDelta = inputManager.getCursorPosition().subtract(prevMouseLoc);
         
-        if(mouseDelta.x != 0 || mouseDelta.y != 0)
+        System.out.println(mouseDelta.toString());
+        if(!mouseDelta.equals(new Vector2f()))
         {
             String delta = Float.toString(mouseDelta.x)+", "+Float.toString(mouseDelta.y);
             log.addEntry(Log.EntryType.MouseLocDelta, delta);
@@ -166,7 +171,7 @@ public class MouseBlockControl implements AnalogListener, Updatable, Loggable {
         if(isReleased)
             log.addEntry(Log.EntryType.MouseReleased, Boolean.toString(isReleased));
         
-        
+        mouseDelta = new Vector2f();
         isClicked = false;
         isReleased = false;
     }
