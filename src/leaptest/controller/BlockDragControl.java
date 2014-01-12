@@ -173,7 +173,11 @@ public class BlockDragControl implements Loggable {
         // New block creation intersection
         creationblock.collideWith(ray, results);
         if (results.size() > 0)
-            return new Block(MaterialManager.normal,creationblock.getPosition(),Vector3f.UNIT_XYZ.mult(creationblock.getDimensions().x));
+        {   
+            Block createdBlock = new Block(MaterialManager.normal,creationblock.getPosition(),Vector3f.UNIT_XYZ.mult(creationblock.getDimensions().x));
+            createBlockID = createdBlock.hashCode();
+            return createdBlock;
+        }
         
         // Collect intersections between ray and all nodes in results list
         world.collideWith(ray, results);
