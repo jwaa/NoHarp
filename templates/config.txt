@@ -38,3 +38,4 @@ SetExtension .set
 % Controllers
 Leap 1
 MouseAndKeyboard 1
+TaskManager 0

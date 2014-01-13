@@ -108,8 +108,9 @@ public class Main extends SimpleApplication
         BlockContainer world = new BlockContainer();
         GridCam camera = new GridCam(cameradistance, cameraangle, Vector3f.ZERO);
         Grid grid = new Grid(griddim, griddim, griddim, blockdims);
-        Block creationblock = new Block(MaterialManager.creationblock, new Vector3f(-grid.getRadius() - 2 * blockdims.x, blockdims.y / 2, 0f), blockdims);
-        TaskManager taskmanager = new TaskManager(config.getValue("ModelFolder"));
+        float creationblockstartpos = (config.isSet("Righthanded") ? 1f : -1f);
+        Block creationblock = new Block(MaterialManager.creationblock, new Vector3f(creationblockstartpos*(grid.getRadius() + 2 * blockdims.x), blockdims.y / 2, 0f), blockdims);
+        TaskManager taskmanager = (config.isSet("TaskManager") ? new TaskManager(config.getValue("ModelFolder")) : null);
         Tweaker tweaker = new Tweaker();
         
         // VIEWS
@@ -169,9 +170,13 @@ public class Main extends SimpleApplication
             GestureGrabControl ggc = new GestureGrabControl(calib, leapbdc, config.isSet("Righthanded"));
             controllers.add(ggc);
             controllers.add(new BlockTargetHelperControl(leapbdc, rootNode, blockdims));
-            controllers.add(new GestureRotateControl(calib, grid, camera));
+            GestureRotateControl grc = new GestureRotateControl(calib, grid, camera);
+            controllers.add(grc);
             if (config.isSet("Debug"))
+            {
                 tweaker.registerTweakable(ggc);
+                tweaker.registerTweakable(grc);
+            }
         }
 
         // Add keyboard control
@@ -204,7 +209,7 @@ public class Main extends SimpleApplication
         controllers.add(new BlockContainerDissolveControl(world));
 
         // Add visual effectors
-        if (config.isSet("ShowModelImage"))
+        if (config.isSet("ShowModelImage") && config.isSet("TaskManager"))
         {
             ModelDisplay modeldisplay = new ModelDisplay(assetManager, settings, taskmanager, grid, config.getValue("ModelImgBase"));
             guiNode.attachChild(modeldisplay);

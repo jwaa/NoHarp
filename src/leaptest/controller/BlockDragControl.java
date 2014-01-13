@@ -80,6 +80,8 @@ public class BlockDragControl {
     
     private boolean isTaskComplete()
     {
+        if (taskmanager == null)
+            return false;
         BlockModel ct = taskmanager.getTask();
         if (ct.getElements() == grid.getBlocks().size())
             return ct.equals(grid);
