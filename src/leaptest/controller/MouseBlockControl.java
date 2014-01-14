@@ -16,12 +16,14 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import leaptest.model.Block;
 import com.jme3.math.Plane;
+import leaptest.utils.Log;
+import leaptest.utils.Loggable;
 
 /**
  *
  * @author silvandeleemput
  */
-public class MouseBlockControl implements AnalogListener, Updatable {
+public class MouseBlockControl implements AnalogListener, Updatable, Loggable {
     // Linked data
     private InputManager inputManager;
     private Camera cam;
@@ -29,6 +31,12 @@ public class MouseBlockControl implements AnalogListener, Updatable {
     // Process data
     private boolean clickinit, clickrelease;
     private float liftdelta;
+    
+    //Log data
+    private Vector2f prevMouseLoc = new Vector2f();
+    private Vector2f mouseDelta = new Vector2f();
+    private boolean isClicked;
+    private boolean isReleased;
     
     private BlockDragControl bdc;
     
@@ -95,7 +103,7 @@ public class MouseBlockControl implements AnalogListener, Updatable {
     }
     
     private void updateBlock()
-    {
+    {        
         Vector3f target = bdc.getTarget();
         
         target.y += liftdelta; // set y
@@ -118,15 +126,17 @@ public class MouseBlockControl implements AnalogListener, Updatable {
     }
     
     public void update(float tpf) 
-    {
+    {        
         // On a new click start dragging
         if (clickinit)
         {
+            isClicked = true;
             bdc.liftBlock(detectBlock());
         } 
         // On button release drop block if dragging
         else if (clickrelease && bdc.getSelected() != null) 
         {
+            isReleased = true;
             bdc.releaseBlock();
         }     
         // While dragging update position of block
@@ -134,8 +144,36 @@ public class MouseBlockControl implements AnalogListener, Updatable {
         {
             updateBlock();
         }
+        // Save mouse location data
+        if(!inputManager.getCursorPosition().clone().equals(prevMouseLoc))
+        {
+            mouseDelta = inputManager.getCursorPosition().subtract(prevMouseLoc);
+            prevMouseLoc = inputManager.getCursorPosition().clone();
+        }
         // Reset click and delta states for next cycle
         resetStates();
+       
+    }
+
+    public void log(Log log) 
+    {
+        
+        System.out.println(mouseDelta.toString());
+        if(!mouseDelta.equals(new Vector2f()))
+        {
+            String delta = Float.toString(mouseDelta.x)+", "+Float.toString(mouseDelta.y);
+            log.addEntry(Log.EntryType.MouseLocDelta, delta);
+        }
+        if(liftdelta != 0.0f)
+            log.addEntry(Log.EntryType.ScrollDelta,  Float.toString(liftdelta));
+        if(isClicked)
+            log.addEntry(Log.EntryType.MouseClick, Boolean.toString(isClicked));
+        if(isReleased)
+            log.addEntry(Log.EntryType.MouseReleased, Boolean.toString(isReleased));
+        
+        mouseDelta = new Vector2f();
+        isClicked = false;
+        isReleased = false;
     }
     
 }

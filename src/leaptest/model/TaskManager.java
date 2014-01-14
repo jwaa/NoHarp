@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
+import leaptest.utils.Log;
+import leaptest.utils.Loggable;
 
 /**
  * Gaat er vanuit dat eerste deel van de models easy zijn, 
@@ -12,7 +14,7 @@ import java.util.Random;
  * TODO: export uit map halen
  * @author Janne Weijkamp
  */
-public class TaskManager {
+public class TaskManager implements Loggable{
     
     /*
      * bm contains a list of 9 random models: 3 easy, 3 normal, 3 hard (in that order)
@@ -23,6 +25,9 @@ public class TaskManager {
     private String [] all_tasks = new String [number_of_tasks];
     private int counter;
     
+    
+    // Log data
+    private int newTaskID = -1;
     
     public TaskManager(String path)
     {
@@ -90,7 +95,8 @@ public class TaskManager {
         if (!hasNextTask())
            return false;
         counter++;
-        return true;
+        newTaskID = counter;
+        return bm.get(counter);
     }
     
     /**
@@ -119,6 +125,12 @@ public class TaskManager {
     public BlockModel getTask()
     {
         return bm.get(counter);
+    }
+
+    public void log(Log log) {
+        if(newTaskID != -1)
+            log.addEntry(Log.EntryType.NewTask, Integer.toString(newTaskID));
+        newTaskID = -1;
     }
     
     private static class LengthCompare implements Comparator<String>

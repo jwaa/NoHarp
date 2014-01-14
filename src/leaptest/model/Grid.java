@@ -6,18 +6,23 @@ package leaptest.model;
 
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
+import leaptest.utils.Log;
+import leaptest.utils.Loggable;
 
 /**
  *
  * @author silvandeleemput
  */
-public class Grid extends BlockContainer {
+public class Grid extends BlockContainer implements Loggable {
     
     private int dimensions[];
     private Vector3f cellDimensions;
     boolean rotating;
     float rotation;
     float radius;
+    
+    // Log data
+    private float rotateDelta;
     
     public Grid(int x, int y, int z, Vector3f cellDimensions)
     {
@@ -40,6 +45,7 @@ public class Grid extends BlockContainer {
     
     public void rotate(float delta)
     {
+        rotateDelta = delta;
         this.rotation += delta;
         this.rotate(0, delta, 0);
     }
@@ -111,6 +117,12 @@ public class Grid extends BlockContainer {
 
     public float getRadius() {
         return radius;
+    }
+
+    public void log(Log log) {
+        if(rotateDelta != 0.0f)
+            log.addEntry(Log.EntryType.GridRotateDelta, Float.toString(rotateDelta));
+        rotateDelta = 0.0f;
     }
     
 }

@@ -62,7 +62,13 @@ public class Main extends SimpleApplication
     private Controller leap;
     private ArrayList<Updatable> controllers;
     private Log log;
-    private boolean stopping = false;
+    private BlockDragControl blockDragControl;
+    private LeapHandControl leapHandControl;
+    private GestureGrabControl gestureGrabControl;
+    private GestureRotateControl gestureRotateControl;
+    private MouseBlockControl mouseBlockControl;
+    private KeyboardGridControl kbGridControl;
+    private KeyboardGridCamControl kbGridCamControl;
     
     /**
      * Loads application config settings from file applies settings and fires up
@@ -165,17 +171,19 @@ public class Main extends SimpleApplication
         LeapCalibrator calib = new LeapCalibrator(leap);
         if (config.isSet("Leap"))
         {
-            controllers.add(new LeapHandControl(calib, handmodel));
-            BlockDragControl leapbdc = new BlockDragControl(world, grid, creationblock, taskmanager, this);
-            GestureGrabControl ggc = new GestureGrabControl(calib, leapbdc, config.isSet("Righthanded"));
-            controllers.add(ggc);
-            controllers.add(new BlockTargetHelperControl(leapbdc, rootNode, blockdims));
-            GestureRotateControl grc = new GestureRotateControl(calib, grid, camera);
-            controllers.add(grc);
+            leapHandControl = new LeapHandControl(calib, handmodel);
+            blockDragControl = new BlockDragControl(world, grid, creationblock, taskmanager);
+            gestureGrabControl = new GestureGrabControl(calib, blockDragControl, config.isSet("Righthanded"));
+            gestureRotateControl = new GestureRotateControl(calib, grid, camera);
+            
+            controllers.add(leapHandControl);
+            controllers.add(gestureGrabControl);
+            controllers.add(gestureRotateControl);
+            controllers.add(new BlockTargetHelperControl(blockDragControl, rootNode, blockdims));
             if (config.isSet("Debug"))
             {
-                tweaker.registerTweakable(ggc);
-                tweaker.registerTweakable(grc);
+                tweaker.registerTweakable(gestureGrabControl);
+                tweaker.registerTweakable(gestureRotateControl);
             }
         }
 
@@ -193,14 +201,16 @@ public class Main extends SimpleApplication
         if (config.isSet("MouseAndKeyboard"))
         {
             // Add keyboard control
-            controllers.add(new KeyboardGridControl(inputManager, grid));
-            controllers.add(new KeyboardGridCamControl(inputManager, camera));
+            kbGridControl = new KeyboardGridControl(inputManager, grid);
+            kbGridCamControl = new KeyboardGridCamControl(inputManager, camera);
+            controllers.add(kbGridControl);
+            controllers.add(kbGridCamControl);
 
             // Add mouse control
-            BlockDragControl mbdc = new BlockDragControl(world, grid, creationblock, taskmanager, this);
-            MouseBlockControl mbc = new MouseBlockControl(inputManager, cam, mbdc);
-            controllers.add(mbc);
-            controllers.add(new BlockTargetHelperControl(mbdc, rootNode, blockdims));
+            blockDragControl = new BlockDragControl(world, grid, creationblock, taskmanager);
+            mouseBlockControl = new MouseBlockControl(inputManager, cam, blockDragControl);
+            controllers.add(mouseBlockControl);
+            controllers.add(new BlockTargetHelperControl(blockDragControl, rootNode, blockdims));
         }
 
         // Add model effectors
@@ -220,6 +230,26 @@ public class Main extends SimpleApplication
         controllers.add(new GridRingColorControl(grid, gridring));
         controllers.add(new BlockContainerShadowControl(grid, blockdims, blockcap));
         controllers.add(new BlockContainerShadowControl(world, blockdims, blockcap));
+        
+        // Add loggables to log (order matters for the log order in log.txt)
+        
+        
+        if(config.isSet("Leap"))
+        {
+            log.addLoggable(leapHandControl);
+            log.addLoggable(gestureGrabControl);
+            log.addLoggable(gestureRotateControl);
+        }
+        else if (config.isSet("MouseAndKeyboard"))
+        {
+            log.addLoggable(mouseBlockControl);
+            log.addLoggable(kbGridControl);
+            log.addLoggable(kbGridCamControl);
+        }
+        log.addLoggable(blockDragControl);
+        log.addLoggable(camera);
+        log.addLoggable(grid);
+        log.addLoggable(taskmanager);
     }
 
     /**

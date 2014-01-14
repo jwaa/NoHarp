@@ -8,6 +8,8 @@ import com.jme3.math.Vector3f;
 import com.leapmotion.leap.*;
 import leaptest.model.Block;
 import leaptest.model.LeapCalibrator;
+import leaptest.utils.Log;
+import leaptest.utils.Loggable;
 import leaptest.utils.TweakSet;
 import leaptest.utils.TweakVariable;
 import leaptest.utils.Tweakable;
@@ -16,7 +18,7 @@ import leaptest.utils.Tweakable;
  *
  * @author Annet
  */
-public class GestureGrabControl extends LeapControl implements Tweakable
+public class GestureGrabControl extends LeapControl implements Tweakable, Loggable
 {
 
     //Thresholds
@@ -38,6 +40,9 @@ public class GestureGrabControl extends LeapControl implements Tweakable
     private Frame frame;
     private Frame previousFrame;
     private BlockDragControl bdc;
+    
+    // Log data
+    private Vector3f whereGrabbed = new Vector3f();
 
     public GestureGrabControl(LeapCalibrator calib, BlockDragControl bdc, boolean isRightHanded)
     {
@@ -98,6 +103,7 @@ public class GestureGrabControl extends LeapControl implements Tweakable
             if (this.gettingSmaller > gettingSmallerThreshold)
             {
                 Vector3f coordinates = calib.leap2world(hand.palmPosition());
+                whereGrabbed = coordinates;
                 bdc.liftBlock(findBlockWithinMarges(coordinates));
                 this.gettingSmaller = 0;
                 this.stayingTheSame = 0;
@@ -222,6 +228,14 @@ public class GestureGrabControl extends LeapControl implements Tweakable
         set.add(new TweakVariable<Float>("zMarge", zMarge));
         set.add(new TweakVariable<Float>("margeSteps", margeSteps));
         return set;
+    }
+
+    public void log(Log log) {
+        if(!whereGrabbed.equals(new Vector3f()))
+        {
+            log.addEntry(Log.EntryType.Grabbed, whereGrabbed.toString());
+        }
+        whereGrabbed = new Vector3f();
     }
 
     private enum Variable
