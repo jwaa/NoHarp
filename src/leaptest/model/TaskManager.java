@@ -96,7 +96,7 @@ public class TaskManager implements Loggable{
            return false;
         counter++;
         newTaskID = counter;
-        return bm.get(counter);
+        return true;
     }
     
     /**

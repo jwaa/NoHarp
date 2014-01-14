@@ -62,6 +62,7 @@ public class Main extends SimpleApplication
     private Controller leap;
     private ArrayList<Updatable> controllers;
     private Log log;
+    private boolean stopping;
     private BlockDragControl blockDragControl;
     private LeapHandControl leapHandControl;
     private GestureGrabControl gestureGrabControl;
