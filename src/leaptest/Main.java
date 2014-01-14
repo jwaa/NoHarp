@@ -64,6 +64,8 @@ public class Main extends SimpleApplication
     private Log log;
     private BlockDragControl blockDragControl;
     private LeapHandControl leapHandControl;
+    private GestureGrabControl gestureGrabControl;
+    private GestureRotateControl gestureRotateControl;
     private MouseBlockControl mouseBlockControl;
     private KeyboardGridControl kbGridControl;
     private KeyboardGridCamControl kbGridCamControl;
@@ -170,17 +172,17 @@ public class Main extends SimpleApplication
         {
             leapHandControl = new LeapHandControl(calib, handmodel);
             blockDragControl = new BlockDragControl(world, grid, creationblock, taskmanager);
-            GestureGrabControl ggc = new GestureGrabControl(calib, blockDragControl, config.isSet("Righthanded"));
-            GestureRotateControl grc = new GestureRotateControl(calib, grid, camera);
+            gestureGrabControl = new GestureGrabControl(calib, blockDragControl, config.isSet("Righthanded"));
+            gestureRotateControl = new GestureRotateControl(calib, grid, camera);
             
             controllers.add(leapHandControl);
-            controllers.add(ggc);
-            controllers.add(grc);
+            controllers.add(gestureGrabControl);
+            controllers.add(gestureRotateControl);
             controllers.add(new BlockTargetHelperControl(blockDragControl, rootNode, blockdims));
             if (config.isSet("Debug"))
             {
-                tweaker.registerTweakable(ggc);
-                tweaker.registerTweakable(grc);
+                tweaker.registerTweakable(gestureGrabControl);
+                tweaker.registerTweakable(gestureRotateControl);
             }
         }
 
@@ -233,6 +235,8 @@ public class Main extends SimpleApplication
         if(config.isSet("Leap"))
         {
             log.addLoggable(leapHandControl);
+            log.addLoggable(gestureGrabControl);
+            log.addLoggable(gestureRotateControl);
         }
         else if (config.isSet("MouseAndKeyboard"))
         {

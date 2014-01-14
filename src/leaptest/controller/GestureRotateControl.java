@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import leaptest.model.Grid;
 import leaptest.model.GridCam;
 import leaptest.model.LeapCalibrator;
+import leaptest.utils.Log;
+import leaptest.utils.Loggable;
 import leaptest.utils.TweakSet;
 import leaptest.utils.TweakVariable;
 import leaptest.utils.Tweakable;
@@ -23,7 +25,7 @@ import leaptest.utils.Tweakable;
  *
  * @author Jasper van der Waa & Annet Meijers
  */
-public class GestureRotateControl extends LeapControl implements Tweakable
+public class GestureRotateControl extends LeapControl implements Tweakable, Loggable
 {
     /*
      * Variables to fine tune what swipe for horizontal rotation is accepted
@@ -42,7 +44,7 @@ public class GestureRotateControl extends LeapControl implements Tweakable
     */
     private float Rotate_Z_Sensitivity = 0.9f;
     private float Rotate_Duration_Sensitivity = 0.25f;
-    private float Rotate_Time_Between_Sensitivity = 0.6f;
+    private float Rotate_Time_Between_Sensitivity = 0.35f;
     private float Rotate_Part_Sensitivity = 0.5f;
     private float Rotate_Min_Accept_Duration = 75000f;
     
@@ -130,6 +132,9 @@ public class GestureRotateControl extends LeapControl implements Tweakable
     private final boolean isShowUserVariables = false;
     private String rejectedOn = "";
     
+    // Log data
+    private boolean isVerticalSwipe;
+    private boolean isHorizontalSwipe;
     
     public GestureRotateControl(LeapCalibrator leap, Grid grid, GridCam camera)
     {
@@ -175,6 +180,7 @@ public class GestureRotateControl extends LeapControl implements Tweakable
                     lastDirectionRotate = rotateSwipe.direction();
                     if(isIntendedAsRotateSwipe(rotateSwipe))
                     {
+                        isHorizontalSwipe = true;
                         isIntended = true;
                         timePreviousIntendedRotateSwipe = rotateSwipe.frame().timestamp();
                         rotateSwipeSpeed = rotateSwipe.speed();
@@ -193,6 +199,7 @@ public class GestureRotateControl extends LeapControl implements Tweakable
                     lastDirectionCamera = cameraSwipe.direction();
                     if(isIntendedAsCameraSwipe(cameraSwipe))
                     {
+                        isVerticalSwipe = true;
                         isIntended = true;
                         timePreviousIntendedCameraSwipe = cameraSwipe.frame().timestamp();
                         cameraSwipeSpeed = cameraSwipe.speed();
@@ -634,6 +641,15 @@ public class GestureRotateControl extends LeapControl implements Tweakable
         set.add(new TweakVariable <Float>("Min_velocity_camera",Min_Velocity_Camera));
         
         return set;
+    }
+
+    public void log(Log log) {
+        if(isVerticalSwipe)
+            log.addEntry(Log.EntryType.SwipedVertical, Boolean.toString(isVerticalSwipe));
+        if(isHorizontalSwipe)
+            log.addEntry(Log.EntryType.SwipedHorizontal, Boolean.toString(isHorizontalSwipe));
+        isVerticalSwipe = false;
+        isHorizontalSwipe = false;
     }
 
     private enum Variables {Rotate_Z_Sensitivity, Rotate_Duration_Sensitivity, Rotate_Time_Between_Swipes_Sensitivity,
