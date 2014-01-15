@@ -41,7 +41,10 @@ public class Log {
     }
         
     public enum EntryType {
-        GridRota, CamRota //TODO add all types 
+        ScrollDelta, MouseLocDelta, MouseClick, MouseReleased, KeyPressUp, 
+        KeyPressDown, KeyPressLeft, KeyPressRight, CameraRotateDelta, GridRotateDelta,
+        NewTask, CreateBlock, DeleteBlock, StartDragBlock, EndDragBlock, MoveBlock,
+        SnapBlock, Finger, Hand, Grabbed, SwipedVertical, SwipedHorizontal, Frame
     };
     
     public class LogEntry
@@ -58,7 +61,8 @@ public class Log {
         @Override
         public String toString()
         {
-            return String.format("%d %s",type, value);
+            //return String.format("%d %s",type, value);
+            return type + " " + value;
         }
     }
         

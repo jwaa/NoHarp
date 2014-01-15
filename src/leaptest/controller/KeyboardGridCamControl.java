@@ -10,18 +10,24 @@ import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.math.FastMath;
 import leaptest.model.GridCam;
+import leaptest.utils.Log;
+import leaptest.utils.Loggable;
 
 /**
  *
  * @author srw-install
  */
-public class KeyboardGridCamControl implements AnalogListener, Updatable {
+public class KeyboardGridCamControl implements AnalogListener, Updatable, Loggable {
 
     private GridCam gridcam;
     
     private final float delta = FastMath.PI/1.5f;
     
     private float inc;
+    
+    // Log data
+    private boolean isKeyPressUp;
+    private boolean isKeyPressDown;
     
     public KeyboardGridCamControl(InputManager inputManager, GridCam gridcam)
     {
@@ -37,15 +43,32 @@ public class KeyboardGridCamControl implements AnalogListener, Updatable {
     }
 
     public void onAnalog(String name, float value, float tpf) {
-          if (name.equals("Rotate Cam Up"))
+        if (name.equals("Rotate Cam Up"))
+        {
+            isKeyPressUp = true;
             inc += delta * tpf;
+        }
         else if (name.equals("Rotate Cam Down"))
+        {
+            isKeyPressDown = true;
             inc -= delta * tpf;
+        }
     }
 
     public void update(float tpf) {
         gridcam.rotate(inc);
         inc = 0;
+    }
+
+    public void log(Log log) 
+    {
+        if(isKeyPressUp)
+            log.addEntry(Log.EntryType.KeyPressUp, Boolean.toString(isKeyPressUp));
+        if(isKeyPressDown)
+            log.addEntry(Log.EntryType.KeyPressDown, Boolean.toString(isKeyPressDown));
+                
+        isKeyPressUp = false;
+        isKeyPressDown = false;
     }
     
 }

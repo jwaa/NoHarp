@@ -5,8 +5,10 @@
 package leaptest.utils;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Map.Entry;
@@ -18,7 +20,6 @@ import java.util.Map.Entry;
 public class ConfigSettings {
     
     private ArrayList<Entry<String,String>> settings;
-    
     
     public ConfigSettings(String filename)
     {
@@ -54,14 +55,8 @@ public class ConfigSettings {
     {
         Boolean ret = false;
         for (Entry<String,String> entry : settings)
-        {
-            //System.out.println("-" + entry.getKey() + "-");
             if (entry.getKey().equals(key))
-            {
-                //System.out.println("-" + entry.getValue()+ "-");
                 return entry.getValue().equals("1");
-            }
-        }
         return ret;
     }
 
@@ -71,6 +66,39 @@ public class ConfigSettings {
             if (entry.getKey().equals(key))
                 return entry.getValue();
         return ret;
+    }
+    
+    public void setValue(String key, String value)
+    {
+         for (Entry<String,String> entry : settings)
+            if (entry.getKey().equals(key))
+               entry.setValue(value);
+    }
+    
+    public boolean save(String filename)
+    {
+        File f = new File(filename);
+        if (!f.exists())
+            return false;
+        try
+        {
+            FileWriter fr = new FileWriter(f);
+            BufferedWriter br = new BufferedWriter(fr);
+            for (Entry<String,String> entry : settings)
+            {
+                br.append(entry.getKey());
+                br.append(" ");
+                br.append(entry.getValue());
+                br.append("\n");
+            }
+            br.close();
+            fr.close();
+            return true;
+        } catch (Exception e) 
+        {
+            e.printStackTrace();
+        }        
+        return false;
     }
     
 }
