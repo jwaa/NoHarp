@@ -71,6 +71,8 @@ public class Main extends SimpleApplication
     private KeyboardGridControl kbGridControl;
     private KeyboardGridCamControl kbGridCamControl;
     
+    private long begintimestamp;
+    
     /**
      * Loads application config settings from file applies settings and fires up
      * application
@@ -105,6 +107,7 @@ public class Main extends SimpleApplication
 
         // MODELS
         // Model settings...
+        begintimestamp = System.currentTimeMillis();
         int griddim = Integer.parseInt(config.getValue("GridSize"));
         float cameradistance = Float.parseFloat(config.getValue("CamDist")), 
                  cameraangle = Float.parseFloat(config.getValue("CamAngle"));
@@ -270,6 +273,8 @@ public class Main extends SimpleApplication
     @Override
     public void simpleUpdate(float tpf)
     {
+        long timestamp = System.currentTimeMillis() - begintimestamp; 
+        log.addEntry(Log.EntryType.Frame, Long.toString(timestamp));
         log.log();
         for (Updatable c : controllers)
             c.update(tpf);
