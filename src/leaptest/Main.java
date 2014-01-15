@@ -235,7 +235,8 @@ public class Main extends SimpleApplication
         // Add loggables to log (order matters for the log order in log.txt)
         if (config.isSet("Log"))
         {
-            log.addLoggable(taskmanager);
+            if (taskmanager != null)
+                log.addLoggable(taskmanager);
             if(config.isSet("Leap"))
             {
                 log.addLoggable(leapHandControl);
