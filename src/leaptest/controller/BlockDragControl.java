@@ -110,7 +110,7 @@ public class BlockDragControl implements Loggable {
         if (taskmanager.nextTask())
             grid.removeAllBlocks();    
         else
-            main.stop();
+            main.setShutDown(true);
     }
     
     public void moveBlock(Vector3f position)
