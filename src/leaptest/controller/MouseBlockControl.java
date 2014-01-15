@@ -157,8 +157,6 @@ public class MouseBlockControl implements AnalogListener, Updatable, Loggable {
 
     public void log(Log log) 
     {
-        
-        System.out.println(mouseDelta.toString());
         if(!mouseDelta.equals(new Vector2f()))
         {
             String delta = Float.toString(mouseDelta.x)+", "+Float.toString(mouseDelta.y);
@@ -170,7 +168,6 @@ public class MouseBlockControl implements AnalogListener, Updatable, Loggable {
             log.addEntry(Log.EntryType.MouseClick, Boolean.toString(isClicked));
         if(isReleased)
             log.addEntry(Log.EntryType.MouseReleased, Boolean.toString(isReleased));
-        
         mouseDelta = new Vector2f();
         isClicked = false;
         isReleased = false;
