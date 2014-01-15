@@ -95,7 +95,7 @@ public class TaskManager implements Loggable{
         if (!hasNextTask())
            return false;
         counter++;
-        newTaskID = counter;
+        newTaskID = getTaskId();
         return true;
     }
     
