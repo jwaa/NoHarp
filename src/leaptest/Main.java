@@ -175,7 +175,7 @@ public class Main extends SimpleApplication
             leapHandControl = new LeapHandControl(calib, handmodel);
             blockDragControl = new BlockDragControl(world, grid, creationblock, taskmanager, this);
             gestureGrabControl = new GestureGrabControl(calib, blockDragControl, config.isSet("Righthanded"));
-            gestureRotateControl = new GestureRotateControl(calib, grid, camera);
+            gestureRotateControl = new GestureRotateControl(calib, grid, camera, config.isSet("RightHanded"));
             
             controllers.add(leapHandControl);
             controllers.add(gestureGrabControl);
