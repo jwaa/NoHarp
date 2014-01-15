@@ -44,7 +44,7 @@ public class BlockDragControl implements Loggable {
     private Vector3f moveBlockVector = new Vector3f();
     private Vector3f prevMoveBlockVector = new Vector3f();
     
-    public BlockDragControl(BlockContainer world, Grid grid, Block creationblock, TaskManager taskmanager)
+    public BlockDragControl(BlockContainer world, Grid grid, Block creationblock, TaskManager taskmanager, Main main)
     {
         this.taskmanager = taskmanager;
         this.creationblock = creationblock;
