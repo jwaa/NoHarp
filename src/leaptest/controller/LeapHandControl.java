@@ -96,8 +96,6 @@ public class LeapHandControl extends LeapControl implements Loggable {
     }
 
     public void log(Log log) {
-        System.out.println("F: " + logFingers.count());
-        System.out.println("H: " + logHands.count());
         for( int f=0; f<logFingers.count(); f++)
         {
             String str = logFingers.get(f).id() + " " + logFingers.get(f).tipPosition().toString();
