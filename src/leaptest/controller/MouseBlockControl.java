@@ -168,7 +168,6 @@ public class MouseBlockControl implements AnalogListener, Updatable, Loggable {
             log.addEntry(Log.EntryType.MouseClick, Boolean.toString(isClicked));
         if(isReleased)
             log.addEntry(Log.EntryType.MouseReleased, Boolean.toString(isReleased));
-        
         mouseDelta = new Vector2f();
         isClicked = false;
         isReleased = false;

@@ -233,24 +233,25 @@ public class Main extends SimpleApplication
         controllers.add(new BlockContainerShadowControl(world, blockdims, blockcap));
         
         // Add loggables to log (order matters for the log order in log.txt)
-        
-        
-        if(config.isSet("Leap"))
+        if (config.isSet("Log"))
         {
-            log.addLoggable(leapHandControl);
-            log.addLoggable(gestureGrabControl);
-            log.addLoggable(gestureRotateControl);
+            if(config.isSet("Leap"))
+            {
+                log.addLoggable(leapHandControl);
+                log.addLoggable(gestureGrabControl);
+                log.addLoggable(gestureRotateControl);
+            }
+            else if (config.isSet("MouseAndKeyboard"))
+            {
+                log.addLoggable(mouseBlockControl);
+                log.addLoggable(kbGridControl);
+                log.addLoggable(kbGridCamControl);
+            }
+            log.addLoggable(blockDragControl);
+            log.addLoggable(camera);
+            log.addLoggable(grid);
+            log.addLoggable(taskmanager);
         }
-        else if (config.isSet("MouseAndKeyboard"))
-        {
-            log.addLoggable(mouseBlockControl);
-            log.addLoggable(kbGridControl);
-            log.addLoggable(kbGridCamControl);
-        }
-        log.addLoggable(blockDragControl);
-        log.addLoggable(camera);
-        log.addLoggable(grid);
-        log.addLoggable(taskmanager);
     }
 
     /**
