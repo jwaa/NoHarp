@@ -175,7 +175,7 @@ public class GestureGrabControl extends LeapControl implements Tweakable, Loggab
      */
     private Hand getGrabHand(HandList hands)
     {
-        if (isRightHanded)
+        if ((isRightHanded && calib.getScale().x > 0) || (!isRightHanded && calib.getScale().x < 0 ))
             return hands.rightmost();
         return hands.leftmost();
     }
