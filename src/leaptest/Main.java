@@ -235,22 +235,25 @@ public class Main extends SimpleApplication
         // Add loggables to log (order matters for the log order in log.txt)
         if (config.isSet("Log"))
         {
+            log.addLoggable(taskmanager);
             if(config.isSet("Leap"))
             {
                 log.addLoggable(leapHandControl);
                 log.addLoggable(gestureGrabControl);
+                log.addLoggable(blockDragControl);
                 log.addLoggable(gestureRotateControl);
+                log.addLoggable(camera);
+                log.addLoggable(grid);
             }
             else if (config.isSet("MouseAndKeyboard"))
             {
                 log.addLoggable(mouseBlockControl);
+                log.addLoggable(blockDragControl);
                 log.addLoggable(kbGridControl);
+                log.addLoggable(grid);
                 log.addLoggable(kbGridCamControl);
+                log.addLoggable(camera);
             }
-            log.addLoggable(blockDragControl);
-            log.addLoggable(camera);
-            log.addLoggable(grid);
-            log.addLoggable(taskmanager);
         }
     }
 
