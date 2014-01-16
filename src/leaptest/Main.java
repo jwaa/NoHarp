@@ -192,6 +192,7 @@ public class Main extends SimpleApplication
         }
 
         // Add keyboard control
+        inputManager.clearMappings();
         if (config.isSet("DebugESC")) 
             controllers.add(new KeyboardDebugControl(this));
         if (config.isSet("Debug"))
