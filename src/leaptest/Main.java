@@ -192,7 +192,9 @@ public class Main extends SimpleApplication
         }
 
         // Add keyboard control
-        controllers.add(new KeyboardDebugControl(this));
+        inputManager.clearMappings();
+        if (config.isSet("DebugESC")) 
+            controllers.add(new KeyboardDebugControl(this));
         if (config.isSet("Debug"))
         {
             tweaker.registerTweakable(calib);
