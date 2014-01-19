@@ -42,7 +42,7 @@ public class GestureRotateControl extends LeapControl implements Tweakable, Logg
      * accepted. PLUS the swipes that are 11% more extreme than the expected 
      * extreme swipes.
     */
-    private float Rotate_Z_Sensitivity = 0.9f;
+    private float Rotate_Z_Sensitivity = 0.65f;
     private float Rotate_Duration_Sensitivity = 0.25f;
     private float Rotate_Time_Between_Sensitivity = 0.35f;
     private float Rotate_Part_Sensitivity = 0.5f;
@@ -59,14 +59,14 @@ public class GestureRotateControl extends LeapControl implements Tweakable, Logg
      * user.
     */
     private float averageZPartialRotateSwipe = 0.0f;
-    private float stdevZPartialRotateSwipe = 60f;
+    private float stdevZPartialRotateSwipe = 0.0f;
     private float averagePartialDurationRotate = 10000f;
     private float stdevPartialDurationRotate = 1000f;
     private float averageDurationRotateSwipe = 200000f;
     private float stdevDurationRotateSwipe = 20000f;
     
     private float averageZPartialCameraSwipe = 0.0f;
-    private float stdevZPartialCameraSwipe = 80f;
+    private float stdevZPartialCameraSwipe = 0.0f;
     private float averagePartialDurationCamera = 20000f;
     private float stdevPartialDurationCamera = 2000f;
     private float averageDurationCameraSwipe = 200000f;
@@ -83,7 +83,7 @@ public class GestureRotateControl extends LeapControl implements Tweakable, Logg
     private float Min_Velocity_Rotate = 0.001f;
     private float Max_Velocity_Camera = 0.025f;
     private float Min_Velocity_Camera = 0.0001f;
-    private boolean IS_RIGHT_HANDED = true;
+    private boolean isRightHanded = true;
     private boolean INVERT_Y_AXIS_FOR_CAMERA = false;
     
     
@@ -136,9 +136,10 @@ public class GestureRotateControl extends LeapControl implements Tweakable, Logg
     private boolean isVerticalSwipe;
     private boolean isHorizontalSwipe;
     
-    public GestureRotateControl(LeapCalibrator leap, Grid grid, GridCam camera)
+    public GestureRotateControl(LeapCalibrator leap, Grid grid, GridCam camera, boolean isRightHanded)
     {
         super(leap);
+        this.isRightHanded = isRightHanded;
         this.grid = grid;
         this.camera = camera;
         isRotateSwipe = false;
@@ -306,11 +307,12 @@ public class GestureRotateControl extends LeapControl implements Tweakable, Logg
 
     private boolean isCorrectSwipe(SwipeGesture s) 
     {                        
-        boolean isCorrectRotateDirection = (Math.abs(s.direction().getX())>Math.abs(s.direction().getY())
-                && Math.abs(s.direction().getX())>Math.abs(s.direction().getZ()));
         
-        boolean isCorrectCameraDirection = (Math.abs(s.direction().getY())>Math.abs(s.direction().getZ())
-                && Math.abs(s.direction().getY())>Math.abs(s.direction().getX()));
+        boolean isCorrectRotateDirection = (Math.abs(s.direction().getX()*this.calib.getScale().x )>Math.abs(s.direction().getY()*this.calib.getScale().y)
+                && Math.abs(s.direction().getX()*this.calib.getScale().x)>Math.abs(s.direction().getZ())*this.calib.getScale().z);
+        
+        boolean isCorrectCameraDirection = (Math.abs(s.direction().getY()*this.calib.getScale().y)>Math.abs(s.direction().getZ()*this.calib.getScale().z)
+                && Math.abs(s.direction().getY()*this.calib.getScale().y)>Math.abs(s.direction().getX())*this.calib.getScale().x);
         
         if(isCorrectRotateDirection)
         {
@@ -351,8 +353,8 @@ public class GestureRotateControl extends LeapControl implements Tweakable, Logg
     
     private boolean isIntendedAsRotateSwipe(SwipeGesture s)
     {
-        boolean isAtRegularSwipePosition = (s.position().getZ() >= (averageZPartialRotateSwipe-ROTATE_Z_SENS_VALUE*stdevZPartialRotateSwipe) &&
-        s.position().getZ() <= (averageZPartialRotateSwipe+ROTATE_Z_SENS_VALUE*stdevZPartialRotateSwipe));
+        boolean isAtRegularSwipePosition = (s.position().getZ()*this.calib.getScale().z >= (averageZPartialRotateSwipe-ROTATE_Z_SENS_VALUE*stdevZPartialRotateSwipe) &&
+        s.position().getZ()*this.calib.getScale().z <= (averageZPartialRotateSwipe+ROTATE_Z_SENS_VALUE*stdevZPartialRotateSwipe));
 
         boolean isOffRegularSwipeDuration = (s.duration() == 0) 
                 || 
@@ -373,8 +375,8 @@ public class GestureRotateControl extends LeapControl implements Tweakable, Logg
     
     private boolean isIntendedAsCameraSwipe(SwipeGesture s)
     {
-        boolean isAtRegularSwipePosition = (s.position().getZ() >= (averageZPartialCameraSwipe-CAMERA_Z_SENS_VALUE*stdevZPartialCameraSwipe) &&
-        s.position().getZ() <= (averageZPartialCameraSwipe+CAMERA_Z_SENS_VALUE*stdevZPartialCameraSwipe));
+        boolean isAtRegularSwipePosition = (s.position().getZ()*this.calib.getScale().z >= (averageZPartialCameraSwipe-CAMERA_Z_SENS_VALUE*stdevZPartialCameraSwipe) &&
+        s.position().getZ()*this.calib.getScale().z <= (averageZPartialCameraSwipe+CAMERA_Z_SENS_VALUE*stdevZPartialCameraSwipe));
 
         boolean isOffRegularSwipeDuration = (s.duration() == 0)
                 ||
@@ -395,10 +397,12 @@ public class GestureRotateControl extends LeapControl implements Tweakable, Logg
     
     private Hand getRotateHand() 
     {
-        if(IS_RIGHT_HANDED)
-            return frame.hands().leftmost();
-        else
+        if(this.calib.getScale().x < 0)
+            isRightHanded = !isRightHanded;
+        if(isRightHanded)
             return frame.hands().rightmost();
+        else
+            return frame.hands().leftmost();
     }
 
     private float calculateVelocity(float speed) 
@@ -408,9 +412,9 @@ public class GestureRotateControl extends LeapControl implements Tweakable, Logg
         {
             if(lastDirectionRotate == null || speed == 0.0)
                 velocity = rotateVelocity;
-            else if(lastDirectionRotate.getX()>0)
+            else if(lastDirectionRotate.getX()*this.calib.getScale().x>0)
                 velocity = rotateVelocity + ((1/frame.currentFramesPerSecond())+(speed/Rotate_Speed_Increase));  
-            else if(lastDirectionRotate.getX()<0)
+            else if(lastDirectionRotate.getX()*this.calib.getScale().getX()<0)
                 velocity = rotateVelocity - ((1/frame.currentFramesPerSecond())+(speed/Rotate_Speed_Increase));
             if(Math.abs(velocity) > Max_Velocity_Rotate )
                 return Math.signum(velocity)*Max_Velocity_Rotate;
@@ -421,9 +425,9 @@ public class GestureRotateControl extends LeapControl implements Tweakable, Logg
         {
             if(lastDirectionCamera == null || speed == 0.0)
                 velocity = cameraVelocity;
-            else if(lastDirectionCamera.getY()>0)
+            else if(lastDirectionCamera.getY()*this.calib.getScale().y>0)
                 velocity = cameraVelocity + ((1/frame.currentFramesPerSecond())+(speed/Camera_Speed_Increase));  
-            else if(lastDirectionCamera.getY()<0)
+            else if(lastDirectionCamera.getY()*this.calib.getScale().y<0)
                 velocity = cameraVelocity - ((1/frame.currentFramesPerSecond())+(speed/Camera_Speed_Increase));
             
             
@@ -449,7 +453,7 @@ public class GestureRotateControl extends LeapControl implements Tweakable, Logg
     {
         nrPartialRotateSwipes++;
         float previousAverage = averageZPartialRotateSwipe, 
-                zCoordinate = rotateSwipe.position().getZ(),
+                zCoordinate = rotateSwipe.position().getZ()*this.calib.getScale().z,
                 duration = rotateSwipe.duration();
         
         averageZPartialRotateSwipe = calculateAverage(averageZPartialRotateSwipe, zCoordinate, nrPartialRotateSwipes);
@@ -484,7 +488,7 @@ public class GestureRotateControl extends LeapControl implements Tweakable, Logg
     {
         nrPartialCameraSwipes++;
         float previousAverage = averageZPartialCameraSwipe, 
-               zCoordinate = cameraSwipe.position().getZ(),
+               zCoordinate = cameraSwipe.position().getZ()*this.calib.getScale().z,
                duration = cameraSwipe.duration();
         
         averageZPartialCameraSwipe = calculateAverage(averageZPartialCameraSwipe, zCoordinate, nrPartialCameraSwipes);
@@ -549,7 +553,7 @@ public class GestureRotateControl extends LeapControl implements Tweakable, Logg
                 System.out.println("\tDirection:\t" + rotateSwipe.direction());
                 System.out.println("\tDuration:\t" + rotateSwipe.duration());
                 System.out.println("\tSpeed:\t\t" + rotateSwipe.speed());
-                System.out.println("\tZ coordinate:\t" + rotateSwipe.position().getZ());
+                System.out.println("\tZ coordinate:\t" + rotateSwipe.position().getZ()*this.calib.getScale().z);
                 System.out.println("\tTime between:\t" + timeBetweenRotateSwipes);
             }
             else if("camera".equals(swipeType))
@@ -559,7 +563,7 @@ public class GestureRotateControl extends LeapControl implements Tweakable, Logg
                 System.out.println("\tDirection:\t" + cameraSwipe.direction());
                 System.out.println("\tDuration:\t" + cameraSwipe.duration());
                 System.out.println("\tSpeed:\t\t" + cameraSwipe.speed());
-                System.out.println("\tZ coordinate:\t" + cameraSwipe.position().getZ());
+                System.out.println("\tZ coordinate:\t" + cameraSwipe.position().getZ()*this.calib.getScale().z);
                 System.out.println("\tTime between:\t" + timeBetweenCameraSwipes);
             }
         }
@@ -604,13 +608,13 @@ public class GestureRotateControl extends LeapControl implements Tweakable, Logg
         {
             if(lastDirectionRotate == null)
                 return true;
-            return Math.signum(lastDirectionRotate.getX()) != Math.signum(s.direction().getX());
+            return Math.signum(lastDirectionRotate.getX()*this.calib.getScale().x) != Math.signum(s.direction().getX()*this.calib.getScale().x);
         }
         else if(isCameraSwipe)
         {
             if(lastDirectionCamera == null)
                 return true;
-            return Math.signum(lastDirectionCamera.getY()) != Math.signum(s.direction().getY());
+            return Math.signum(lastDirectionCamera.getY()*this.calib.getScale().y) != Math.signum(s.direction().getY()*this.calib.getScale().y);
         }
         else
             return false;

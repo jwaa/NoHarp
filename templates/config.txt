@@ -1,6 +1,7 @@
 % Turn logging & debugging on/off
 Debug 1
 DebugGridSaver 0
+DebugESC 1
 Log 1
 LogFolder logs/
 
@@ -38,4 +39,4 @@ SetExtension .set
 % Controllers
 Leap 1
 MouseAndKeyboard 1
-TaskManager 0
+TaskManager 1

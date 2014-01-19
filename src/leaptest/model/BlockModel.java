@@ -163,10 +163,10 @@ public class BlockModel
                         nieuw2[nieuw2.length - 1 - j][i] = old[i][j];
                 return nieuw2;
             case 3:
-                int[][] nieuw3 = new int[old.length][old[0].length];
+                int[][] nieuw3 = new int[old[0].length][old.length];
                 for (int i = 0; i < old.length; i++)
                     for (int j = 0; j < old[0].length; j++)
-                        nieuw3[nieuw3.length - 1 - i][nieuw3[0].length - 1 - j] = old[i][j];
+                        nieuw3[j][nieuw3[0].length - 1 - i] = old[i][j];
                 return nieuw3;
             default:
                 return old;

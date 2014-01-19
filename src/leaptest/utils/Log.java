@@ -111,23 +111,6 @@ public class Log {
     }
     
     /**
-     * Convenience method for getting a DateTimeString
-     * @return DateTime formatted String
-     */
-    public static String getDateTimeString()
-    {
-        Date d = new Date();
-        int day = d.getDay(),
-            month = d.getMonth(),
-            year = d.getYear()-100,
-            hour = d.getHours(),
-            minutes = d.getMinutes(),
-            seconds = d.getSeconds();
-        return String.format("%02d%02d%02d_%02d%02d%02d", 
-                day, month, year, hour, minutes, seconds);
-    }
-
-    /**
      * Checks if enabled
      * @return boolean enabled
      */
