@@ -52,10 +52,10 @@ public class GestureGrabControl extends LeapControl implements Tweakable, Loggab
         this.gettingBigger = 0;
         this.stayingTheSame = 0;
         this.isRightHanded = isRightHanded;
-        gettingSmallerThreshold = 5;
-        gettingBiggerThreshold = 2;
+        gettingSmallerThreshold = 3;
+        gettingBiggerThreshold = 1;
         stayingTheSameThreshold = 2;
-        grabbingThreshold = 0.98f;
+        grabbingThreshold = 0.9779999f;
         releaseThreshold = 1.01f;
         yMarge = 1.0f;
         xMarge = 1.0f;
