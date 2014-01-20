@@ -75,7 +75,8 @@ public class GestureGrabControl extends LeapControl implements Tweakable, Loggab
                 {
                     Vector3f coordinates = calib.leap2world(hand.palmPosition());
                     Block grabable = findBlockWithinMarges(coordinates);
-                    grabable.setOver(true);
+                    if (grabable != null)
+                        grabable.setOver(true);
                 }
             if (bdc.getSelected() != null)
                 if (!release(hand))
