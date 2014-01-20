@@ -127,15 +127,12 @@ public class MouseBlockControl implements AnalogListener, Updatable, Loggable {
     
     public void update(float tpf) 
     {  
-        // See if there is a block under the mouse
-        Block undermouse = detectBlock(); 
-        if (bdc.getSelected() == null && undermouse != null)
-            undermouse.setOver(true);
+
         // On a new click start dragging
         if (clickinit)
         {
             isClicked = true;
-            bdc.liftBlock(undermouse);
+            bdc.liftBlock(detectBlock());
         } 
         // On button release drop block if dragging
         else if (clickrelease && bdc.getSelected() != null) 
@@ -147,6 +144,13 @@ public class MouseBlockControl implements AnalogListener, Updatable, Loggable {
         if (bdc.getSelected() != null)
         {
             updateBlock();
+        }
+        // See if mouse hovers over a block and highlight it
+        else 
+        {
+            Block undermouse = detectBlock(); 
+            if (undermouse != null)
+                undermouse.setOver(true);            
         }
         // Save mouse location data
         if(!inputManager.getCursorPosition().clone().equals(prevMouseLoc))
