@@ -15,7 +15,7 @@ import com.jme3.math.ColorRGBA;
  */
 public class MaterialManager {
     
-    public static Material normal, lifted, falling, target, gridnormal, ringrotate, creationblock, floor, leaphand;
+    public static Material normal, lifted, falling, target, gridnormal, ringrotate, over, creationblock, floor, leaphand;
      
     // Should not be instantiated
     private MaterialManager() {}
@@ -40,6 +40,8 @@ public class MaterialManager {
         ringrotate = generateMaterial(assetManager, ColorRGBA.Orange);  
         creationblock = generateMaterial(assetManager, ColorRGBA.Green);
         creationblock.setTexture("DiffuseMap",assetManager.loadTexture("Textures/CubeTexCreate.png"));
+        over = generateMaterial(assetManager, ColorRGBA.White);
+        over.setTexture("DiffuseMap",assetManager.loadTexture("Textures/CubeTexOver.png"));
         target = generateMaterial(assetManager, new ColorRGBA(1.0f,0f,0.f,0.2f));
         target.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
         floor = generateMaterial(assetManager, new ColorRGBA(0.3f,0.3f,0.70f,1.0f));

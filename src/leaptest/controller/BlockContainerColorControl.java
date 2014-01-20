@@ -29,7 +29,12 @@ public class BlockContainerColorControl implements Updatable {
             {
                 if (b.isLifted())
                     b.setMaterial(MaterialManager.lifted);
-                else
+                else if (b.isOver())
+                {
+                    b.setMaterial(MaterialManager.over);
+                    b.setOver(false);
+                }
+                else    
                     b.setMaterial(MaterialManager.normal);
             } 
         }

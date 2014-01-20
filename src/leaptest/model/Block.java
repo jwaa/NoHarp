@@ -20,7 +20,7 @@ public class Block extends Geometry implements Comparable {
     
     private Vector3f dimensions;
     private Vector3f position;
-    private boolean lifted, falling, dissolving;
+    private boolean lifted, falling, dissolving, over;
     private float rotation, gravity;
     
     
@@ -87,6 +87,16 @@ public class Block extends Geometry implements Comparable {
     public boolean isLifted()
     {
         return lifted;
+    }
+    
+    public void setOver(boolean over)
+    {
+        this.over = over;
+    }
+    
+    public boolean isOver()
+    {
+        return over;
     }
     
     public Vector3f getPosition()
