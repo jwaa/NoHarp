@@ -1,0 +1,9 @@
+gettingSmallerThreshold Integer 3
+gettingBiggerThreshold Integer 1
+stayingTheSameThreshold Integer 2
+grabbingThreshold Float 0.9779999
+releaseThreshold Float 1.01
+yMarge Float 1.0
+xMarge Float 1.0
+zMarge Float 1.0
+margeSteps Float 0.5
