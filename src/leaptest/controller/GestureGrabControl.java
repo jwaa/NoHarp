@@ -66,13 +66,20 @@ public class GestureGrabControl extends LeapControl implements Tweakable, Loggab
     @Override
     public void update(float tpf)
     {
+        HandList hands = frame.hands();
+        Hand hand = getGrabHand(hands);
         if (frame != null)
         {
             if (bdc.getSelected() == null)
-                grab();
+                if (!grab(hand))
+                {
+                    Vector3f coordinates = calib.leap2world(hand.palmPosition());
+                    Block grabable = findBlockWithinMarges(coordinates);
+                    grabable.setOver(true);
+                }
             if (bdc.getSelected() != null)
-                if (!release())
-                    drag();
+                if (!release(hand))
+                    drag(hand);
             previousFrame = frame;
         }
     }
@@ -80,14 +87,12 @@ public class GestureGrabControl extends LeapControl implements Tweakable, Loggab
     /**
      * Checks whether one is trying to grab a block and if so grabs the block.
      */
-    private void grab()
+    private boolean grab(Hand hand)
     {
-        HandList hands = frame.hands();
-        Hand hand = getGrabHand(hands);
         if (previousFrame != null)
         {
             if (hand == null)
-                return;
+                return false;
             if (hand.scaleFactor(previousFrame) < grabbingThreshold)
             {
                 this.gettingSmaller++;
@@ -107,18 +112,18 @@ public class GestureGrabControl extends LeapControl implements Tweakable, Loggab
                 bdc.liftBlock(findBlockWithinMarges(coordinates));
                 this.gettingSmaller = 0;
                 this.stayingTheSame = 0;
+                return true;
             }
         }
+        return false;
     }
 
     /**
      * Moves the block that is currently hold according to the hand movement and
      * the rules present in the environment.
      */
-    private void drag()
+    private void drag(Hand hand)
     {
-        HandList hands = frame.hands();
-        Hand hand = getGrabHand(hands);
         Vector3f coordinates = calib.leap2world(hand.palmPosition());
         bdc.moveBlock(coordinates);
     }
@@ -128,10 +133,8 @@ public class GestureGrabControl extends LeapControl implements Tweakable, Loggab
      *
      * @return a boolean which says whether the block is released.
      */
-    private boolean release()
+    private boolean release(Hand hand)
     {
-        HandList hands = frame.hands();
-        Hand hand = getGrabHand(hands);
         if (previousFrame != null)
         {
             if (hand == null)
