@@ -116,6 +116,7 @@ public class Main extends SimpleApplication
         TaskManager taskmanager = (config.isSet("TaskManager") ? new TaskManager(config.getValue("ModelFolder")) : null);
         Tweaker tweaker = new Tweaker();
         
+        
         // VIEWS
         // Set viewports
         viewPort.setBackgroundColor(ColorRGBA.DarkGray);
@@ -166,6 +167,7 @@ public class Main extends SimpleApplication
         // Create a Leap Motion interface and put it within the calibrator
         leap = new Controller();
         LeapCalibrator calib = new LeapCalibrator(leap);
+        
         if (config.isSet("Leap"))
         {
             LeapHandControl leapHandControl = new LeapHandControl(calib, handmodel);
@@ -177,11 +179,11 @@ public class Main extends SimpleApplication
             controllers.add(gestureGrabControl);
             controllers.add(gestureRotateControl);
             controllers.add(new BlockTargetHelperControl(blockDragControl, rootNode, blockdims));
-            if (config.isSet("Debug"))
-            {
-                tweaker.registerTweakable(gestureGrabControl);
-                tweaker.registerTweakable(gestureRotateControl);
-            }
+
+            tweaker.registerTweakable(calib);
+            tweaker.registerTweakable(gestureGrabControl);
+            tweaker.registerTweakable(gestureRotateControl);
+            
             if (config.isSet("Log"))
             {
                 log.addLoggable(blockDragControl);
@@ -197,10 +199,11 @@ public class Main extends SimpleApplication
             controllers.add(new KeyboardDebugControl(this));
         if (config.isSet("Debug"))
         {
-            tweaker.registerTweakable(calib);
             controllers.add(new KeyboardTweakerControl(inputManager, tweaker, config.getValue("SetFolder"), config.getValue("SetExtension")));
             if (config.isSet("DebugGridSaver"))
                 controllers.add(new KeyboardGridSaveControl(inputManager, grid, config.getValue("ModelFolder") + config.getValue("ModelFile")));
+        } else {
+            tweaker.loadTweakSets(config.getValue("SetFolder"), config.getValue("SetExtension"));
         }
 
 

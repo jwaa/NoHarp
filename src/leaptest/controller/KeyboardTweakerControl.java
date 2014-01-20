@@ -21,7 +21,6 @@ public class KeyboardTweakerControl implements Updatable, ActionListener {
     private Tweaker tweak;
     String pre, post;
     
-    
     public KeyboardTweakerControl(InputManager inputManager, Tweaker tweak, String pre, String post)
     {
         this.pre = pre;
@@ -117,7 +116,6 @@ public class KeyboardTweakerControl implements Updatable, ActionListener {
                 change(name);
             }
     }
-
 
     public void update(float tpf) {}
     

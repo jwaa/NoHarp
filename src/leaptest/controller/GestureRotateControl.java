@@ -659,7 +659,7 @@ public class GestureRotateControl extends LeapControl implements Tweakable, Logg
     private enum Variables {Rotate_Z_Sensitivity, Rotate_Duration_Sensitivity, Rotate_Time_Between_Swipes_Sensitivity,
     Rotate_Partial_Sensitivity, Rotate_Min_acceptance_duration, Camera_Z_Sensitivity, Camera_Duration_Sensitivity, 
     Camera_Time_Between_Swipes_Sensitivity, Camera_Partial_Sensitivity, Camera_Min_acceptance_duration, Rotate_speed_increase,
-    Camera_speed_increase, Rotate_decay_constant, Camera_decay_constant, Max_velocity_rotate, Max_velocity_camera, Min_velocity_camera}
+    Camera_speed_increase, Rotate_decay_constant, Camera_decay_constant, Max_velocity_rotate, Min_velocity_rotate, Max_velocity_camera, Min_velocity_camera}
     
     public void setVariable(TweakVariable var) 
     {
@@ -709,6 +709,9 @@ public class GestureRotateControl extends LeapControl implements Tweakable, Logg
             case Camera_decay_constant:
                 Camera_Decay_Constant = varFloat;
                 break;
+            case Min_velocity_rotate:
+                Min_Velocity_Rotate = varFloat;
+                break;    
             case Max_velocity_rotate:
                 Max_Velocity_Rotate = varFloat;
                 break;
