@@ -40,7 +40,6 @@ public class GestureGrabControl extends LeapControl implements Tweakable, Loggab
     private Frame frame;
     private Frame previousFrame;
     private BlockDragControl bdc;
-    
     // Log data
     private Vector3f whereGrabbed = new Vector3f();
 
@@ -66,22 +65,25 @@ public class GestureGrabControl extends LeapControl implements Tweakable, Loggab
     @Override
     public void update(float tpf)
     {
-        HandList hands = frame.hands();
-        Hand hand = getGrabHand(hands);
         if (frame != null)
         {
-            if (bdc.getSelected() == null)
-                if (!grab(hand))
-                {
-                    Vector3f coordinates = calib.leap2world(hand.palmPosition());
-                    Block grabable = findBlockWithinMarges(coordinates);
-                    if (grabable != null)
-                        grabable.setOver(true);
-                }
-            if (bdc.getSelected() != null)
-                if (!release(hand))
-                    drag(hand);
-            previousFrame = frame;
+            HandList hands = frame.hands();
+            Hand hand = getGrabHand(hands);
+            if (frame != null)
+            {
+                if (bdc.getSelected() == null)
+                    if (!grab(hand))
+                    {
+                        Vector3f coordinates = calib.leap2world(hand.palmPosition());
+                        Block grabable = findBlockWithinMarges(coordinates);
+                        if (grabable != null)
+                            grabable.setOver(true);
+                    }
+                if (bdc.getSelected() != null)
+                    if (!release(hand))
+                        drag(hand);
+                previousFrame = frame;
+            }
         }
     }
 
@@ -179,7 +181,7 @@ public class GestureGrabControl extends LeapControl implements Tweakable, Loggab
      */
     private Hand getGrabHand(HandList hands)
     {
-        if ((isRightHanded && calib.getScale().x > 0) || (!isRightHanded && calib.getScale().x < 0 ))
+        if ((isRightHanded && calib.getScale().x > 0) || (!isRightHanded && calib.getScale().x < 0))
             return hands.rightmost();
         return hands.leftmost();
     }
@@ -234,11 +236,10 @@ public class GestureGrabControl extends LeapControl implements Tweakable, Loggab
         return set;
     }
 
-    public void log(Log log) {
-        if(!whereGrabbed.equals(new Vector3f()))
-        {
+    public void log(Log log)
+    {
+        if (!whereGrabbed.equals(new Vector3f()))
             log.addEntry(Log.EntryType.Grabbed, whereGrabbed.toString());
-        }
         whereGrabbed = new Vector3f();
     }
 

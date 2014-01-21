@@ -166,6 +166,7 @@ public class BlockDragControl implements Loggable {
         Block result;
         // If is creation block get new block 
         if (creationblock.isInside(pos)) {
+            creationblock.setOver(true);
             Block createdBlock = new Block(MaterialManager.normal,creationblock.getPosition(),Vector3f.UNIT_XYZ.mult(creationblock.getDimensions().x));
             createBlockID = createdBlock.hashCode();
             return createdBlock;
@@ -178,6 +179,8 @@ public class BlockDragControl implements Loggable {
         return grid.getBlockAt(pos);    
     }
     
+    
+    
     public Block getBlockCollideWith(Collidable ray)
     {
         CollisionResults results = new CollisionResults();
@@ -186,6 +189,7 @@ public class BlockDragControl implements Loggable {
         creationblock.collideWith(ray, results);
         if (results.size() > 0)
         {   
+            creationblock.setOver(true);
             Block createdBlock = new Block(MaterialManager.normal,creationblock.getPosition(),Vector3f.UNIT_XYZ.mult(creationblock.getDimensions().x));
             createBlockID = createdBlock.hashCode();
             return createdBlock;
