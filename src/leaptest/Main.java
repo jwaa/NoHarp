@@ -243,7 +243,6 @@ public class Main extends SimpleApplication
             controllers.add(modeldisplay);
         }
         controllers.add(new BlockContainerColorControl(grid));
-        world.addBlock(creationblock);
         controllers.add(new BlockContainerColorControl(world));
         controllers.add(new GridRingColorControl(grid, gridring));
         controllers.add(new BlockContainerShadowControl(grid, blockdims, blockcap));

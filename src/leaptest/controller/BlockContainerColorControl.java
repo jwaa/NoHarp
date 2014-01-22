@@ -8,41 +8,36 @@ import leaptest.model.Block;
 import leaptest.model.BlockContainer;
 import leaptest.view.MaterialManager;
 
+
 /**
  *
  * @author silvandeleemput
  */
-public class BlockContainerColorControl implements Updatable
-{
+public class BlockContainerColorControl implements Updatable {
 
     private BlockContainer bc;
-
+    
     public BlockContainerColorControl(BlockContainer bc)
     {
         this.bc = bc;
     }
-
-    public void update(float tpf)
-    {
+    
+    public void update(float tpf) {
         for (Block b : bc.getBlocks())
         {
-            if (b.isCreation())
-                if (b.isOver())
-                {
-                    b.setMaterial(MaterialManager.creationblockover);
-                    b.setOver(false);
-                }
-                else
-                    b.setMaterial(MaterialManager.creationblock);
-            else if (!b.isDissolving())
+            if (!b.isDissolving())
+            {
                 if (b.isLifted())
                     b.setMaterial(MaterialManager.lifted);
                 else if (b.isOver())
                 {
                     b.setMaterial(MaterialManager.over);
                     b.setOver(false);
-                } else
+                }
+                else    
                     b.setMaterial(MaterialManager.normal);
+            } 
         }
     }
+    
 }
