@@ -26,9 +26,9 @@ public class BlockContainerShadowControl implements Updatable {
     private Vector3f offset;
     private Block shadow_fix;
     
-    public BlockContainerShadowControl(BlockContainer bc, Vector3f dimensions, Geometry cap)
+    public BlockContainerShadowControl(BlockContainer bc, Vector3f dimensions)
     {
-        this.cap = cap; //new BlockCap(dimensions);
+        this.cap = new BlockCap(dimensions);
 
         offset = new Vector3f(-dimensions.x/2,dimensions.y/2+0.01f,dimensions.z/2);
         node = new Node();

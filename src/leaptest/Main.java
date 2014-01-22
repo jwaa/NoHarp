@@ -23,6 +23,7 @@ import leaptest.controller.BlockContainerDissolveControl;
 import leaptest.controller.BlockContainerShadowControl;
 import leaptest.controller.BlockDragControl;
 import leaptest.controller.BlockTargetHelperControl;
+import leaptest.controller.CreationBlockColorControl;
 import leaptest.controller.GestureGrabControl;
 import leaptest.controller.GestureRotateControl;
 import leaptest.controller.GridCamControl;
@@ -113,7 +114,7 @@ public class Main extends SimpleApplication
         GridCam camera = new GridCam(cameradistance, cameraangle, Vector3f.ZERO);
         Grid grid = new Grid(griddim, griddim, griddim, blockdims);
         float creationblockstartpos = (config.isSet("Righthanded") ? 1f : -1f);
-        Block creationblock = new Block(MaterialManager.creationblock, new Vector3f(creationblockstartpos*(grid.getRadius() + 2 * blockdims.x), blockdims.y / 2, 0f), blockdims);
+        Block creationblock = new Block(MaterialManager.creationblock, new Vector3f(creationblockstartpos*(grid.getRadius() + 1 * blockdims.x), blockdims.y / 2, 0f), blockdims);
         TaskManager taskmanager = (config.isSet("TaskManager") ? new TaskManager(config.getValue("ModelFolder")) : null);
         Tweaker tweaker = new Tweaker();
         
@@ -134,13 +135,6 @@ public class Main extends SimpleApplication
         rootNode.attachChild(floor);
         rootNode.attachChild(world);
         rootNode.attachChild(creationblock);
-        BlockCap blockcap = new BlockCap(blockdims);
-        BlockCap cblockcap = (BlockCap) blockcap.clone();
-        cblockcap.move(creationblock.getLocalTranslation());
-        cblockcap.rotate(-FastMath.PI * 0.5f, 0, 0);
-        cblockcap.setMaterial(creationblock.getMaterial());
-        cblockcap.setShadowMode(ShadowMode.Receive);
-        rootNode.attachChild(cblockcap);
 
         // Add lights
         DirectionalLight sun = new DirectionalLight();
@@ -250,9 +244,10 @@ public class Main extends SimpleApplication
         }
         controllers.add(new BlockContainerColorControl(grid));
         controllers.add(new BlockContainerColorControl(world));
+        controllers.add(new CreationBlockColorControl(creationblock));
         controllers.add(new GridRingColorControl(grid, gridring));
-        controllers.add(new BlockContainerShadowControl(grid, blockdims, blockcap));
-        controllers.add(new BlockContainerShadowControl(world, blockdims, blockcap));
+        controllers.add(new BlockContainerShadowControl(grid, blockdims));
+        controllers.add(new BlockContainerShadowControl(world, blockdims));
         
         // Add loggables to log (order matters for the log order in log.txt)
         if (config.isSet("Log"))

@@ -40,7 +40,6 @@ public class GestureGrabControl extends LeapControl implements Tweakable, Loggab
     private Frame frame;
     private Frame previousFrame;
     private BlockDragControl bdc;
-    
     // Log data
     private Vector3f whereGrabbed = new Vector3f();
 
@@ -179,7 +178,7 @@ public class GestureGrabControl extends LeapControl implements Tweakable, Loggab
      */
     private Hand getGrabHand(HandList hands)
     {
-        if ((isRightHanded && calib.getScale().x > 0) || (!isRightHanded && calib.getScale().x < 0 ))
+        if ((isRightHanded && calib.getScale().x > 0) || (!isRightHanded && calib.getScale().x < 0))
             return hands.rightmost();
         return hands.leftmost();
     }
@@ -234,11 +233,10 @@ public class GestureGrabControl extends LeapControl implements Tweakable, Loggab
         return set;
     }
 
-    public void log(Log log) {
-        if(!whereGrabbed.equals(new Vector3f()))
-        {
+    public void log(Log log)
+    {
+        if (!whereGrabbed.equals(new Vector3f()))
             log.addEntry(Log.EntryType.Grabbed, whereGrabbed.toString());
-        }
         whereGrabbed = new Vector3f();
     }
 
