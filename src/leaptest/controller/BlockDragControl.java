@@ -8,13 +8,11 @@ import com.jme3.collision.Collidable;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.math.Ray;
-import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import leaptest.Main;
 import leaptest.model.Block;
 import leaptest.model.BlockContainer;
-import leaptest.model.BlockModel;
 import leaptest.model.Grid;
 import leaptest.model.TaskManager;
 import leaptest.utils.Log;
@@ -30,7 +28,7 @@ public class BlockDragControl implements Loggable {
     private BlockContainer world;
     private Grid grid;
     private Block dragging, creationblock;
-    private TaskManager taskmanager;
+    private TaskManagerControl taskmanager;
     private Main main;
     
     private Vector3f target;
@@ -44,7 +42,7 @@ public class BlockDragControl implements Loggable {
     private Vector3f moveBlockVector = new Vector3f();
     private Vector3f prevMoveBlockVector = new Vector3f();
     
-    public BlockDragControl(BlockContainer world, Grid grid, Block creationblock, TaskManager taskmanager, Main main)
+    public BlockDragControl(BlockContainer world, Grid grid, Block creationblock, TaskManagerControl taskmanager)
     {
         this.taskmanager = taskmanager;
         this.creationblock = creationblock;
@@ -63,8 +61,7 @@ public class BlockDragControl implements Loggable {
            {
                world.addBlock(dragging);
                grid.removeFromGrid(dragging);
-               if (isTaskComplete())
-                   tryNextTask();
+               taskmanager.completionCheck();
            } else if (!world.containsBlock(dragging))
                world.addBlock(dragging);
            dragging.setLifted(true);
@@ -84,8 +81,7 @@ public class BlockDragControl implements Loggable {
             dragging.setRotation(0f);
             world.removeBlock(dragging);
             grid.addBlock(dragging);
-            if (isTaskComplete())
-                tryNextTask();
+            taskmanager.completionCheck();
         }
         else
         {
@@ -94,24 +90,6 @@ public class BlockDragControl implements Loggable {
         }
         dragging = null;    
     }    
-    
-    private boolean isTaskComplete()
-    {
-        if (taskmanager == null)
-            return false;
-        BlockModel ct = taskmanager.getTask();
-        if (ct.getElements() == grid.getBlocks().size())
-            return ct.equals(grid);
-        return false;
-    }
-    
-    private void tryNextTask()
-    {
-        if (taskmanager.nextTask())
-            grid.removeAllBlocks();    
-        else
-            main.setShutDown(true);
-    }
     
     public void moveBlock(Vector3f position)
     {

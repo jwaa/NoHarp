@@ -66,10 +66,10 @@ public class GestureGrabControl extends LeapControl implements Tweakable, Loggab
     @Override
     public void update(float tpf)
     {
-        HandList hands = frame.hands();
-        Hand hand = getGrabHand(hands);
         if (frame != null)
         {
+            HandList hands = frame.hands();
+            Hand hand = getGrabHand(hands);
             if (bdc.getSelected() == null)
                 if (!grab(hand))
                 {

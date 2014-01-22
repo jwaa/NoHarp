@@ -25,6 +25,8 @@ public class TaskManager implements Loggable{
     private String [] all_tasks = new String [number_of_tasks];
     private int counter;
     
+    private long lastTaskStarted;
+    
     
     // Log data
     private int newTaskID = -1;
@@ -85,11 +87,21 @@ public class TaskManager implements Loggable{
      */
     public boolean nextTask()
     {
+        lastTaskStarted = System.currentTimeMillis();
         if (!hasNextTask())
            return false;
         counter++;
         newTaskID = getTaskId();
         return true;
+    }
+    
+    /**
+     * Gets time difference between now and the start of the task
+     * @return time difference
+     */
+    public long getTimeSinceTaskStart()
+    {
+        return System.currentTimeMillis() - lastTaskStarted;
     }
     
     /**
@@ -134,7 +146,7 @@ public class TaskManager implements Loggable{
         }
     }
     
-    static void shuffleArray(String[] ar)
+    private static void shuffleArray(String[] ar)
     {
         Random rnd = new Random();
         for (int i = ar.length - 1; i > 0; i--)

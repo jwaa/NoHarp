@@ -32,6 +32,7 @@ import leaptest.controller.KeyboardGridControl;
 import leaptest.controller.KeyboardGridSaveControl;
 import leaptest.controller.KeyboardTweakerControl;
 import leaptest.controller.MouseBlockControl;
+import leaptest.controller.TaskManagerControl;
 import leaptest.controller.Updatable;
 import leaptest.model.Block;
 import leaptest.model.BlockContainer;
@@ -163,7 +164,12 @@ public class Main extends SimpleApplication
         // CONTROLS
         // Set-up looping controllers (order matters!!)
         controllers = new ArrayList<Updatable>();
-
+        
+        TaskManagerControl taskcontrol = new TaskManagerControl(taskmanager, grid, this, Long.parseLong(config.getValue("TimerInterval")));
+        if (config.isSet("Timer"))
+            controllers.add(taskcontrol);
+        
+        
         // Create a Leap Motion interface and put it within the calibrator
         leap = new Controller();
         LeapCalibrator calib = new LeapCalibrator(leap);
@@ -171,7 +177,7 @@ public class Main extends SimpleApplication
         if (config.isSet("Leap"))
         {
             LeapHandControl leapHandControl = new LeapHandControl(calib, handmodel);
-            BlockDragControl blockDragControl = new BlockDragControl(world, grid, creationblock, taskmanager, this);
+            BlockDragControl blockDragControl = new BlockDragControl(world, grid, creationblock, taskcontrol);
             GestureGrabControl gestureGrabControl = new GestureGrabControl(calib, blockDragControl, config.isSet("Righthanded"));
             GestureRotateControl gestureRotateControl = new GestureRotateControl(calib, grid, camera, config.isSet("RightHanded"));
             
@@ -216,7 +222,7 @@ public class Main extends SimpleApplication
             controllers.add(kbGridCamControl);
 
             // Add mouse control
-            BlockDragControl blockDragControl = new BlockDragControl(world, grid, creationblock, taskmanager, this);
+            BlockDragControl blockDragControl = new BlockDragControl(world, grid, creationblock, taskcontrol);
             MouseBlockControl mouseBlockControl = new MouseBlockControl(inputManager, cam, blockDragControl);
             controllers.add(mouseBlockControl);
             controllers.add(new BlockTargetHelperControl(blockDragControl, rootNode, blockdims));

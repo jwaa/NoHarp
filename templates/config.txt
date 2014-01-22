@@ -4,6 +4,8 @@ DebugGridSaver 0
 DebugESC 1
 Log 1
 LogFolder logs/
+Timer 1
+TimerInterval 420000
 
 % Screen settings
 Menu 0
