@@ -156,7 +156,7 @@ public class Main extends SimpleApplication
         controllers = new ArrayList<Updatable>();
         
         TaskManagerControl taskcontrol = new TaskManagerControl(taskmanager, grid, this, Long.parseLong(config.getValue("TimerInterval")));
-        if (config.isSet("Timer"))
+        if (taskmanager!=null && config.isSet("Timer"))
             controllers.add(taskcontrol);
         
         
