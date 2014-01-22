@@ -23,6 +23,7 @@ import leaptest.controller.BlockContainerDissolveControl;
 import leaptest.controller.BlockContainerShadowControl;
 import leaptest.controller.BlockDragControl;
 import leaptest.controller.BlockTargetHelperControl;
+import leaptest.controller.CreationBlockColorControl;
 import leaptest.controller.GestureGrabControl;
 import leaptest.controller.GestureRotateControl;
 import leaptest.controller.GridCamControl;
@@ -133,13 +134,6 @@ public class Main extends SimpleApplication
         rootNode.attachChild(floor);
         rootNode.attachChild(world);
         rootNode.attachChild(creationblock);
-        BlockCap blockcap = new BlockCap(blockdims);
-        BlockCap cblockcap = (BlockCap) blockcap.clone();
-        cblockcap.move(creationblock.getLocalTranslation());
-        cblockcap.rotate(-FastMath.PI * 0.5f, 0, 0);
-        cblockcap.setMaterial(creationblock.getMaterial());
-        cblockcap.setShadowMode(ShadowMode.Receive);
-        rootNode.attachChild(cblockcap);
 
         // Add lights
         DirectionalLight sun = new DirectionalLight();
@@ -244,9 +238,10 @@ public class Main extends SimpleApplication
         }
         controllers.add(new BlockContainerColorControl(grid));
         controllers.add(new BlockContainerColorControl(world));
+        controllers.add(new CreationBlockColorControl(creationblock));
         controllers.add(new GridRingColorControl(grid, gridring));
-        controllers.add(new BlockContainerShadowControl(grid, blockdims, blockcap));
-        controllers.add(new BlockContainerShadowControl(world, blockdims, blockcap));
+        controllers.add(new BlockContainerShadowControl(grid, blockdims));
+        controllers.add(new BlockContainerShadowControl(world, blockdims));
         
         // Add loggables to log (order matters for the log order in log.txt)
         if (config.isSet("Log"))
