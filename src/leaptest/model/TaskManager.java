@@ -19,7 +19,7 @@ public class TaskManager implements Loggable{
     /*
      * bm contains a list of 9 random models: 3 easy, 3 normal, 3 hard (in that order)
      */
-    private final static int number_of_tasks = 9;
+    private final static int number_of_tasks = 4;
     
     private ArrayList <BlockModel> bm;
     private String [] all_tasks = new String [number_of_tasks];
@@ -53,36 +53,29 @@ public class TaskManager implements Loggable{
         
         Arrays.sort(listOfFileNames, new LengthCompare());
 
-        String[] allEasyModels = new String [listOfFileNames.length/3];
-        String[] allNormalModels = new String [listOfFileNames.length/3];
-        String[] allHardModels = new String [listOfFileNames.length/3];
+        String[] allEasyModels = new String [listOfFileNames.length/2];
+        String[] allNormalModels = new String [listOfFileNames.length/2];
         
-        for(int i=0;i<listOfFiles.length/3;i++)
+        for(int i=0;i<listOfFiles.length/2;i++)
         {   
             allEasyModels[i] = listOfFileNames[i];
-            allNormalModels[i] = listOfFileNames[i+listOfFiles.length/3];
-            allHardModels[i] = listOfFileNames[i+ 2*(listOfFiles.length/3)];
+            allNormalModels[i] = listOfFileNames[i+listOfFiles.length/2];
         }
         shuffleArray(allEasyModels); 
         shuffleArray(allNormalModels);
-        shuffleArray(allHardModels);
       
-        for(int i=0;i<number_of_tasks/3; i++)
+        for(int i=0;i<number_of_tasks/2; i++)
         {   
             all_tasks[i] = allEasyModels[i];
             bm.add(new BlockModel(path + allEasyModels[i]));
             
         }
-        for(int i=0;i<number_of_tasks/3; i++)
+        for(int i=0;i<number_of_tasks/2; i++)
         {
-            all_tasks[i+(number_of_tasks/3)] = allNormalModels[i];
+            all_tasks[i+(number_of_tasks/2)] = allNormalModels[i];
             bm.add(new BlockModel(path + allNormalModels[i]));
         }
-        for(int i=0;i<3; i++)
-        {
-            all_tasks[i+2*(number_of_tasks/3)] = allHardModels[i];
-            bm.add(new BlockModel(path + allHardModels[i]));
-        }
+      
         nextTask();
     }
 
