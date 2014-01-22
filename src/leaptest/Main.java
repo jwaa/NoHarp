@@ -9,10 +9,8 @@ import com.jme3.app.StatsAppState;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
 import com.leapmotion.leap.Controller;
@@ -45,7 +43,6 @@ import leaptest.utils.ConfigSettings;
 import leaptest.utils.DefaultAppSettings;
 import leaptest.utils.Log;
 import leaptest.utils.Tweaker;
-import leaptest.view.BlockCap;
 import leaptest.view.MaterialManager;
 import leaptest.view.GridLines;
 import leaptest.view.GridRing;
@@ -65,7 +62,6 @@ public class Main extends SimpleApplication
     private ArrayList<Updatable> controllers;
     private Log log;
     private boolean stopping;
-    
     private long begintimestamp;
     
     /**
