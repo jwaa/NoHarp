@@ -1,11 +1,10 @@
 % Turn logging & debugging on/off
 Debug 1
 DebugGridSaver 0
-DebugESC 1
 Log 1
 LogFolder logs/
 Timer 1
-TimerInterval 420000
+TimerInterval 10000
 
 % Screen settings
 Menu 0
@@ -13,6 +12,7 @@ FullScreen 0
 ScreenWidth 800
 ScreenHeight 600
 ScreenFrequency 0
+ScreenBitsPerPixel 16
 FPS 30
 FPScounter 1
 

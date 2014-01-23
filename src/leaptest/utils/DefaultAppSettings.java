@@ -24,7 +24,8 @@ public class DefaultAppSettings {
         int width = Integer.valueOf(config.getValue("ScreenWidth")).intValue();
         int height = Integer.valueOf(config.getValue("ScreenHeight")).intValue();
         int freq = Integer.valueOf(config.getValue("ScreenFrequency")).intValue();                
-
+        int bpp = Integer.valueOf(config.getValue("ScreenBitsPerPixel")).intValue();
+        
         AppSettings settings = new AppSettings(true);
         // Relevant settings
         settings.put("FrameRate",fps);         
@@ -46,7 +47,7 @@ public class DefaultAppSettings {
 
             // Additional default settings
             settings.put("MinHeight", 0);
-            settings.put("BitsPerPixel", 16);
+            settings.put("BitsPerPixel", bpp);
             settings.put("DepthBits", 24);
             settings.put("StencilBits", 0);
             settings.put("Samples", 0);
