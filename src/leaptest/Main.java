@@ -192,7 +192,7 @@ public class Main extends SimpleApplication
         // Add keyboard control
         inputManager.clearMappings();
         if (config.isSet("DebugESC")) 
-            controllers.add(new KeyboardDebugControl(this));
+            controllers.add(new KeyboardDebugControl(this, settings));
         if (config.isSet("Debug"))
         {
             controllers.add(new KeyboardTweakerControl(inputManager, tweaker, config.getValue("SetFolder"), config.getValue("SetExtension")));
