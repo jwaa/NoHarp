@@ -31,6 +31,7 @@ import leaptest.controller.KeyboardGridControl;
 import leaptest.controller.KeyboardGridSaveControl;
 import leaptest.controller.KeyboardTweakerControl;
 import leaptest.controller.MouseBlockControl;
+import leaptest.controller.StopTimerControl;
 import leaptest.controller.TaskManagerControl;
 import leaptest.controller.Updatable;
 import leaptest.model.Block;
@@ -156,8 +157,11 @@ public class Main extends SimpleApplication
         controllers = new ArrayList<Updatable>();
         
         TaskManagerControl taskcontrol = new TaskManagerControl(taskmanager, grid, this, Long.parseLong(config.getValue("TimerInterval")));
-        if (taskmanager!=null && config.isSet("Timer"))
-            controllers.add(taskcontrol);
+        if (config.isSet("Timer"))
+            if (taskmanager!=null)
+                controllers.add(taskcontrol);
+            else
+                controllers.add(new StopTimerControl(this, Long.parseLong(config.getValue("TimerInterval"))));
         
         
         // Create a Leap Motion interface and put it within the calibrator
