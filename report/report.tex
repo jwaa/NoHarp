@@ -1,0 +1,35 @@
+\documentclass[a4paper]{article}
+\usepackage{fullpage} %More text on one page
+\usepackage{graphicx} %Able to add pictures
+\usepackage{amsmath} %Math
+
+%Linkable TOC
+\usepackage{url} 
+\usepackage[hidelinks]{hyperref}
+
+%Images with text
+\usepackage[import]{xy}
+\xyoption{import}
+
+%No boxes around the links
+\hypersetup{
+    colorlinks=false,
+    linktoc=all}
+
+\begin{document}
+
+%Title
+\input{title}
+
+\input{report/abstract}
+\input{report/introduction}
+\input{report/methods}
+\input{report/results}
+\input{report/discussion}
+\input{report/conclusion}
+
+\bibliographystyle{abbrv}
+\bibliography{references}
+
+
+\end{document}
