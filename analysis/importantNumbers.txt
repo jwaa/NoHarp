@@ -1,0 +1,5 @@
+crombach's alpha's
+keyboard_system_usefullness (Q1 - Q8): .854
+keyboard_interface_quality (Q9 - Q11): .574	
+leap_system_usefullness (Q1 - Q8): .909
+leap_interface_quality (Q9 - Q11): .868
