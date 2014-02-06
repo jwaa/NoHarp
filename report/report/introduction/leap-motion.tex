@@ -1,2 +1,48 @@
-\subsection{LEAP-motion (Jasper)}
-Hier ook iets over de perceptive components van de LEAP
+\subsection{The Leap Motion}
+
+The Leap Motion is new interaction peripheral device designed to be
+used with your computer. It is a small device ($80\times12.7$mm)
+connected through a single USB cable. With its two infrared
+cameras and three infrared LED\textquoteright{}s it is designed to
+observe objects in a reversed hemispherical area with the Leap Motion
+on the bottom center. The main purpose of the Leap Motion is to observe
+the hands and fingers of the user perhaps with the addition of so-called
+pointables such as a pen. These are perceived by the leap through
+the reflected infrared light from the three LED\textquoteright{}s
+on the two infrared cameras. The distinct patterns of infrared emission
+produces the hemisphere with an effective range of up to thirty centimeters
+from the Leap Motion.
+
+The software development kit (SDK) for the Leap Motion contains several
+algorithms and data-analysis tools to convert the two dimensional
+frames from the two cameras into a three dimensional space containing
+the perceived objects. The SDK classifies these objects into hands
+that can contain fingers and a separate class containing the pointables,
+if detected. All other objects, if correctly classified, are filtered
+out of this three dimensional space.
+
+The representation of these high level objects are based on three
+Cartesian coordinates and three dimensional vectors, respectively
+denoting position and direction. A finger or another pointable is
+represented by the coordinates of its tip and the vector to denote
+the direction it points to. The hand is represented by the coordinates
+of the hand palm with a unique additional feature that is the radius
+of the sphere that fits into the palm.
+
+The SDK also provide temporal support by dividing time into frames
+where each frame contains the high level object data and the features
+belonging to each object. Frames can also include gestures that can
+be recognized by the Leap Motion. Such gestures form the basics of
+the interaction between the user and his computer through the Leap
+Motion. The provided gestures are divided into continuous or discrete
+gestures. The continuous gestures are the gestures that change over
+time, therefore their data is spread over several frames, whereas
+the discrete gestures are gesture that can occur in one frame. The
+two continuous gestures are a hand swipe gesture or circle gesture
+(either with the entire hand or finger). The discrete gestures are
+tap gestures in either a horizontal direction (screen taps) or vertical
+direction (key taps).
+
+The combination of this hardware technique and SDK allows a developer
+to create a method of interaction based on natural and complex hand
+movements while minimizing the restraints on allowed movements. 
