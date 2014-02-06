@@ -1,1 +1,73 @@
-\subsubsection{Rotate (Jasper)}
+\subsubsection{The Rotate Gestures}
+
+The control of the circular grid through the Leap Motion is done by
+swipe gestures. This choice was inspired by the numerous available
+interaction patterns where swipe gestures are used to navigate through
+some kind of interface. Also, a full hand swipe in a horizontal orientated
+direction is similar to the movement one makes when spinning a plate
+such as the circular grid. 
+
+For these reasons a set of swipe gestures were implemented to rotate
+the circular grid in both a horizontal and vertical direction (adjust
+the angle at which the interface shows the grid). These gestures are
+called the rotate gestures and are divided into two groups; swipe
+gestures that move in a horizontal direction and those that move in
+a vertical direction. The decision boundary lies at a $45$ degree
+angle from the horizontal axis, any gestures beyond that angle are
+classified as a vertical rotate gesture.
+
+The straightforward implementation of these gestures based on the
+swipe data presented by the Leap Motion and the used SDK caused several
+problems. The first being that the SDK returned every swipe it detected
+but not in a reliable way; the tags showing if this continuous gesture
+just started, continued or ended in the current frame did not correlate
+with the actual swipe movement performed. Therefore a single fluent
+swipe performed by the user could contain several different swipes
+according to the SDK. Another problem was that when the user made
+an unrestricted swipe in open space there was always a small movement
+back to a central position specific to the user. The SDK and Leap
+Motion detected this movement as a swipe as well while not intended
+as a rotate gesture. 
+
+To solve these two problems a robust way of filtering the swipes received
+from the SDK had to be created. This was done by creating two small
+user profiles (one for each rotate gesture category) based on all
+previous perceived rotate gestures started with some initial values.
+This profile contained the average coordinate on the z-axis and x-axis
+for respectively the horizontal and vertical rotate gestures. Each
+category also contained the average speed of these gestures and the
+average time between the rotate gestures. Each average was calculated
+in a moving average manner as well as its moving standard deviation.
+With these two values, and a static predefined sensitivity value,
+a range was constructed where the respective feature should lie in
+between to be accepted. If all features of a certain swipe were accepted,
+the swipe was classified as a rotate swipe and was performed. 
+
+The initial values of these user profiles was based on extensive trials
+of three expert users using the rotate gestures. Their combined user
+profiles was taken as these initial values. The sensitivity values
+where also based on these trials to find their most optimal values.
+
+The rotation of the circular grid based on the rotate gestures is
+done in a momentum-decay manner; the velocity of the rotate gestures
+contributes to the current rotation momentum of the circular grid
+while at each frame this momentum was decreased by a certain decay
+factor. This implementation was inspired on the various applications
+where swipe is used to scroll the interface but is not immediately
+stopped when no swipe is detected and where several swipes in quick
+succession cause an increase in scrolling speed. 
+
+The decay value and rotate gesture contribution (scaled by a sensitivity
+value) differed for the vertical and horizontal rotate gestures. The
+vertical rotate gesture had a larger decay value and large swipe velocities
+did not affected the momentum as much (low sensitivity values). This
+was due to a desire of changing the angle of the circular grid in
+a more precise manner, whereas the horizontal rotate gesture did not
+had such a requirement.
+
+The usage of these small user profiles and extensive testing of several
+sensitivity values resulted in a robust implementation of the rotate
+gestures that could adapt on the users own preferred way of swiping.
+The addition of a momentum-decay rotation effect caused the circular
+grid to move in a more natural and intuitive way compared to previous
+experience the user could have with swipe based navigation.
