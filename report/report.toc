@@ -11,10 +11,10 @@
 \contentsline {subsubsection}{\numberline {2.2.4}Experimentor interface (Sil)}{1}{subsubsection.2.2.4}
 \contentsline {subsection}{\numberline {2.3}Experimental design (Janne)}{1}{subsection.2.3}
 \contentsline {subsubsection}{\numberline {2.3.1}Participants}{1}{subsubsection.2.3.1}
-\contentsline {subsubsection}{\numberline {2.3.2}Task and procedure}{1}{subsubsection.2.3.2}
-\contentsline {subsection}{\numberline {2.4}Design and measurements}{2}{subsection.2.4}
-\contentsline {section}{\numberline {3}Results (Mike)}{2}{section.3}
-\contentsline {section}{\numberline {4}Discussion (Mike)}{2}{section.4}
-\contentsline {section}{\numberline {5}Conclusion (Annet)}{2}{section.5}
-\contentsline {section}{\numberline {A}The Post-Study System Usability Questionnaire Items}{3}{appendix.A}
-\contentsline {section}{\numberline {A}Additional questionnaire}{5}{appendix.A}
+\contentsline {subsubsection}{\numberline {2.3.2}Task and procedure}{3}{subsubsection.2.3.2}
+\contentsline {subsection}{\numberline {2.4}Design and measurements}{3}{subsection.2.4}
+\contentsline {section}{\numberline {3}Results (Mike)}{3}{section.3}
+\contentsline {section}{\numberline {4}Discussion (Mike)}{3}{section.4}
+\contentsline {section}{\numberline {5}Conclusion (Annet)}{3}{section.5}
+\contentsline {section}{\numberline {A}The Post-Study System Usability Questionnaire Items}{4}{appendix.A}
+\contentsline {section}{\numberline {A}Additional questionnaire}{6}{appendix.A}
