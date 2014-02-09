@@ -3,10 +3,11 @@
 \usepackage{graphicx} %Able to add pictures
 \usepackage{amsmath} %Math
 \usepackage{array}
+\usepackage{float} % Use [H] for in placement on images and tables
 
 %Linkable TOC
 \usepackage{url} 
-\usepackage[hidelinks]{hyperref}
+\usepackage{hyperref}
 
 %Images with text
 \usepackage[import]{xy}
@@ -14,8 +15,9 @@
 
 %No boxes around the links
 \hypersetup{
-    colorlinks=false,
-    linktoc=all}
+   colorlinks=false,
+   pdfborder={0 0 0},
+   linktoc=all}
 
 \begin{document}
 

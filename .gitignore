@@ -3,8 +3,13 @@
 *.aux
 *.out
 *.toc
+*.bbl
+*.blg
 *.class
 .*
+
+/report/pdfclose.scpt
+/report/Makefile
 
 # Package Files #
 *.jar
