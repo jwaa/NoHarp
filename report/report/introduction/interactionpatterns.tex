@@ -27,12 +27,13 @@ Rotating view over y-axis:
 \subsubsection{Cognitive modelling}
 The possible tasks of the user are modelled using the KLM-GOMS (Keystroke Level Model - Goals, Operators, Methods, and Selection rules) method~\cite{john1996goms}. The KLM-GOMS method, can be used to predict execution times. Using the KLM-GOMS method sequences of actions the user must perform to accomplish a task are specified. The estimated times needed to perform these actions are added up to predict the executions time of this particular task. It is important to keep in mind that GOMS assumes an error less performance and is generally aimed at expert users.
 
-Card, Moran, & Newell(1983)~\cite{card1983psychology} developed a standard set of operators (e.g. mouse click, keystroke) and their estimated execution times based on experimental data (see Table 1). 
+Card, Moran, \& Newell(1983)~\cite{card1983psychology} developed a standard set of operators (e.g. mouse click, keystroke) and their estimated execution times based on experimental data (see Table 1). 
 
 The possible tasks for the user in this system are: selecting/picking up a block, moving a block, deselecting/dropping a block, rotating view over x-axis, rotating view over y-axis. The GOMS diagrams of these task can be found in Appendix D. The execution times are estimated only using the standard set of estimated execution times (see Table 1). Not every actions' execution time could be estimated in this way, considering that for rotating the view it depends on how much rotation the user demands. Moreover, for the LEAP motion these standards are not yet developed and predicted executions times will highly depend on implementation of gestures and expertise/training hours of the user.
 
 
-\begin{table} [!htbp]
+\begin{table} [H]
+\centering
 \begin{tabular}{|l|c|}
 \hline
 K - keystroke & 0.28 sec\\ \hline
@@ -45,7 +46,6 @@ M - Mental act of routine thinking or perception & 0.6 - 1.35 sec; use 1.2 sec \
 W(t) - Waiting for the system to respond & time t must be determined \\ 
 \hline
 \end{tabular}
-\\[2.5]
-Table 1: The standard operators and estimated times for each operator considering average users.
+\caption{The standard operators and estimated times for each operator considering average users.}
 \end{table}
 
