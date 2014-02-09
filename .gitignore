@@ -6,6 +6,7 @@
 *.bbl
 *.blg
 *.class
+*.psd
 .*
 
 /report/pdfclose.scpt
