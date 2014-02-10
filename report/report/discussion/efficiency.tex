@@ -1,0 +1,26 @@
+\subsection{Efficiency}
+
+Three measures are important for the accuracy: \textsc{efficient actions}, \textsc{block repositioning} and \textsc{orientation changes}. These three measures all contribute to the more general account of accuracy. It is a broad and context dependent term. In this case it is related to the optimality of performed actions. Has every action an indented purpose and was it useful and successful?
+
+\subsubsection{Efficient actions}
+The independent variable \textsc{efficient actions } is defined as the ratio of useful actions within total actions. More specifically with the keyboard-mouse combination an action is defined as a mouse click and a useful action is picking up a block. The same holds for the LEAP-motion with the only difference that an action is defined as a grabbing motion.
+
+A strong effect of interaction device has been found on the accuracy. Not the LEAP-motion but the keyboard-mouse got the best scores on accuracy. Only in two cases a perfect score was not achieved using the mouse. This is contrasted by the LEAP-motion where approximately three in four actions were not useful. This happens due to two main scenarios: 1) the user made a grabbing gesture while their hand was not positioned on a block or 2) the recognizer interoperated hand movements as a grabbing gesture without the users intent.  
+
+The first scenario can be countered by tweaking the strictness of the block selection and by providing better feedback to the user when a grabbing action is possible. Making block selecting more strict will improve the resolution of actions i.e. more fine grain. Making block selection less strict will make it easier to select with the risk of overlapping block selection areas. Tweaking will lead to a better optimum. Giving better feedback improves the users knowledge on when the block is selectable or not. A change in color when it is selectable is at this moment the only feedback to the users. Most problems occur when users are at the border of the block selection area. With only slight hand (or mouse) movements a block changes state (from selectable to unselectable or vice versa). This leads to an appeared inconsistency. An improvement would be to apply a gradient in the color change. The more the hand (or mouse) is positioned at the center of the block selection area the more intense the color (indicating selectability) becomes. 
+
+The second scenario is harder to tackle because it is hardware related. The range of the LEAP-motion is somewhat limited. Creating blocks happened at the edge of the range of the LEAP-motion sometimes resulting in suboptimal detection. Besides block creation also the height of block structures could cause problems. This means that the LEAP-motion is not the ideal interaction device for the build application. Software and/or hardware improvements from the LEAP-motion manufacturer could counter these problems.
+
+\subsubsection{Block repositioning}
+\textsc{Block repositioning} is the amount of blocks that needed to be repositioned. There are two types of block repositioning: 1) intended and 2) unintended. Typical examples of intended block replacements are when the user moves a wrongly paced block or the block obstructs a different action and needs to be repositioned. Unintended block repositioning happens by mistake (made by the user or by misinterpretation of the system).
+
+A strong effect of interaction device has been found on the amount of blocks that were repositioned. This almost never happened when using the keyboard and mouse (median = 0) and was far more needed when using the LEAP-motion (median = 16). This indicates that the LEAP-motion is not as efficient as the keyboard-mouse combination.
+
+Intended block repositioning with the LEAP-motion as interaction device was needed mostly to correct earlier made mistakes. Dropping a block was difficult due to recognition problems. The LEAP-motion failed in many occasions the register a releasing gesture or recognized a releasing gesture without the users intent. This is again caused by the limitations of hardware and software provided by the manufacturer.
+
+\subsubsection{Orientation changes} 
+\textsc{Orientation changes} are harder to interoperate. The block structures that the participants had to build did not require a screen rotation. It is dificult to determine why the participant changed the orientation with only behavioral data. No motivational data on this particular subject was collected.
+
+A strong effect of interaction device on the amount of orientation changes was found. During the keyboard and mouse trial only one participant rotated the screen while during the LEAP-motion trial only two did not. Why the difference? Two plausible not exclusive explanations are: 1) when using the keyboard-mouse combination the users could complete the assignments without using the keyboard at all. The need to try it (by accident) was very low and 2) the LEAP-motion misinterpreted the moving of the hand as swipes leading to a horizontal or vertical screen rotation. 
+
+An improvement to the system could be to disable screen rotations, but more additional research needs to be performed to draw thorough conclusions.
