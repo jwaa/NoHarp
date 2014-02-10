@@ -1,3 +1,13 @@
 \subsection{Experimentor interface}
 
-The 
+For managing the actual experiment an additional Java program was written that controlled the flow of the experiment. This program, called the `experimentor interface', showed participants instructions, made the user do tasks in the task environment, made the user fill in questionnaires and meanwhile recorded user generated data. The program heavily relied on the jxBrowser version 4.1 by TeamDev, which provided a Java Swing component that could render webpages employing the Google Chrome webbrowser renderer. 
+
+The program had a list of TODO screen-states that were presented to the participants in a sequential fashion. The experimentor interface had effectively three different types of screen-states:
+\begin{enumerate}
+	\item{\textbf{A local webpage with instructions:}} This showed a set of instructions for as long as the participants needed to read. Advancing to the next screen state could be achieved by clicking the `next' button.
+	\item{\textbf{An external webpage with a Google Forms questionnaire:}} This showed a Google Form that the participants needed to fill in. Advancing to the next screen state could be achieved by filling in all required fields and clicking the `next' button.
+	\item{\textbf{A fullscreen showing the task environment:}} This showed the task environment on the screen (resolution: $800 \times 600$ pixels) under various conditions. Advancing to the next screen state would happen when the task environment terminated. Termination conditions depended on the conditions.
+\end{enumerate}
+
+
+

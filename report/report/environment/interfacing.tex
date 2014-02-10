@@ -1,7 +1,12 @@
-\subsection{Interfacing}
+\subsection{Control interfaces}\label{sec:interface}
 
-\paragraph{Block manipulation}
-For both interfaces a way to move a block from one point to another point had to be implemented. This function can be split into three subfunctions. Picking up a block, moving a block, releasing the block. First will be discussed how this was implemented in the case of the keyboard and mouse interface. After that the implementation for the LEAP motion is discussed.
+The control interfaces define the actual control strategy, i.e. they describe the mapping from the input of a peripheral device towards the actual manipulations within the task environment. This section starts with a brief explanation of the two major sets of manipulations with the task environment and then discusses how these were implemented through control interfaces for the LEAP Motion and the mouse and keyboard. 
+
+The major two sets of manipulations with the environment were:
+\begin{enumerate}
+	\item{\textbf{Building block manipulations:}} creating new blocks, dragging blocks, picking up blocks, dropping blocks and removing blocks.
+	\item{\textbf{View manipulations:}} rotating the circular grid, lowering and raising the camera.
+\end{enumerate}
 
 \input{report/environment/keyboardmouse}
 \input{report/environment/leap}
