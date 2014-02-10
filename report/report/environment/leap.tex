@@ -1,5 +1,15 @@
-\subsubsection{The Rotate Gestures}
+\subsubsection{LEAP Motion}
 
+\paragraph{Block manipulation}
+It was tried to keep the LEAP motion gesture as close to real life movements as possible. Therefore, the grabbing gesture had to be performed by closing a hand when it was shown above a block. The block was then shown inside the hand. While the hand remained closed the block would stay in the hand and move along with it. When the hand was opened the block would fall down at the position the hand was at that moment.
+
+To indicate a grabbing gesture the function \texttt{Hand.scaleFactor(Frame sinceFrame)} from the LEAP motion SDK is used. This function looks at the scaling of the hand with all the fingers. When clenching the fist, the fingers get closer to the hand and therefore the scaling gets smaller, indicated by values $<1.0$. So for every frame, the program looks at the previous frame and finds a value of the scaling. When this value is lower than a certain threshold (in our case $<0.978$) it is saved. When the scaling gets lower for at least four frames, the system recognizes a grabbing gesture. When there are there are three or more frames in a row where the scaling is the same or bigger. The memory gets reset and the grabbing has to start over again.
+
+After picking up it was easy to move the block, because the block would just follow the hand with which it was picked-up. Releasing was done in a similar manner as grabbing. When the scaling factor between the hand and the same hand in the previous frame was $>1.01$ for at least two frames the block got released. All thresholds were found with empirically.
+
+An added feature to the LEAP motion interface was the fact that the hand should be near the block but not necessarily  on it to pick up the block. When detecting a grab gesture, the system would try to find a block within a certain parameter.
+
+\paragraph{Grid rotation \& Camera rotation}
 The control of the circular grid through the Leap Motion is done by
 swipe gestures. This choice was inspired by the numerous available
 interaction patterns where swipe gestures are used to navigate through
