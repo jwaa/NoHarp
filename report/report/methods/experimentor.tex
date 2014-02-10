@@ -1,35 +1,40 @@
 \subsection{Experimentor interface}
 
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|p{6cm}|}
+\hline
+\textbf{number} & \textbf{state-type} & \textbf{state-name} & \textbf{comments} \\ \hline \hline
+1 & intro-screen &  & Obtain participant number and handiness  \\ \hline
+2 & instructions & begin & \\ \hline
+3 & instructions & environment & \\ \hline
+4 & instructions & Leap Motion & \\ \hline
+5 & environment & Leap Motion practice & Practice lasts $3$ minutes \\ \hline
+6 & instructions & after practice & \\ \hline
+7 & environment & Leap Motion & Generates a log with user generated Leap Motion data \\ \hline 
+8 & instructions & questionnaire 1 & \\ \hline
+9 & questionnaire & Leap Motion & The Post-Study System Usability Questionnaire (see Appendix~\ref{appendix:post_study_questionnaire}) \\ \hline
+10 & instructions & Keyboard and mouse & \\ \hline
+11 & environment & Keyboard and mouse practice & Practice lasts $3$ minutes \\ \hline
+12 & instructions & after practice & \\ \hline
+13 & environment & Keyboard and mouse & Generates a log with user generated keyboard and mouse data  \\ \hline
+14 & instructions & questionnaire 2 & \\ \hline
+15 & questionnaire & Keyboard and mouse & The Post-Study System Usability Questionnaire (see  Appendix~\ref{appendix:post_study_questionnaire}) \\ \hline
+16 & questionnaire & additional & Additional questionnaire on participant background (see Appendix~\ref{appendix:additional_questionnaire}) \\ \hline
+17 & instructions & end & \\ \hline
+\end{tabular}
+\caption{\label{tab:screenstates} All screen-states of the Experimentor interface.}
+\end{table}
+
 For managing the actual flow of the experiment an additional Java program was written. This program, called the `Experimentor interface', showed participants instructions, made the user do tasks in the task environment, made the user fill in questionnaires and meanwhile recorded user generated data. The program heavily relied on the jxBrowser version $4.1$ by TeamDev~\footnote{More on jxBrowser: \url{http://www.teamdev.com/jxbrowser}}, which provided a Java Swing component that could render webpages employing the Google Chrome webbrowser renderer. 
 
 The experimentor interface had effectively four different types of screen-states:
 \begin{enumerate}
-	\item{\textbf{An introduction screen:}} The introduction screen asks for the handiness of the participant. Advancing to the next screen could be achieved by clicking the button for `left-handiness' or `right-handiness'. 
+	\item{\textbf{An introduction screen:}} The introduction screen asks for the handiness of the participant. Advancing to the next screen could be achieved by clicking the button labeled `I am left-handed' or the button labeled `I am right-handed'. 
 	\item{\textbf{A local webpage with instructions:}} This showed a set of instructions for as long as the participants needed to read. Advancing to the next screen state could be achieved by clicking the `next' button. 
-	\item{\textbf{An external webpage with a Google Forms questionnaire:}} This showed a Google Form that the participants needed to fill in. Advancing to the next screen state could be achieved by filling in all required fields and clicking the `next' button.
+	\item{\textbf{An external webpage with a Google Forms questionnaire:}} This showed a Google Form~\footnote{Google Forms: \url{http://www.google.com/google-d-s/createforms.html}} that the participants needed to fill in. Advancing to the next screen state could be achieved by filling in all required fields and clicking the `next' button.
 	\item{\textbf{A fullscreen instance of the task environment:}} This showed the task environment on the entire screen (resolution: $800 \times 600$ pixels) under various conditions. Advancing to the next screen state would happen when the task environment terminated. Termination conditions depended on the conditions.
 \end{enumerate}
 
-\noindent The program had a list of $17$ screen-states that were presented to the participants in a sequential fashion. The name of the instructions refer to instructions listed under Appendix~\ref{app:instructions}.
-\begin{enumerate}
-\item{\textbf{introduction screen}} Obtain participant number and handiness 
-\item{\textbf{instructions - begin}}
-\item{\textbf{instructions - environment}}
-\item{\textbf{instructions - LEAP Motion}}
-\item{\textbf{environment - LEAP Motion training}} Training lasts $3$ minutes max
-\item{\textbf{instructions - after test}}
-\item{\textbf{environment - LEAP Motion}}
-\item{\textbf{instructions - questionnaire 1}}
-\item{\textbf{questionnaire - LEAP Motion}} The Post-Study System Usability Questionnaire (see Appendix~\ref{appendix:post_study_questionnaire})
-\item{\textbf{instructions - Keyboard and mouse}}
-\item{\textbf{environment - Keyboard and mouse training}} Training lasts $3$ minutes max
-\item{\textbf{instructions - after test}}
-\item{\textbf{environment - Keyboard and mouse}} 
-\item{\textbf{instructions - questionnaire 2}}
-\item{\textbf{questionnaire - Keyboard and mouse}} The Post-Study System Usability Questionnaire (see Appendix~\ref{appendix:post_study_questionnaire})
-\item{\textbf{questionnaire - additional}} Additional questionnaire on participant background (see Appendix~\ref{appendix:additional_questionnaire})
-\item{\textbf{instructions - end}}
-\end{enumerate}
-
-\noindent 
+\noindent The program had a list of $17$ screen-states that were presented to the participants in a sequential fashion that are listed in Table~\ref{tab:screenstates}. The name of the instructions refer to the instructions listed under Appendix~\ref{app:instructions}. Screen-states numbers $4,5,7,9$ were swapped respectively with states $10,11,13,15$ for half of the participants to counter-balance the presentation of the interfaces. The experimentor had to enter a participant number before letting a participant start on the introduction screen. The participant number was used to label the generated data to the participant. 
 
